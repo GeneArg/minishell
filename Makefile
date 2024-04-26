@@ -1,47 +1,74 @@
-NAME = minishell
-CC = cc
-CFLAGS = -Wall -Wextra -Werror
-AR = ar rcs
-RM = rm -f
+NAME		:= minishell
 
-LIBFT = libft
-LIBFT_LIB = $(LIBFT)/libft.a
+# Directories
+HDR_DIR		:= include
+SRC_DIR		:= src
+OBJ_DIR		:= obj
 
-SRC_FILES = lexer.c
-OBJ_DIR = obj
-OBJ_FILES = $(SRC_FILES:%.c=$(OBJ_DIR)/%.o)
+# Libft
+LIBFT_DIR	:= libft
+LIBFT		:= ${LIBFT_DIR}/libft.a
 
-# Rule to make everything
-all: $(OBJ_DIR) $(NAME)
+# Compiler flags
+CC			:= cc
+CFLAGS		:= -Wall -Werror -Wextra
+INCL		:= -I ${HDR_DIR}/ -I ${LIBFT_DIR}/include/
 
-# Creating the obj directory
+# Includes
+HDR_FILES :=	minishell.h
+
+# Files
+SRC_FILES		:= lexer.c \
+					parser.c \
+
+
+SRC				:= ${addprefix ${SRC_DIR}/, ${SRC_FILES}}
+OBJ				:= ${addprefix ${OBJ_DIR}/, ${SRC_FILES:.c=.o}}
+HDR				:= ${addprefix ${HDR_DIR}/, ${HDR_FILES}}
+
+# Colours
+GREEN			:= \033[32;1m
+YELLOW			:= \033[33;1m
+RED				:= \033[31;1m
+BOLD			:= \033[1m
+RESET			:= \033[0m
+
+# Rules
+all: $(NAME)
+
+$(NAME): $(LIBFT) $(OBJ)
+	@ printf "%b%s%b" "$(YELLOW)$(BOLD)" "Compiling MINISHELL..." "$(RESET)"
+	@ $(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
+	@ printf "\t\t%b%s%b\n" "$(GREEN)$(BOLD)" "	[OK]" "$(RESET)"
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	@ $(CC) $(CFLAGS) $(INCL) -c $< -o $@
+
 $(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+	@ mkdir -p $(OBJ_DIR)
 
-# Compiling the project and linking with libft to create the push_swap executable
-$(NAME): $(LIBFT_LIB) $(OBJ_FILES)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJ_FILES) -L$(LIBFT) -lft
+$(LIBFT):
+	@ printf "%b%s%b" "$(YELLOW)$(BOLD)" "Compiling and archiving LIBFT..." "$(RESET)"
+	@ make -C ${LIBFT_DIR}											> /dev/null
+	@ printf "\t%b%s%b\n" "$(GREEN)$(BOLD)" "[OK]" "$(RESET)"
 
-# Rule for making libft
-$(LIBFT_LIB):
-	$(MAKE) -C $(LIBFT)
-
-# Generic rule for object files, now includes obj directory
-$(OBJ_DIR)/%.o: %.c minishell.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Cleaning up the object files
 clean:
-	$(RM) -r $(OBJ_DIR)
-	$(MAKE) clean -C $(LIBFT)
+	@ echo "$(RED)$(BOLD) Cleaning LIBFT...$(RESET)"
+	@ make clean -C ${LIBFT_DIR}								> /dev/null
 
-# Full clean (includes the library and executable)
-fclean: clean
-	$(RM) $(NAME)
-	$(MAKE) fclean -C $(LIBFT)
+	@ echo "$(RED)$(BOLD) Cleaning Object files...$(RESET)"
+	@ rm -rf ${OBJ}
+	@ rm -rf ${OBJ_DIR}
 
-# Re-make everything
-re: fclean all
+fclean:
+	@ echo "$(RED)$(BOLD)Fully cleaning LIBFT...$(RESET)"
+	@ make fclean -C ${LIBFT_DIR}								> /dev/null
 
-# Prevents issues with make and filenames
+	@ echo "$(RED)$(BOLD)Fully cleaning MINISHELL...$(RESET)"
+	@ rm -rf ${NAME}
+	@ rm -rf ${OBJ}
+	@ rm -rf ${OBJ_DIR}
+
+re: fclean $(NAME)
+
 .PHONY: all clean fclean re

@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 11:24:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/04/25 14:34:44 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/04/26 16:24:50 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
-#include "minishell.h"
+#include "../include/minishell.h"
 
 
 char **splitter(char *input)
@@ -229,25 +229,25 @@ t_token *populate_list(char **split)
 }
 
 
-int main(void)
-{
-	char *test = "sort \"list.txt\" | uniq -c | sort -nr > 'result file.txt'";
-	char **split = splitter(test);
-	int i = 0;
-	printf("Split:\n");
-	while (split[i])
-	{
-		printf("%s\n", split[i]);
-		i++;
-	}
-	t_token *token = populate_list(split);
-	t_token *current = token;
-	printf("Token list:\n");
-	while (current->value)
-	{
-		printf("Type: %d, Value: %s\n", current->type, current->value);
-		current = current->next;
-	}
-}
+// int main(void)
+// {
+// 	char *test = "sort \"list.txt\" | uniq -c | sort -nr > 'result file.txt'";
+// 	char **split = splitter(test);
+// 	int i = 0;
+// 	printf("Split:\n");
+// 	while (split[i])
+// 	{
+// 		printf("%s\n", split[i]);
+// 		i++;
+// 	}
+// 	t_token *token = populate_list(split);
+// 	t_token *current = token;
+// 	printf("Token list:\n");
+// 	while (current->value)
+// 	{
+// 		printf("Type: %d, Value: %s\n", current->type, current->value);
+// 		current = current->next;
+// 	}
+// }
 
 
