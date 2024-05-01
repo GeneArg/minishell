@@ -20,6 +20,7 @@ HDR_FILES :=	minishell.h
 # Files
 SRC_FILES		:= lexer.c \
 					parser.c \
+					main.c \
 
 
 SRC				:= ${addprefix ${SRC_DIR}/, ${SRC_FILES}}
