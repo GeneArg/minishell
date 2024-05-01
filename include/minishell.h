@@ -11,8 +11,8 @@
 // Lexer
 
 typedef enum {
-    TOKEN_WORD = 1,              // A generic token for words, could be a command or an argument
-    TOKEN_PIPE,              // Pipe '|'
+    TOKEN_WORD = 1,
+    TOKEN_PIPE,
     TOKEN_REDIRECT_IN,       // Input redirection '<'
     TOKEN_REDIRECT_OUT,      // Output redirection '>'
     TOKEN_REDIRECT_APPEND,   // Append redirection '>>'

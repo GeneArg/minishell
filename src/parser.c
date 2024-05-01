@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/01 10:09:56 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/01 16:35:10 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,13 @@ t_command	*init_command(void)
 	return (cmd);
 }
 
+#include <stdlib.h>
+#include <string.h>
+
 void	append_argument(t_command **cmd, char *arg)
 {
-	int	argc;
+	int		argc;
+	char	**new_argv;
 
 	argc = 0;
 	if ((*cmd)->argv)
@@ -38,9 +42,14 @@ void	append_argument(t_command **cmd, char *arg)
 		while ((*cmd)->argv[argc])
 			argc++;
 	}
-	(*cmd)->argv = realloc((*cmd)->argv, sizeof(char *) * (argc + 2));
-	(*cmd)->argv[argc] = strdup(arg);
-	(*cmd)->argv[argc + 1] = NULL;
+	new_argv = (char **)malloc(sizeof(char *) * (argc + 2));
+	for (int i = 0; i < argc; i++)
+		new_argv[i] = (*cmd)->argv[i];
+	new_argv[argc] = ft_strdup(arg);
+	new_argv[argc + 1] = NULL;
+	if ((*cmd)->argv)
+		free((*cmd)->argv);
+	(*cmd)->argv = new_argv;
 }
 
 t_command	*parse(t_token *token)
@@ -48,6 +57,7 @@ t_command	*parse(t_token *token)
 	t_command	*head;
 	t_command	*current_cmd;
 	t_command	*new_cmd;
+	char		*heredoc_delimiter;
 
 	head = NULL;
 	current_cmd = NULL;
@@ -94,7 +104,22 @@ t_command	*parse(t_token *token)
 		{
 			token = token->next;
 			if (token)
-				current_cmd->redirect_in = ft_strdup(token->value);
+			{
+				heredoc_delimiter = ft_strdup(token->value);
+				token = token->next;
+				while (token->value && strcmp(token->value,
+						heredoc_delimiter) != 0)
+				{
+					if (current_cmd->heredoc_content)
+						current_cmd->heredoc_content = ft_strjoin(current_cmd->heredoc_content,
+								" ");
+					else
+						current_cmd->heredoc_content = ft_strdup("");
+					current_cmd->heredoc_content = ft_strjoin(current_cmd->heredoc_content,
+							token->value);
+					token = token->next;
+				}
+			}
 		}
 		token = token->next;
 	}
