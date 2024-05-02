@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/01 16:35:10 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/02 11:37:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,6 @@ t_command	*init_command(void)
 	cmd->next = NULL;
 	return (cmd);
 }
-
-#include <stdlib.h>
-#include <string.h>
 
 void	append_argument(t_command **cmd, char *arg)
 {
