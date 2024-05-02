@@ -28,6 +28,7 @@ typedef struct s_token {
     struct s_token* next; // Pointer to the next token
 } t_token;
 
+char	**splitter(char *input);
 t_token *lex(char *input);
 
 // Parser
@@ -54,8 +55,9 @@ t_command *parse(t_token *tokens);
 
 // Utils
 
+// Test functions
 
-
+void test_display(char *input);
 
 
 #endif

@@ -18,9 +18,11 @@ INCL		:= -I ${HDR_DIR}/ -I ${LIBFT_DIR}/include/
 HDR_FILES :=	minishell.h
 
 # Files
-SRC_FILES		:= lexer.c \
-					parser.c \
+SRC_FILES		:=  lexer/lexer_split.c \
+					lexer/lexer_list.c \
+					parser/parser.c \
 					main.c \
+					test_display.c \
 
 
 SRC				:= ${addprefix ${SRC_DIR}/, ${SRC_FILES}}
@@ -43,7 +45,9 @@ $(NAME): $(LIBFT) $(OBJ)
 	@ printf "\t\t%b%s%b\n" "$(GREEN)$(BOLD)" "	[OK]" "$(RESET)"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	@ $(CC) $(CFLAGS) $(INCL) -c $< -o $@ 
+	@ mkdir -p $(@D)  # This ensures the directory exists before compiling
+	@ $(CC) $(CFLAGS) $(INCL) -c $< -o $@
+
 
 $(OBJ_DIR):
 	@ mkdir -p $(OBJ_DIR)
