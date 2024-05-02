@@ -11,7 +11,7 @@ LIBFT		:= ${LIBFT_DIR}/libft.a
 
 # Compiler flags
 CC			:= cc
-CFLAGS		:= -Wall -Werror -Wextra 
+CFLAGS		:= -Wall -Werror -Wextra
 INCL		:= -I ${HDR_DIR}/ -I ${LIBFT_DIR}/include/
 
 # Includes
@@ -23,6 +23,7 @@ SRC_FILES		:=  lexer/lexer_split.c \
 					parser/parser.c \
 					main.c \
 					test_display.c \
+					freeing.c \
 
 
 SRC				:= ${addprefix ${SRC_DIR}/, ${SRC_FILES}}
@@ -41,7 +42,7 @@ all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJ)
 	@ printf "%b%s%b" "$(YELLOW)$(BOLD)" "Compiling MINISHELL..." "$(RESET)"
-	@ $(CC) $(CFLAGS) $(OBJ) $(LIBFT) -lreadline -o $(NAME) 
+	@ $(CC) $(CFLAGS) $(OBJ) $(LIBFT) -lreadline -o $(NAME)
 	@ printf "\t\t%b%s%b\n" "$(GREEN)$(BOLD)" "	[OK]" "$(RESET)"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)

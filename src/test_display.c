@@ -3,25 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   test_display.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:47:48 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/02 12:05:01 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/03 00:24:54 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void test_display(char *input)
+void test_display(t_program *program)
 {
-	t_token		*head_token;
 	t_token		*current;
-	t_command	*head_command;
 	t_command	*current_command;
 
-	printf("INPUT: %s\n", input);
-	head_token = lex(input);
-	current = head_token;
+	printf("INPUT: %s\n", program->input);
+	program->tokens = lex(program->input);
+	current = program->tokens;
 	printf("\nLEXER OUTPUT:\n");
 	while (current)
 	{
@@ -29,8 +27,8 @@ void test_display(char *input)
 		current = current->next;
 	}
 	printf("\nPARSER OUTPUT:\n");
-	head_command = parse(head_token);
-	current_command = head_command;
+	program->commands = parse(program->tokens);
+	current_command = program->commands;
 	while (current_command)
 	{
 		printf("Command: %s\n", *(current_command->argv));

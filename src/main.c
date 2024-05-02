@@ -3,39 +3,47 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/02 12:05:27 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/03 00:46:26 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void run(char *input)
+t_program	*init_program()
 {
-	t_token		*head_token;
-	t_command	*head_command;
+	t_program	*program;
 
-	head_token = lex(input);
-	head_command = parse(head_token);
-	(void)head_command;
-	//expand(head_command);
-	//execute(head_command);
+	program = malloc(sizeof(t_program));
+	program->input = NULL;
+	program->tokens = NULL;
+	program->commands = NULL;
+	return (program);
+}
+
+void run(t_program *program)
+{
+	program->tokens = lex(program->input);
+	program->commands = parse(program->tokens);
+	(void)program->commands;
+	//expand(program->commands);
+	//execute(program->commands);
 }
 
 int	main(void)
 {
-	char		*input;
+	t_program	*program;
+
+	program = init_program();
 
 	while (1)
 	{
-		input = readline("minishell$ ");
-		test_display(input);
-		//run(input);
-		add_history(input);
+		program->input = readline("minishell$ ");
+		test_display(program);
+		//run(program);
+		add_history(program->input);
+		free_program_nonpersistent_values(program);
 	}
 }
-
-
-
