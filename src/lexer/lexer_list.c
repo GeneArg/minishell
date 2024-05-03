@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_list.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 11:24:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/02 12:11:32 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/03 10:04:31 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../include/minishell.h"
 
 TokenType	determine_type(char *token)
 {

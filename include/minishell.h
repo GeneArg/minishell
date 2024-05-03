@@ -35,6 +35,7 @@ typedef struct s_command
 	char *redirect_in;      // Filename for input redirection, or heredoc delimiter
 	char *redirect_out;     // Filename for output redirection
 	int append;             // Flag for append redirection
+	int ret;				// Return value of the command
 	char *heredoc_content;  // Heredoc content
 	struct s_command *next; // Pointer to the next command in a pipeline, if any
 }					t_command;
@@ -44,6 +45,7 @@ typedef struct s_program
 	char			*input;
 	t_token			*tokens;
 	t_command		*commands;
+	char			**envp;
 }					t_program;
 
 // Lexer
@@ -58,6 +60,11 @@ t_command			*parse(t_token *tokens);
 // Expander
 
 // Executer
+void execute(t_program *program);
+char	*find_path(char **envp, char *cmd);
+char	**get_paths(char **envp);
+void	append_str_to_array(char ***array, char *str);
+void	free_split(char **split);
 
 // Builtins
 
