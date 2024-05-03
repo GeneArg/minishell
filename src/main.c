@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/04 00:22:36 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/04 00:27:21 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	main(int argc, char **argv, char **envp)
 	program->envp = envp;
 	while (1)
 	{
-		program->input = readline("\033[1;32mminishell$ \033[0m");
+		program->input = readline("\033[1;31mminishell$ \033[0m");
 		//test_display(program);
 		run(program);
 		add_history(program->input);
