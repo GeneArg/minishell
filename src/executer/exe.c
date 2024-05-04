@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 10:25:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/03 20:48:04 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/04 13:06:42 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,45 +283,6 @@ void execute(t_program *program)
 		// 	// change directory in pwd by using __environ
 		// 	continue;
 		// }
-		// else if (!ft_strncmp(current_command->argv[0], "pwd", 4))
-		// {
-		// 	printf("%s\n", getcwd(NULL, 0));
-		// 	current_command = current_command->next;
-		// 	continue;
-		// }
-		// else if (!ft_strncmp(current_command->argv[0], "echo", 5))
-		// {
-		// 	if (current_command->argv[1] && !ft_strncmp(current_command->argv[1], "-n", 3))
-		// 	{
-		// 		for (int i = 2; current_command->argv[i]; i++)
-		// 		{
-		// 			printf("%s", current_command->argv[i]);
-		// 			if (current_command->argv[i + 1])
-		// 				printf(" ");
-		// 		}
-		// 	}
-		// 	else
-		// 		for (int i = 1; current_command->argv[i]; i++)
-		// 		{
-		// 			printf("%s", current_command->argv[i]);
-		// 			if (current_command->argv[i + 1])
-		// 				printf(" ");
-		// 			printf("\n");
-		// 		}
-		// 	// for (int i = 1; current_command->argv[i]; i++)
-		// 	// {
-		// 	// 	printf("%s", current_command->argv[i]);
-		// 	// 	if (current_command->argv[i + 1])
-		// 	// 		printf(" ");
-		// 	// }
-		// 	// printf("\n");
-		// 	current_command = current_command->next;
-		// 	continue;
-		// }
-		// else if (!ft_strncmp(current_command->argv[0], "exit", 5))
-		// {
-		// 	free_program(program, 0);
-		// }
 		// else if (!ft_strncmp(current_command->argv[0], "export", 7))
 		// {
 		// 	ft_export(program, current_command);
@@ -332,19 +293,38 @@ void execute(t_program *program)
 		// {
 		// 	// Implement unset
 		// }
-		// else if (!ft_strncmp(current_command->argv[0], "env", 4))
-		// {
-		// 	for (int i = 0; program->envp[i]; i++)
-		// 		printf("%s\n", program->envp[i]);
-			
-		// 	current_command = current_command->next;
-		// 	continue;
-		// }
+		if (!ft_strncmp(current_command->argv[0], "exit", 5))
+		{
+			bool is_digit;
+			for (int i = 0; current_command->argv[1][i]; i++)
+			{
+				if (!isdigit(current_command->argv[1][i]))
+				{
+					is_digit = false;
+					break;
+				}
+				is_digit = true;
+			}
+			if (current_command->argv[1] && is_digit)
+				free_program(program, ft_atoi(current_command->argv[1])%256);
+			else
+			{
+				if (!is_digit)
+				{
+					perror("minishell: exit: %s: numeric argument required\n", current_command->argv[1]);
+					free_program(program, 2);
+					
+				}
+				free_program(program, 0);
+			}
+			free_program(program, 0);
+			current_command = current_command->next;
+			continue;
+		}
 		if (fork() == 0)
 		{
 			if (current_command->next)
 				dup2(fd[1], 1);
-			printf("HELLO\n");
 			if (fd[0] != 0)
 				dup2(fd[0], 0);
 			if (in != 0)
@@ -355,9 +335,29 @@ void execute(t_program *program)
 			{
 				for (int i = 0; program->envp[i]; i++)
 					printf("%s\n", program->envp[i]);
+			}
+			else if (!ft_strncmp(current_command->argv[0], "pwd", 4))
+				printf("%s", getcwd(NULL, 0));
 				
-				//current_command = current_command->next;
-				//continue;
+			else if (!ft_strncmp(current_command->argv[0], "echo", 5))
+			{
+				if (current_command->argv[1] && !ft_strncmp(current_command->argv[1], "-n", 3))
+				{
+					for (int i = 2; current_command->argv[i]; i++)
+					{
+						printf("%s", current_command->argv[i]);
+						if (current_command->argv[i + 1])
+							printf(" ");
+					}
+				}
+				else
+					for (int i = 1; current_command->argv[i]; i++)
+					{
+						printf("%s", current_command->argv[i]);
+						if (current_command->argv[i + 1])
+							printf(" ");
+						printf("\n");
+					}
 			}
 			else
 			{
