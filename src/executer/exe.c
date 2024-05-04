@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 10:25:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/04 13:06:42 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/04 17:17:36 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,11 @@ char	**get_paths(char **envp)
 	while (*envp && !ft_strnstr(*envp, "PWD=", 4))
 		envp++;
 	char *pwd = ft_substr(*envp, 4, ft_strlen(*envp) - 4);
-	for (int i = 0; paths[i]; i++)
-		printf("paths[%d]: %s\n", i, paths[i]);
+	// for (int i = 0; paths[i]; i++)
+	// 	printf("paths[%d]: %s\n", i, paths[i]);
 
 	append_str_to_array(&paths, pwd);
-	printf("pwd: %s\n", pwd);
+	//printf("pwd: %s\n", pwd);
 	return (paths);
 }
 
@@ -92,11 +92,11 @@ char	*find_path(char **envp, char *cmd)
 	paths = get_paths(envp);
 	temp_paths = paths;
 	sub = ft_strjoin("/", cmd);
-	printf("cmd: %s\n", cmd);
+	//printf("cmd: %s\n", cmd);
 	while (*temp_paths)
 	{
 		cmd_path = ft_strjoin(*temp_paths, sub);
-		printf("cmd_path: %s\n", cmd_path);
+		//printf("cmd_path: %s\n", cmd_path);
 		if (!access(cmd_path, F_OK))
 			break ;
 		free(cmd_path);
@@ -183,42 +183,6 @@ char *ft_strip_quotes(char *str)
 	return (new_str);
 }
 
-
-void	ft_export(t_program *program, t_command *command)
-{
-    int i;
-
-    i = 0;
-    while (command->argv[i])
-    {
-        if (ft_strchr(command->argv[i], '='))
-        {
-            char *var = ft_substr(command->argv[i], 0, ft_strchr(command->argv[i], '=') - command->argv[i]);
-            int index = find_env_var(program->envp, var);
-            if (index != -1)
-            {
-                //free(program->envp[index]);
-                program->envp[index] = ft_strdup(command->argv[i]);
-            }
-            else
-            {
-                int old_envp_size = 0;
-                while (program->envp[old_envp_size])
-                    old_envp_size++;
-                char **new_envp = (char **)malloc(sizeof(char *) * (old_envp_size + 2));
-                for (int j = 0; j < old_envp_size; j++)
-                    new_envp[j] = program->envp[j];
-                new_envp[old_envp_size] = ft_strip_quotes(ft_strdup(command->argv[i]));
-                new_envp[old_envp_size + 1] = NULL;
-                //free(program->envp);
-                program->envp = new_envp;
-            }
-            free(var);
-        }
-        i++;
-    }
-}
-
 // int check_builtins(t_program *program)
 // {
 // 	program->commands->ret = 0;
@@ -235,7 +199,7 @@ void	ft_export(t_program *program, t_command *command)
 // 		program->envp = 
 // }
 
-void execute(t_program *program)
+void execute(t_program **program)
 {
 	t_command *current_command;
 	int status;
@@ -243,8 +207,12 @@ void execute(t_program *program)
 	int in;
 	int out;
 	char *cmd_path;
+	
+	printf("Trying to change TEST value\n");
+	(*program)->test = "SUCCESS";
 
-	current_command = program->commands;
+
+	current_command = (*program)->commands;
 	in = 0;
 	while (current_command)
 	{
@@ -283,12 +251,6 @@ void execute(t_program *program)
 		// 	// change directory in pwd by using __environ
 		// 	continue;
 		// }
-		// else if (!ft_strncmp(current_command->argv[0], "export", 7))
-		// {
-		// 	ft_export(program, current_command);
-		// 	current_command = current_command->next;
-		// 	continue;
-		// }
 		// else if (!ft_strncmp(current_command->argv[0], "unset", 6))
 		// {
 		// 	// Implement unset
@@ -296,6 +258,11 @@ void execute(t_program *program)
 		if (!ft_strncmp(current_command->argv[0], "exit", 5))
 		{
 			bool is_digit;
+			int i;
+
+			ft_putstr_fd("exit\n", 1);
+			if (array_len(current_command->argv) == 1)
+				free_program((*program), 0);
 			for (int i = 0; current_command->argv[1][i]; i++)
 			{
 				if (!isdigit(current_command->argv[1][i]))
@@ -305,23 +272,33 @@ void execute(t_program *program)
 				}
 				is_digit = true;
 			}
-			if (current_command->argv[1] && is_digit)
-				free_program(program, ft_atoi(current_command->argv[1])%256);
+			if (is_digit)
+				i = ft_atoi(current_command->argv[1]);
+			printf("array len : %zu\n", array_len(current_command->argv));
+			printf("is_digit : %d\n", is_digit);
+			if (array_len(current_command->argv) > 2 && is_digit)
+			{
+				ft_putstr_fd("bash: exit: too many arguments\n", 2);
+				// set exit code to 1 without exiting
+			}
+			else if (current_command->argv[1] && !is_digit)
+			{
+				ft_putstrs_fd("bash: exit: ", current_command->argv[1], ": numeric argument required\n", 2);
+				free_program((*program), 2);
+			}
+			else if (current_command->argv[1] && is_digit)
+				free_program((*program), i % 256);
 			else
 			{
 				if (!is_digit)
 				{
-					perror("minishell: exit: %s: numeric argument required\n", current_command->argv[1]);
-					free_program(program, 2);
-					
+					ft_putstrs_fd("bash: exit: ", current_command->argv[1], ": numeric argument required\n", 2);
+					free_program((*program), 2);
 				}
-				free_program(program, 0);
+				free_program((*program), 0);
 			}
-			free_program(program, 0);
-			current_command = current_command->next;
-			continue;
 		}
-		if (fork() == 0)
+		else if (fork() == 0)
 		{
 			if (current_command->next)
 				dup2(fd[1], 1);
@@ -333,11 +310,14 @@ void execute(t_program *program)
 				dup2(out, 1);
 			if (!ft_strncmp(current_command->argv[0], "env", 4))
 			{
-				for (int i = 0; program->envp[i]; i++)
-					printf("%s\n", program->envp[i]);
+				for (int i = 0; (*program)->envp[i]; i++)
+				{
+					if (ft_strncmp((*program)->envp[i], "_=", 2))
+						printf("%s\n", (*program)->envp[i]);
+				}
 			}
 			else if (!ft_strncmp(current_command->argv[0], "pwd", 4))
-				printf("%s", getcwd(NULL, 0));
+				printf("%s\n", getcwd(NULL, 0));
 				
 			else if (!ft_strncmp(current_command->argv[0], "echo", 5))
 			{
@@ -351,21 +331,28 @@ void execute(t_program *program)
 					}
 				}
 				else
+				{
 					for (int i = 1; current_command->argv[i]; i++)
 					{
 						printf("%s", current_command->argv[i]);
 						if (current_command->argv[i + 1])
 							printf(" ");
-						printf("\n");
 					}
+					printf("\n");
+				}
+			}
+			else if (!ft_strncmp(current_command->argv[0], "export", 7))
+			{
+				ft_export(program, current_command);
+				
 			}
 			else
 			{
 				if (current_command->argv[0][0] == '/')
 					cmd_path = ft_strdup(current_command->argv[0]);
 				else
-					cmd_path = find_path(program->envp, current_command->argv[0]);
-				int execstat = execve(cmd_path, current_command->argv, program->envp);
+					cmd_path = find_path((*program)->envp, current_command->argv[0]);
+				int execstat = execve(cmd_path, current_command->argv, (*program)->envp);
 				if (execstat == -1)
 				{
 					printf("minishell: %s: command not found\n", current_command->argv[0]);
@@ -374,7 +361,7 @@ void execute(t_program *program)
 				}
 				free(cmd_path);
 			}
-			exit(1);
+			exit (0);
 		}
 		else
 		{

@@ -46,6 +46,7 @@ typedef struct s_program
 	t_token			*tokens;
 	t_command		*commands;
 	char			**envp;
+	char			*test;
 }					t_program;
 
 // Lexer
@@ -60,13 +61,14 @@ t_command			*parse(t_token *tokens);
 // Expander
 
 // Executer
-void execute(t_program *program);
+void execute(t_program **program);
 char	*find_path(char **envp, char *cmd);
 char	**get_paths(char **envp);
 void	append_str_to_array(char ***array, char *str);
 void	free_split(char **split);
 
 // Builtins
+void	ft_export(t_program **program, t_command *command);
 
 // Quitting & Error Handling
 

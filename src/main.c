@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/04 00:32:06 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/04 17:20:07 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,13 @@ t_program	*init_program()
 	return (program);
 }
 
-void run(t_program *program)
+void run(t_program **program)
 {
-	program->tokens = lex(program->input);
-	program->commands = parse(program->tokens);
+	(*program)->tokens = lex((*program)->input);
+	(*program)->commands = parse((*program)->tokens);
 	//expand(program->commands);
 	execute(program);
+	printf("test: %s\n", (*program)->test);
 }
 
 
@@ -64,13 +65,15 @@ int	main(int argc, char **argv, char **envp)
 
 	program = init_program();
 	program->envp = envp;
+	program->test = "FAILURE";
 	while (1)
 	{
 		program->input = readline("\033[1;31mminishell$ \033[0m");
 		//test_display(program);
-		run(program);
+		run(&program);
 		add_history(program->input);
 		free_program_nonpersistent_values(program);
+		
 	}
 	(void)argc;
 	(void)argv;
