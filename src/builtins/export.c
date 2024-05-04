@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/04 17:16:16 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/04 18:34:04 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,39 +49,24 @@ char **sort_env(t_program *program)
 
 void add_env(char ***envp, char *new_env) {
     int i = 0;
-	printf("we are here 1");
     while ((*envp)[i] != NULL && ft_strncmp((*envp)[i], new_env, ft_strlen(new_env) - (ft_strchr(new_env, '=') - new_env)))
     {   
-	    i++;
-	}
-	if ((*envp)[i] != NULL && ft_strchr((*envp)[i], '='))
-	{
-		printf("we are here 2");
-		// free(envp[i]);
-		(*envp)[i] = ft_strdup(new_env);
-		//return envp;
-	}
-	else
-	{
-		printf("we are here 3");
-		append_str_to_array(envp, new_env);
-		//return envp;
-	}
-		
-	
-    // char **new_envp = malloc((i + 2) * sizeof(char *)); // +2 because one for new env and one for NULL
-
-    // // Copy the old environment variables to the new array
-    // for (int j = 0; j < i; j++)
-    //     new_envp[j] = envp[j];
-    // // Add the new environment variable
-    // new_envp[i] = new_env;
-    // // Set the last element to NULL
-    // new_envp[i + 1] = NULL;
-    // // Free the old environment variables array
-    // free(envp);
-
-    // return new_envp;
+        i++;
+    }
+    if ((*envp)[i] != NULL && ft_strchr((*envp)[i], '='))
+    {
+        free((*envp)[i]);
+        (*envp)[i] = (char *)malloc((ft_strlen(new_env) + 1) * sizeof(char)); // Allocate memory for the new string
+        if ((*envp)[i] != NULL)
+        {
+            ft_strlcpy((*envp)[i], new_env, ft_strlen(new_env) + 1); // Copy the new string into the allocated memory
+        }
+    }
+    else
+    {
+		printf("new_env: %s\n", new_env);
+        append_str_to_array(envp, new_env);
+    }
 }
 
 void	ft_export(t_program **program, t_command *command)
@@ -123,6 +108,7 @@ void	ft_export(t_program **program, t_command *command)
 		while (args[i])
 		{
 			add_env(&((*program)->envp), args[i]);
+			(*program)->test = "SUCCESS";
 			i++;
 		}
 	}

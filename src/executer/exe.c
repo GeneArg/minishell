@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 10:25:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/04 17:17:36 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/04 18:24:03 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,7 +202,7 @@ char *ft_strip_quotes(char *str)
 void execute(t_program **program)
 {
 	t_command *current_command;
-	int status;
+	//int status;
 	int fd[2];
 	int in;
 	int out;
@@ -298,8 +298,12 @@ void execute(t_program **program)
 				free_program((*program), 0);
 			}
 		}
-		else if (fork() == 0)
+	else
+	{
+		pid_t pid = fork();
+		if (pid == 0)
 		{
+			// This is the child process
 			if (current_command->next)
 				dup2(fd[1], 1);
 			if (fd[0] != 0)
@@ -318,7 +322,6 @@ void execute(t_program **program)
 			}
 			else if (!ft_strncmp(current_command->argv[0], "pwd", 4))
 				printf("%s\n", getcwd(NULL, 0));
-				
 			else if (!ft_strncmp(current_command->argv[0], "echo", 5))
 			{
 				if (current_command->argv[1] && !ft_strncmp(current_command->argv[1], "-n", 3))
@@ -341,11 +344,6 @@ void execute(t_program **program)
 					printf("\n");
 				}
 			}
-			else if (!ft_strncmp(current_command->argv[0], "export", 7))
-			{
-				ft_export(program, current_command);
-				
-			}
 			else
 			{
 				if (current_command->argv[0][0] == '/')
@@ -363,13 +361,26 @@ void execute(t_program **program)
 			}
 			exit (0);
 		}
-		else
+		else if (pid > 0)
 		{
-			waitpid(-1, &status, 0);
+			// This is the parent process
+			if (!ft_strncmp(current_command->argv[0], "export", 7))
+			{
+				ft_export(program, current_command);
+				printf("test: %s\n", (*program)->test);
+			}
+			// Wait for the child process to finish
+			int status;
+			waitpid(pid, &status, 0);
 			if (WIFEXITED(status))
 				printf("Program exited with status %d\n", WEXITSTATUS(status));
 			if (WIFSIGNALED(status))
 				printf("Program was killed by signal %d\n", WTERMSIG(status));
+		}
+		else
+		{
+			// Fork failed
+			printf("fork failed\n");
 		}
 		if (in != 0)
 			close(in);
@@ -382,4 +393,5 @@ void execute(t_program **program)
 		}
 		current_command = current_command->next;
 	}
+}
 }
