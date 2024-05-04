@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/04 18:34:04 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/04 18:48:07 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,69 +47,73 @@ char **sort_env(t_program *program)
 	return (sorted_envp);
 }
 
-void add_env(char ***envp, char *new_env) {
+void add_env(char ***envp, char *new_env)
+{
     int i = 0;
-    while ((*envp)[i] != NULL && ft_strncmp((*envp)[i], new_env, ft_strlen(new_env) - (ft_strchr(new_env, '=') - new_env)))
+    int new_env_len = ft_strlen(new_env);
+    int new_env_key_len = ft_strchr(new_env, '=') - new_env;
+
+    // Find the existing variable or the end of the array
+    while ((*envp)[i] != NULL && ft_strncmp((*envp)[i], new_env, new_env_key_len))
     {   
         i++;
     }
+
+    // If variable exists, update it
     if ((*envp)[i] != NULL && ft_strchr((*envp)[i], '='))
     {
         free((*envp)[i]);
-        (*envp)[i] = (char *)malloc((ft_strlen(new_env) + 1) * sizeof(char)); // Allocate memory for the new string
+        (*envp)[i] = (char *)malloc((new_env_len + 1) * sizeof(char));
         if ((*envp)[i] != NULL)
         {
-            ft_strlcpy((*envp)[i], new_env, ft_strlen(new_env) + 1); // Copy the new string into the allocated memory
+            ft_strlcpy((*envp)[i], new_env, new_env_len + 1);
         }
     }
     else
     {
-		printf("new_env: %s\n", new_env);
         append_str_to_array(envp, new_env);
     }
 }
 
-void	ft_export(t_program **program, t_command *command)
+void ft_export(t_program **program, t_command *command)
 {
-	char **args;
-	int i = 0;
+    char **args;
+    int i = 0;
 
-	args = command->argv;
-	if (!args[1])
-	{
-		char **sorted_envp = sort_env(*program);
-		while (sorted_envp[i])
-		{
-			if (ft_strncmp(sorted_envp[i], "_=", 2) == 0)
-			{
-				i++;
-				continue;
-			}
-			ft_putstr_fd("declare -x ", 1);
-			while (*sorted_envp[i] != '=')
-				ft_putchar_fd(*sorted_envp[i]++, 1);
-			if (*sorted_envp[i] == '=')
-			{
-				ft_putchar_fd('=', 1);
-				ft_putchar_fd('\"', 1);
-				sorted_envp[i]++;
-				while (*sorted_envp[i])
-					ft_putchar_fd(*sorted_envp[i]++, 1);
-				ft_putchar_fd('\"', 1);
-			}
-			ft_putchar_fd('\n', 1);
-			i++;
-		}
-		return ;
-	}
-	else
-	{
-		i = 1;
-		while (args[i])
-		{
-			add_env(&((*program)->envp), args[i]);
-			(*program)->test = "SUCCESS";
-			i++;
-		}
-	}
+    args = command->argv;
+    if (!args[1])
+    {
+        char **sorted_envp = sort_env(*program);
+        while (sorted_envp[i])
+        {
+            char *env = sorted_envp[i];
+            int key_len = 0;
+            while (env[key_len] && env[key_len] != '=')
+            {
+                key_len++;
+            }
+
+            ft_putstr_fd("declare -x ", 1);
+            write(1, env, key_len);
+
+            if (env[key_len] == '=')
+            {
+                ft_putstr_fd("=\"", 1);
+                write(1, env + key_len + 1, ft_strlen(env) - key_len - 1);
+                ft_putstr_fd("\"\n", 1);
+            }
+            else
+            {
+                ft_putchar_fd('\n', 1);
+            }
+            i++;
+        }
+    }
+    else
+    {
+        for (i = 1; args[i]; i++)
+        {
+            add_env(&((*program)->envp), args[i]);
+        }
+    }
 }
