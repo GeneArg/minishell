@@ -69,7 +69,7 @@ void	append_str_to_array(char ***array, char *str);
 void	free_split(char **split);
 
 // Builtins
-void	ft_export(t_program **program, t_command *command);
+void	ft_export(t_program **program, char **argv);
 
 // Quitting & Error Handling
 

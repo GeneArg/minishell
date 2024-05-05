@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/04 18:48:07 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/05 15:48:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,12 @@ void add_env(char ***envp, char *new_env)
     }
 }
 
-void ft_export(t_program **program, t_command *command)
+void ft_export(t_program **program, char **argv)
 {
     char **args;
     int i = 0;
 
-    args = command->argv;
+    args = argv;
     if (!args[1])
     {
         char **sorted_envp = sort_env(*program);

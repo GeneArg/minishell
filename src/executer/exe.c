@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 10:25:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/05 15:28:30 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/05 15:54:44 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,16 +363,24 @@ void execute(t_program **program)
 			// This is the parent process
 			if (!ft_strncmp(current_command->argv[0], "export", 7))
 			{
-				ft_export(program, current_command);
+				ft_export(program, current_command->argv);
 			}
 			// Wait for the child process to finish
 
 			int status;
 			waitpid(pid, &status, 0);
+			
+			
 			if (WIFEXITED(status))
+			{
 				printf("Program exited with status %d\n", WEXITSTATUS(status));
+				ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WEXITSTATUS(status))), NULL});
+			}
 			if (WIFSIGNALED(status))
+			{
 				printf("Program was killed by signal %d\n", WTERMSIG(status));
+				ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WTERMSIG(status))), NULL});
+			}
 		}
 		else
 		{
