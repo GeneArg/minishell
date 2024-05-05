@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 10:25:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/04 18:24:03 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/05 15:10:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,10 +207,6 @@ void execute(t_program **program)
 	int in;
 	int out;
 	char *cmd_path;
-	
-	printf("Trying to change TEST value\n");
-	(*program)->test = "SUCCESS";
-
 
 	current_command = (*program)->commands;
 	in = 0;

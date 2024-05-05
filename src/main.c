@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/04 17:20:07 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/05 15:10:44 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,17 @@ void run(t_program **program)
 	(*program)->commands = parse((*program)->tokens);
 	//expand(program->commands);
 	execute(program);
-	printf("test: %s\n", (*program)->test);
 }
 
+
+void	handle_sigint(int sig)
+{
+	(void)sig;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -66,8 +74,12 @@ int	main(int argc, char **argv, char **envp)
 	program = init_program();
 	program->envp = envp;
 	program->test = "FAILURE";
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, SIG_IGN);
+
 	while (1)
 	{
+		
 		program->input = readline("\033[1;31mminishell$ \033[0m");
 		//test_display(program);
 		run(&program);
