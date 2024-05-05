@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 10:25:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/05 15:10:15 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/05 15:28:30 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -359,13 +359,14 @@ void execute(t_program **program)
 		}
 		else if (pid > 0)
 		{
+
 			// This is the parent process
 			if (!ft_strncmp(current_command->argv[0], "export", 7))
 			{
 				ft_export(program, current_command);
-				printf("test: %s\n", (*program)->test);
 			}
 			// Wait for the child process to finish
+
 			int status;
 			waitpid(pid, &status, 0);
 			if (WIFEXITED(status))
@@ -377,15 +378,6 @@ void execute(t_program **program)
 		{
 			// Fork failed
 			printf("fork failed\n");
-		}
-		if (in != 0)
-			close(in);
-		if (out != 1)
-			close(out);
-		if (current_command->next)
-		{
-			close(fd[1]);
-			in = fd[0];
 		}
 		current_command = current_command->next;
 	}
