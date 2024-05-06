@@ -20,8 +20,8 @@ ifeq ($(UNAME_S),Linux)
     READLINE_LIB := -lreadline
 endif
 ifeq ($(UNAME_S),Darwin)
-    READLINE_LIB := -L/usr/local/opt/readline/lib -lreadline
-    INCL += -I/usr/local/opt/readline/include
+    READLINE_LIB := -L/opt/homebrew/opt/readline -lreadline
+    INCL += -I/opt/homebrew/opt/readline/include
 endif
 
 # Includes
@@ -34,7 +34,7 @@ SRC_FILES	:= lexer/lexer_split.c \
 				main.c \
 				test_display.c \
 				freeing.c \
-				executer/exe.c \
+				executor/exe.c \
 				builtins/export.c \
 				expander/expander.c \
 				builtins/echo.c \
