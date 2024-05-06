@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 13:35:12 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/06 14:12:49 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ char *find_env_var_value(char **envp, char *var)
 
 
 bool is_builtin(char *cmd) {
-	return !strcmp(cmd, "cd") || !strcmp(cmd, "echo") || !strcmp(cmd, "export") || !strcmp(cmd, "pwd") || !strcmp(cmd, "env") || !strcmp(cmd, "exit");
+	return !strcmp(cmd, "cd") || !strcmp(cmd, "echo") || !strcmp(cmd, "export") || !strcmp(cmd, "unset") || !strcmp(cmd, "pwd") || !strcmp(cmd, "env") || !strcmp(cmd, "exit");
 }
 
 
@@ -231,6 +231,40 @@ void	ft_exit(t_program **program, t_command *current_command)
 			}
 }
 
+void ft_unset(t_program **program, char **argv)
+{
+	int i;
+	int j;
+	int k;
+	char *env_var;
+	// char *env_var_value;
+	char **new_envp;
+
+	i = 1;
+	while (argv[i])
+	{
+		env_var = ft_strjoin(argv[i], "=");
+		j = find_env_var((*program)->envp, env_var);
+		if (j != -1)
+		{
+			k = 0;
+			new_envp = (char **)malloc(sizeof(char *) * (ft_array_len((*program)->envp)));
+			while ((*program)->envp[k])
+			{
+				if (k != j)
+					new_envp[k] = ft_strdup((*program)->envp[k]);
+				k++;
+			}
+			new_envp[k] = NULL;
+			free((*program)->envp[j]);
+			free((*program)->envp);
+			(*program)->envp = new_envp;
+		}
+		free(env_var);
+		i++;
+	}
+}
+
 void execute_builtin_with_redirection(t_command *cmd, t_program **program, int in_fd, int out_fd) {
     int saved_stdout = dup(1);
     int saved_stdin = dup(0);
@@ -245,6 +279,10 @@ void execute_builtin_with_redirection(t_command *cmd, t_program **program, int i
 
     if (!strcmp(cmd->argv[0], "export"))
         ft_export(program, cmd->argv);
+	else if (!strcmp(cmd->argv[0], "unset"))
+	{
+		ft_unset(program, cmd->argv);
+	}
 	else if (!strcmp(cmd->argv[0], "echo")) 
         ft_echo(cmd->argv);
 	else if (!ft_strncmp(cmd->argv[0], "pwd", 4))
