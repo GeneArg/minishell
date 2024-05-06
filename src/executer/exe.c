@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 14:20:38 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/06 16:47:02 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,26 +140,6 @@ bool is_builtin(char *cmd) {
 	return !strcmp(cmd, "cd") || !strcmp(cmd, "echo") || !strcmp(cmd, "export") || !strcmp(cmd, "unset") || !strcmp(cmd, "pwd") || !strcmp(cmd, "env") || !strcmp(cmd, "exit");
 }
 
-
-void	ft_echo(char **argv)
-{
-	int i;
-
-	i = 1;
-	if (argv[1] && !ft_strncmp(argv[1], "-n", 3))
-		i++;
-	while (argv[i])
-	{
-		printf("%s", argv[i]);
-		if (argv[i + 1])
-			printf(" ");
-		i++;
-	}
-	if (argv[1] && !ft_strncmp(argv[1], "-n", 3))
-		return ;
-	printf("\n");
-}
-
 void	ft_cd(t_program **program, char **argv)
 {
 	char *home;
@@ -268,6 +248,7 @@ void ft_unset(t_program **program, char **argv)
 void execute_builtin_with_redirection(t_command *cmd, t_program **program, int in_fd, int out_fd) {
     int saved_stdout = dup(1);
     int saved_stdin = dup(0);
+	int exit_code = -1;
 
     if (saved_stdout == -1 || saved_stdin == -1) {
         perror("Failed to save STDIN or STDOUT");
@@ -284,7 +265,7 @@ void execute_builtin_with_redirection(t_command *cmd, t_program **program, int i
 		ft_unset(program, cmd->argv);
 	}
 	else if (!strcmp(cmd->argv[0], "echo")) 
-        ft_echo(cmd->argv);
+		exit_code = ft_echo(cmd->argv);
 	else if (!ft_strncmp(cmd->argv[0], "pwd", 4))
 		printf("%s\n", getcwd(NULL, 0));
 	else if (!ft_strncmp(cmd->argv[0], "env", 4))
@@ -299,6 +280,8 @@ void execute_builtin_with_redirection(t_command *cmd, t_program **program, int i
 		ft_cd(program, cmd->argv);
 	else if (!ft_strncmp(cmd->argv[0], "exit", 5))
 		ft_exit(program, cmd);
+	
+	ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(exit_code)), NULL});
     // Restore STDIN and STDOUT
     dup2(saved_stdin, 0);
     dup2(saved_stdout, 1);

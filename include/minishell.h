@@ -10,8 +10,9 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
-#include <fcntl.h>
-#include <sys/wait.h>
+# include <fcntl.h>
+# include <sys/wait.h>
+# include <errno.h>
 
 // Structures
 
@@ -75,6 +76,8 @@ void				free_split(char **split);
 
 // Builtins
 void				ft_export(t_program **program, char **argv);
+void 				add_env(char ***envp, char *new_env);
+int					ft_echo(char **argv);
 
 // Quitting & Error Handling
 

@@ -5,3 +5,7 @@ out
 test.txt
 fractol
 exe_old.c
+minishell_tester
+*.swp
+*.swo
+*.o

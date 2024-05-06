@@ -27,3 +27,7 @@ why ctrl+d segfaults
 fix leaks
 
 cleanup/separating into files/norm
+
+
+today:
+exit codes for builtins
