@@ -6,11 +6,11 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 11:24:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/03 10:04:31 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/06 14:45:39 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 TokenType	determine_type(char *token)
 {

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   freeing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 00:42:25 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/03 00:53:17 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/06 14:44:18 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../include/minishell.h"
 
 void free_program_nonpersistent_values(t_program *program)
 {

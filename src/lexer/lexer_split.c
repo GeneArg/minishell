@@ -6,11 +6,11 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 12:07:05 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/03 10:04:50 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/06 14:45:47 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 char	**splitter(char *input)
 {

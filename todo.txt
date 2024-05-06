@@ -1,0 +1,29 @@
+expander
+
+unset
+
+export $? for builtins
+
+expand and remove quotes for export values
+
+output errors to stderr and not stdout
+
+
+
+
+
+
+
+run tester 
+
+
+
+
+
+
+
+why ctrl+d segfaults
+
+fix leaks
+
+cleanup/separating into files/norm
