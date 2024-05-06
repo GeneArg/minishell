@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 09:33:16 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/06 13:08:10 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ void run(t_program **program)
 {
 	(*program)->tokens = lex((*program)->input);
 	(*program)->commands = parse((*program)->tokens);
-	//expand(program->commands);
+	expand((*program)->commands, (*program)->envp);
+	//test_display(*program);
 	execute(program);
 }
 

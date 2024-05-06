@@ -26,6 +26,7 @@ SRC_FILES		:=  lexer/lexer_split.c \
 					freeing.c \
 					executer/exe.c \
 					builtins/export.c \
+					expander/expander.c \
 
 
 SRC				:= ${addprefix ${SRC_DIR}/, ${SRC_FILES}}

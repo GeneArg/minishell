@@ -62,6 +62,8 @@ t_command			*parse(t_token *tokens);
 
 // Expander
 
+void expand(t_command *commands, char **envp);
+
 // Executer
 void				execute(t_program **program);
 char				*find_path(char **envp, char *cmd);
