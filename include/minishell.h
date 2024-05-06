@@ -10,6 +10,8 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+# include <sys/wait.h>
+# include <fcntl.h>
 
 // Structures
 
@@ -61,6 +63,8 @@ t_token				*lex(char *input);
 t_command			*parse(t_token *tokens);
 
 // Expander
+
+void expand(t_command *commands, char **envp);
 
 // Executer
 void				execute(t_program **program);
