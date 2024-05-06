@@ -10,8 +10,8 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
-# include <sys/wait.h>
-# include <fcntl.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 
 // Structures
 
@@ -82,6 +82,8 @@ void				free_program(t_program *program, int exit_status);
 void				free_program_nonpersistent_values(t_program *program);
 
 // Utils
+
+char *find_env_var_value(char **envp, char *var);
 
 // Test functions
 

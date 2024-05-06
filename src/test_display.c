@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   test_display.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:47:48 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/03 00:24:54 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/06 13:29:48 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../include/minishell.h"
 
 void test_display(t_program *program)
 {
