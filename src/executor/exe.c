@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 17:22:53 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 00:25:04 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,22 @@ void	ft_exit(t_program **program, t_command *current_command)
 	}
 }
 
+int	ft_pwd(void)
+{
+	char	*pwd;
+
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
+	{
+		ft_putstr_fd("minishell: pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+		return (1);
+	}
+	ft_putstr_fd(pwd, 1);
+	ft_putstr_fd("\n", 1);
+	free(pwd);
+	return (0);
+}
+
 void	execute_builtin_with_redirection(t_command *cmd, t_program **program,
 		int in_fd, int out_fd)
 {
@@ -207,7 +223,7 @@ void	execute_builtin_with_redirection(t_command *cmd, t_program **program,
 	else if (!strcmp(cmd->argv[0], "echo"))
 		exit_code = ft_echo(cmd->argv);
 	else if (!ft_strncmp(cmd->argv[0], "pwd", 4))
-		printf("%s\n", getcwd(NULL, 0));
+		exit_code = ft_pwd();
 	else if (!ft_strncmp(cmd->argv[0], "env", 4))
 	{
 		for (int i = 0; (*program)->envp[i]; i++)
