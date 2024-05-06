@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 16:55:40 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/06 17:29:01 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,31 @@ void add_env(char ***envp, char *new_env)
     }
 }
 
-void ft_export(t_program **program, char **argv)
+int	check_if_valid_name(char *name)
+{
+	int i = 0;
+
+	if (!ft_isalpha(name[0]) && name[0] != '_' && ft_strncmp(name, "?=", 2))
+	{
+		ft_putstr_fd("bash: export: `", 2);
+		ft_putstr_fd(name, 2);
+		ft_putstr_fd("': not a valid identifier\n", 2);
+		return (1);
+	}
+	while (name[++i])
+	{
+		if (!ft_isalnum(name[i]) && name[i] != '_' && ft_strncmp(name, "?=", 2))
+		{
+			ft_putstr_fd("bash: export: `", 2);
+			ft_putstr_fd(name, 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+int ft_export(t_program **program, char **argv)
 {
     char **args;
     int i = 0;
@@ -111,9 +135,12 @@ void ft_export(t_program **program, char **argv)
     }
     else
     {
+		if (check_if_valid_name(args[1]))
+			return (1);
         for (i = 1; args[i]; i++)
         {
             add_env(&((*program)->envp), args[i]);
         }
     }
+	return (0);
 }

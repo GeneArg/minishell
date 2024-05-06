@@ -75,9 +75,11 @@ void				append_str_to_array(char ***array, char *str);
 void				free_split(char **split);
 
 // Builtins
-void				ft_export(t_program **program, char **argv);
+int					ft_export(t_program **program, char **argv);
 void 				add_env(char ***envp, char *new_env);
 int					ft_echo(char **argv);
+int					ft_cd(t_program **program, char **argv);
+int 				ft_unset(t_program **program, char **argv);
 
 // Quitting & Error Handling
 
@@ -86,7 +88,9 @@ void				free_program_nonpersistent_values(t_program *program);
 
 // Utils
 
-char *find_env_var_value(char **envp, char *var);
+char 				*find_env_var_value(char **envp, char *var);
+int					find_env_var(char **envp, char *var);
+
 
 // Test functions
 

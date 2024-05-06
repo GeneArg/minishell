@@ -9,3 +9,5 @@ minishell_tester
 *.swp
 *.swo
 *.o
+minishell
+*.a

@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 16:47:02 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/06 17:22:53 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,33 +140,6 @@ bool is_builtin(char *cmd) {
 	return !strcmp(cmd, "cd") || !strcmp(cmd, "echo") || !strcmp(cmd, "export") || !strcmp(cmd, "unset") || !strcmp(cmd, "pwd") || !strcmp(cmd, "env") || !strcmp(cmd, "exit");
 }
 
-void	ft_cd(t_program **program, char **argv)
-{
-	char *home;
-	char *oldpwd;
-	char *pwd;
-	char *path;
-	int ret;
-
-	home = find_env_var_value((*program)->envp, "HOME");
-	oldpwd = find_env_var_value((*program)->envp, "OLDPWD");
-	pwd = find_env_var_value((*program)->envp, "PWD");
-	if (!argv[1] || !ft_strncmp(argv[1], "~", 2))
-		path = home;
-	else if (!ft_strncmp(argv[1], "-", 2))
-		path = oldpwd;
-	else
-		path = argv[1];
-	ret = chdir(path);
-	if (ret == -1)
-	{
-		printf("minishell: cd: %s: No such file or directory\n", path);
-		return ;
-	}
-	ft_export(program, (char *[]){"export", ft_strjoin("OLDPWD=", pwd), NULL});
-	ft_export(program, (char *[]){"export", ft_strjoin("PWD=", getcwd(NULL, 0)), NULL});
-}
-
 void	ft_exit(t_program **program, t_command *current_command)
 {
 	bool is_digit;
@@ -211,44 +184,10 @@ void	ft_exit(t_program **program, t_command *current_command)
 			}
 }
 
-void ft_unset(t_program **program, char **argv)
-{
-	int i;
-	int j;
-	int k;
-	char *env_var;
-	// char *env_var_value;
-	char **new_envp;
-
-	i = 1;
-	while (argv[i])
-	{
-		env_var = ft_strjoin(argv[i], "=");
-		j = find_env_var((*program)->envp, env_var);
-		if (j != -1)
-		{
-			k = 0;
-			new_envp = (char **)malloc(sizeof(char *) * (ft_array_len((*program)->envp)));
-			while ((*program)->envp[k])
-			{
-				if (k != j)
-					new_envp[k] = ft_strdup((*program)->envp[k]);
-				k++;
-			}
-			new_envp[k] = NULL;
-			free((*program)->envp[j]);
-			free((*program)->envp);
-			(*program)->envp = new_envp;
-		}
-		free(env_var);
-		i++;
-	}
-}
-
 void execute_builtin_with_redirection(t_command *cmd, t_program **program, int in_fd, int out_fd) {
     int saved_stdout = dup(1);
     int saved_stdin = dup(0);
-	int exit_code = -1;
+	int exit_code = 0;
 
     if (saved_stdout == -1 || saved_stdin == -1) {
         perror("Failed to save STDIN or STDOUT");
@@ -259,11 +198,9 @@ void execute_builtin_with_redirection(t_command *cmd, t_program **program, int i
     dup2(out_fd, 1);
 
     if (!strcmp(cmd->argv[0], "export"))
-        ft_export(program, cmd->argv);
+		exit_code = ft_export(program, cmd->argv);
 	else if (!strcmp(cmd->argv[0], "unset"))
-	{
-		ft_unset(program, cmd->argv);
-	}
+		exit_code = ft_unset(program, cmd->argv);
 	else if (!strcmp(cmd->argv[0], "echo")) 
 		exit_code = ft_echo(cmd->argv);
 	else if (!ft_strncmp(cmd->argv[0], "pwd", 4))
@@ -277,7 +214,7 @@ void execute_builtin_with_redirection(t_command *cmd, t_program **program, int i
 		}
 	}
 	else if (!strcmp(cmd->argv[0], "cd"))
-		ft_cd(program, cmd->argv);
+		exit_code = ft_cd(program, cmd->argv);
 	else if (!ft_strncmp(cmd->argv[0], "exit", 5))
 		ft_exit(program, cmd);
 	

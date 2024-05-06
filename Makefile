@@ -28,6 +28,8 @@ SRC_FILES		:=  lexer/lexer_split.c \
 					builtins/export.c \
 					expander/expander.c \
 					builtins/echo.c \
+					builtins/unset.c \
+					builtins/cd.c \
 
 
 SRC				:= ${addprefix ${SRC_DIR}/, ${SRC_FILES}}

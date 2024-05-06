@@ -6,15 +6,44 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 15:52:31 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 16:46:56 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/06 19:16:36 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
+// char *remove_quotes(char *str)
+// {
+//     int len = strlen(str);
+//     int i;
+
+//     // Check for a quote at the beginning and remove it
+//     if (str[0] == '\'' || str[0] == '\"')
+//     {
+//         for (i = 0; i < len; i++)
+//         {
+// 			printf("here1\n");
+//             str[i] = str[i+1];
+//         }
+//     }
+
+//     // Update the length after potentially removing a quote at the beginning
+//     len = strlen(str);
+
+//     // Check for a quote at the end and remove it
+//     if (str[len-1] == '\'' || str[len-1] == '\"')
+//     {
+// 		printf("here2\n");
+//         str[len-1] = '\0';
+//     }
+
+//     return str;
+// }
+
 int	ft_echo(char **argv)
 {
 	int	i;
+	// char	*arg;
 	bool	n_option;
 
 	n_option = false;
@@ -31,6 +60,7 @@ int	ft_echo(char **argv)
 	}
 	while (argv[i])
 	{
+		// arg = remove_quotes(argv[i]);
 		ft_putstr_fd(argv[i], 1);
 		if (argv[i + 1])
 			ft_putstr_fd(" ", 1);
