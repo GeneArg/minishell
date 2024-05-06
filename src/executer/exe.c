@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 10:25:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/05 15:54:44 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/06 09:34:06 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,7 +257,7 @@ void execute(t_program **program)
 			int i;
 
 			ft_putstr_fd("exit\n", 1);
-			if (array_len(current_command->argv) == 1)
+			if (ft_array_len(current_command->argv) == 1)
 				free_program((*program), 0);
 			for (int i = 0; current_command->argv[1][i]; i++)
 			{
@@ -270,9 +270,9 @@ void execute(t_program **program)
 			}
 			if (is_digit)
 				i = ft_atoi(current_command->argv[1]);
-			printf("array len : %zu\n", array_len(current_command->argv));
+			printf("array len : %zu\n", ft_array_len(current_command->argv));
 			printf("is_digit : %d\n", is_digit);
-			if (array_len(current_command->argv) > 2 && is_digit)
+			if (ft_array_len(current_command->argv) > 2 && is_digit)
 			{
 				ft_putstr_fd("bash: exit: too many arguments\n", 2);
 				// set exit code to 1 without exiting
@@ -379,7 +379,8 @@ void execute(t_program **program)
 			if (WIFSIGNALED(status))
 			{
 				printf("Program was killed by signal %d\n", WTERMSIG(status));
-				ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WTERMSIG(status))), NULL});
+				printf("Program exited with status %d\n", status);
+				ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(status + 128)), NULL});
 			}
 		}
 		else

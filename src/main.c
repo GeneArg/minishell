@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/05 15:10:44 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/06 09:33:16 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,12 +67,14 @@ void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
+
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_program	*program;
 
 	program = init_program();
-	program->envp = envp;
+	program->envp = ft_copy_array(envp);
 	program->test = "FAILURE";
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);

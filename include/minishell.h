@@ -4,12 +4,12 @@
 # include "../libft/libft.h"
 # include <readline/history.h>
 # include <readline/readline.h>
+# include <signal.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
-# include <signal.h>
 
 // Structures
 
@@ -32,11 +32,12 @@ typedef struct s_token
 
 typedef struct s_command
 {
-	char **argv;			// Arguments vector,including the command itself as the first element
-	char *redirect_in;      // Filename for input redirection, or heredoc delimiter
+	char **argv;           
+		// Arguments vector,including the command itself as the first element
+	char *redirect_in;      // Filename for input redirection,or heredoc delimiter
 	char *redirect_out;     // Filename for output redirection
 	int append;             // Flag for append redirection
-	int ret;				// Return value of the command
+	int ret;                // Return value of the command
 	char *heredoc_content;  // Heredoc content
 	struct s_command *next; // Pointer to the next command in a pipeline, if any
 }					t_command;
@@ -62,14 +63,14 @@ t_command			*parse(t_token *tokens);
 // Expander
 
 // Executer
-void execute(t_program **program);
-char	*find_path(char **envp, char *cmd);
-char	**get_paths(char **envp);
-void	append_str_to_array(char ***array, char *str);
-void	free_split(char **split);
+void				execute(t_program **program);
+char				*find_path(char **envp, char *cmd);
+char				**get_paths(char **envp);
+void				append_str_to_array(char ***array, char *str);
+void				free_split(char **split);
 
 // Builtins
-void	ft_export(t_program **program, char **argv);
+void				ft_export(t_program **program, char **argv);
 
 // Quitting & Error Handling
 

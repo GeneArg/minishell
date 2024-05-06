@@ -1,27 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   array_len.c                                        :+:      :+:    :+:   */
+/*   ft_is_valid_int.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/04 13:37:23 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/04 13:43:40 by eagranat         ###   ########.fr       */
+/*   Created: 2024/05/04 13:39:52 by eagranat          #+#    #+#             */
+/*   Updated: 2024/05/06 09:36:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t	array_len(char **array)
+int	ft_is_valid_int(char *str)
 {
-	size_t	i;
+	char	*tmp;
 
-	if (!array)
+	tmp = str;
+	if (*tmp == '-' || *tmp == '+')
+		tmp++;
+	if (!*tmp)
 		return (0);
-	if (!*array)
-		return (0);
-	i = 0;
-	while (array[i])
-		i++;
-	return (i);
+	while (*tmp)
+	{
+		if (!(ft_isdigit(*tmp)))
+			return (0);
+		tmp++;
+	}
+	return (1);
 }
