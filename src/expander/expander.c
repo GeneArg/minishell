@@ -3,27 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 19:28:37 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/06 22:46:11 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	trim_quotes(char **arg)
-{
-	char	*trimmed;
 
-	trimmed = ft_strtrim(*arg, "'\"");
-	free(*arg);
-	*arg = trimmed;
-}
 
 bool is_enclosed_in_single_quotes(char *arg)
 {
 	return (arg[0] == '\'' && arg[ft_strlen(arg) - 1] == '\'');
+}
+
+bool is_enclosed_in_double_quotes(char *arg)
+{
+	return (arg[0] == '"' && arg[ft_strlen(arg) - 1] == '"');
+}
+
+void	trim_quotes(char **arg)
+{
+	char	*trimmed;
+	if (is_enclosed_in_single_quotes(*arg))
+		trimmed = ft_strtrim(*arg, "'");
+	else if (is_enclosed_in_double_quotes(*arg))
+		trimmed = ft_strtrim(*arg, "\"");
+	else
+		return;
+	free(*arg);
+	*arg = trimmed;
 }
 
 void replace_env_variables(char **arg, char **env)
@@ -32,7 +43,7 @@ void replace_env_variables(char **arg, char **env)
     char *output = malloc(strlen(input) + 1);
     char *cur = input;
 	char *out = output;
-	
+
     while (*cur) {
         if (*cur == '$') {
             char *end = cur + 1;

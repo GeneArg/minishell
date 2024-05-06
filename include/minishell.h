@@ -2,8 +2,6 @@
 # define MINISHELL_H
 
 # include "../libft/libft.h"
-# include <readline/history.h>
-# include <readline/readline.h>
 # include <signal.h>
 # include <stdbool.h>
 # include <stdio.h>
@@ -13,6 +11,9 @@
 # include <fcntl.h>
 # include <sys/wait.h>
 # include <errno.h>
+# include <readline/history.h>
+# include <readline/readline.h>
+
 
 // Structures
 
@@ -35,7 +36,7 @@ typedef struct s_token
 
 typedef struct s_command
 {
-	char **argv;           
+	char **argv;
 		// Arguments vector,including the command itself as the first element
 	char *redirect_in;      // Filename for input redirection,or heredoc delimiter
 	char *redirect_out;     // Filename for output redirection
