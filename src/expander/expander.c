@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 22:46:11 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/07 16:40:05 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void replace_env_variables(char **arg, char **env)
 	char *out = output;
 
     while (*cur) {
-        if (*cur == '$') {
+        if (*cur == '$' && (*(cur + 1) == '?' ||ft_isalnum((unsigned char)*(cur + 1)))){
             char *end = cur + 1;
             while (ft_isalnum((unsigned char)*end) || *end == '_' || *end == '?') {
                 end++;  // Find the end of the variable name
