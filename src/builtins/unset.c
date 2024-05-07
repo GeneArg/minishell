@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 17:12:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 17:16:55 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 16:51:28 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,11 @@ int ft_unset(t_program **program, char **argv)
 			free((*program)->envp);
 			(*program)->envp = new_envp;
 		}
-		else
-		{
-			printf("minishell: unset: `%s': not a valid identifier\n", argv[i]);
-			return (1);
-		}
+		// else
+		// {
+		// 	printf("minishell: unset: `%s': not a valid identifier\n", argv[i]);
+		// 	return (1);
+		// }
 		free(env_var);
 		i++;
 	}
