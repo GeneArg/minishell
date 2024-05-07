@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 19:22:02 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 12:51:51 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ int	main(int argc, char **argv, char **envp)
 
 	program = init_program();
 	program->envp = ft_copy_array(envp);
+	ft_export(&program, (char *[]){"export", ft_strjoin("?=", ft_itoa(0)), NULL});
 	program->test = "FAILURE";
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
