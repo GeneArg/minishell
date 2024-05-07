@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/07 12:54:01 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/08 00:11:11 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,46 +140,50 @@ bool	is_builtin(char *cmd)
 void	ft_exit(t_program **program, t_command *current_command)
 {
 	bool	is_digit;
+	int		exit_code;
 	int		i;
 
+	is_digit = true;
+	i = 0;
 	ft_putstr_fd("exit\n", 1);
 	if (ft_array_len(current_command->argv) == 1)
 		free_program((*program), 0);
-	for (int i = 0; current_command->argv[1][i]; i++)
-	{
-		if (!isdigit(current_command->argv[1][i]))
-		{
-			is_digit = false;
-			break ;
-		}
-		is_digit = true;
-	}
-	if (is_digit)
-		i = ft_atoi(current_command->argv[1]);
-	//printf("array len : %zu\n", ft_array_len(current_command->argv));
-	//printf("is_digit : %d\n", is_digit);
-	if (ft_array_len(current_command->argv) > 2 && is_digit)
-	{
-		ft_putstr_fd("bash: exit: too many arguments\n", 2);
-		// set exit code to 1 without exiting
-	}
-	else if (current_command->argv[1] && !is_digit)
-	{
-		ft_putstrs_fd("bash: exit: ", current_command->argv[1],
-			": numeric argument required\n", 2);
-		free_program((*program), 2);
-	}
-	else if (current_command->argv[1] && is_digit)
-		free_program((*program), i % 256);
 	else
 	{
-		if (!is_digit)
+		if (current_command->argv[1][0] == '-'
+			|| current_command->argv[1][0] == '+')
+			i++;
+		while (current_command->argv[1][i])
 		{
-			ft_putstrs_fd("bash: exit: ", current_command->argv[1],
-				": numeric argument required\n", 2);
-			free_program((*program), 2);
+			if (!isdigit(current_command->argv[1][i]))
+			{
+				is_digit = false;
+				break ;
+			}
+			i++;
 		}
-		free_program((*program), 0);
+		if (is_digit)
+		{
+			exit_code = ft_atoi(current_command->argv[1]);
+			if (exit_code > 255)
+				exit_code = exit_code % 256;
+		}
+		else
+		{
+			ft_putstr_fd("bash: exit: numeric argument required\n", 2);
+			exit_code = 255;
+		}
+		i = 0;
+		while (current_command->argv[++i])
+		{
+			if (i > 1)
+			{
+				ft_putstr_fd("bash: exit: too many arguments\n", 2);
+				exit_code = 1;
+				break ;
+			}
+		}
+		free_program((*program), exit_code);
 	}
 }
 
@@ -190,7 +194,8 @@ int	ft_pwd(void)
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 	{
-		ft_putstr_fd("minishell: pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+		ft_putstr_fd("minishell: pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n",
+			2);
 		return (1);
 	}
 	ft_putstr_fd(pwd, 1);
@@ -251,7 +256,7 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 	char	*cmd_path;
 	pid_t	pid;
 	int		execstat;
-		int status;
+	int		status;
 
 	pid = fork();
 	if (pid == 0)

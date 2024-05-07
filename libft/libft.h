@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 13:13:44 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 09:36:19 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/08 00:12:58 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,5 @@ int	ft_putstrs_fd(char *before, char *str, char *after, int fd);
 int	ft_is_valid_int(char *str);
 size_t	ft_array_len(char **array);
 char **ft_copy_array(char **array);
-
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:39:51 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 17:19:02 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 23:44:54 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	ft_cd(t_program **program, char **argv)
 	ret = chdir(path);
 	if (ret == -1)
 	{
-		printf("minishell: cd: %s: No such file or directory\n", path);
+		printf("No such file or directory\n");
 		return (1);
 	}
 	ft_export(program, (char *[]){"export", ft_strjoin("OLDPWD=", pwd), NULL});
