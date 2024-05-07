@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/07 23:11:57 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 23:35:28 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,9 @@ int	check_if_valid_name(char *name)
 	}
 	while (name[++i])
 	{
-		if (!ft_isalnum(name[i]) && name[i] != '_' && name[i] != '/' && ft_strncmp(name, "?=", 2) && name[i] != '=')
+		if (name[i] == '=')
+			break;
+		if (!ft_isalnum(name[i]) && name[i] != '_' && ft_strncmp(name, "?=", 2))
 		{
 			ft_putstr_fd("bash: export: `", 2);
 			ft_putstr_fd(name, 2);
