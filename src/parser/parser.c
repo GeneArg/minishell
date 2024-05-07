@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 14:46:05 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 22:10:43 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,56 @@ t_command	*init_command(void)
 	return (cmd);
 }
 
+// void	append_argument(t_command **cmd, char *arg)
+// {
+// 	int		argc;
+// 	char	**new_argv;
+
+// 	argc = 0;
+// 	if ((*cmd)->argv)
+// 	{
+// 		while ((*cmd)->argv[argc])
+// 			argc++;
+// 	}
+// 	new_argv = (char **)malloc(sizeof(char *) * (argc + 2));
+// 	for (int i = 0; i < argc; i++)
+// 		new_argv[i] = (*cmd)->argv[i];
+// 	new_argv[argc] = ft_strdup(arg);
+// 	new_argv[argc + 1] = NULL;
+// 	if ((*cmd)->argv)
+// 		free((*cmd)->argv);
+// 	(*cmd)->argv = new_argv;
+// }
+
 void	append_argument(t_command **cmd, char *arg)
 {
 	int		argc;
 	char	**new_argv;
+	char	*new_arg;
+	int		i;
+	int		j;
+	char	quote;
 
+	new_arg = malloc(strlen(arg) + 1);
+	i = 0;
+	j = 0;
+	while (arg[i] != '\0')
+	{
+		if (arg[i] == '\'' || arg[i] == '\"')
+		{
+			quote = arg[i++];
+			while (arg[i] != quote)
+			{
+				new_arg[j++] = arg[i++];
+			}
+			i++; // Skip the closing quote
+		}
+		else
+		{
+			new_arg[j++] = arg[i++];
+		}
+	}
+	new_arg[j] = '\0';
 	argc = 0;
 	if ((*cmd)->argv)
 	{
@@ -42,11 +87,12 @@ void	append_argument(t_command **cmd, char *arg)
 	new_argv = (char **)malloc(sizeof(char *) * (argc + 2));
 	for (int i = 0; i < argc; i++)
 		new_argv[i] = (*cmd)->argv[i];
-	new_argv[argc] = ft_strdup(arg);
+	new_argv[argc] = ft_strdup(new_arg);
 	new_argv[argc + 1] = NULL;
 	if ((*cmd)->argv)
 		free((*cmd)->argv);
 	(*cmd)->argv = new_argv;
+	free(new_arg);
 }
 
 t_command	*parse(t_token *token)

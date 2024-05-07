@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/07 12:51:51 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/07 21:40:17 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	handle_sigint(int sig)
 	(void)sig;
 	write(1, "\n", 1);
 	rl_on_new_line();
-	rl_replace_line("", 0);
+	// rl_replace_line("", 0);
 	rl_redisplay();
 }
 
@@ -78,18 +78,18 @@ int	main(int argc, char **argv, char **envp)
 	program->envp = ft_copy_array(envp);
 	ft_export(&program, (char *[]){"export", ft_strjoin("?=", ft_itoa(0)), NULL});
 	program->test = "FAILURE";
-	signal(SIGINT, handle_sigint);
+	// signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
 
 	while (1)
 	{
-		
+
 		program->input = readline("\033[1;31mminishell$ \033[0m");
 		//test_display(program);
 		run(&program);
 		add_history(program->input);
 		free_program_nonpersistent_values(program);
-		
+
 	}
 	(void)argc;
 	(void)argv;

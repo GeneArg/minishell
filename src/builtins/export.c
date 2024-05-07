@@ -6,11 +6,13 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/06 17:29:01 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 21:52:22 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+
+
 
 char **sort_env(t_program *program)
 {
@@ -55,7 +57,7 @@ void add_env(char ***envp, char *new_env)
 
     // Find the existing variable or the end of the array
     while ((*envp)[i] != NULL && ft_strncmp((*envp)[i], new_env, new_env_key_len))
-    {   
+    {
         i++;
     }
 
