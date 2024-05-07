@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/07 21:40:17 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 22:59:53 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,20 @@ void	handle_sigint(int sig)
 	// rl_replace_line("", 0);
 	rl_redisplay();
 }
+void init_env(t_program **program, char **envp)
+{
+	(*program)->envp = ft_copy_array(envp);
+}
 
+void	init_pwd(t_program **program)
+{
+	char	*pwd;
 
+	pwd = getcwd(NULL, 0);
+	ft_export(program, (char *[]){"export", ft_strjoin("PWD=", pwd), NULL});
+	ft_export(program, (char *[]){"export", ft_strjoin("OLDPWD=", pwd), NULL});
+	free(pwd);
+}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -77,6 +89,7 @@ int	main(int argc, char **argv, char **envp)
 	program = init_program();
 	program->envp = ft_copy_array(envp);
 	ft_export(&program, (char *[]){"export", ft_strjoin("?=", ft_itoa(0)), NULL});
+	init_pwd(&program);
 	program->test = "FAILURE";
 	// signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);

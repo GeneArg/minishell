@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/07 16:40:05 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/07 23:25:08 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,13 @@ void replace_env_variables(char **arg, char **env)
     while (*cur) {
         if (*cur == '$' && (*(cur + 1) == '?' ||ft_isalnum((unsigned char)*(cur + 1)))){
             char *end = cur + 1;
-            while (ft_isalnum((unsigned char)*end) || *end == '_' || *end == '?') {
-                end++;  // Find the end of the variable name
-            }
+			if (*end != '?')
+			{
+            	while (ft_isalnum((unsigned char)*end) || *end == '_' || *end == '?')
+                	end++;  // Find the end of the variable name
+			}
+			else
+				end++;
             size_t var_len = end - (cur + 1);
             char var_name[var_len + 1];
             strncpy(var_name, cur + 1, var_len);

@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/07 22:10:43 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 23:15:16 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,50 +49,55 @@ t_command	*init_command(void)
 // 	(*cmd)->argv = new_argv;
 // }
 
-void	append_argument(t_command **cmd, char *arg)
+char **create_and_copy_new_argv(t_command **cmd, char *new_arg)
 {
-	int		argc;
-	char	**new_argv;
-	char	*new_arg;
-	int		i;
-	int		j;
-	char	quote;
+    int current_arg_count = 0;
+    if ((*cmd)->argv)
+    {
+        while ((*cmd)->argv[current_arg_count])
+            current_arg_count++;
+    }
+    char **updated_argv = (char **)malloc(sizeof(char *) * (current_arg_count + 2));
+    for (int i = 0; i < current_arg_count; i++)
+        updated_argv[i] = (*cmd)->argv[i];
+    updated_argv[current_arg_count] = ft_strdup(new_arg);
+    updated_argv[current_arg_count + 1] = NULL;
+    return updated_argv;
+}
 
-	new_arg = malloc(strlen(arg) + 1);
-	i = 0;
-	j = 0;
-	while (arg[i] != '\0')
-	{
-		if (arg[i] == '\'' || arg[i] == '\"')
-		{
-			quote = arg[i++];
-			while (arg[i] != quote)
-			{
-				new_arg[j++] = arg[i++];
-			}
-			i++; // Skip the closing quote
-		}
-		else
-		{
-			new_arg[j++] = arg[i++];
-		}
-	}
-	new_arg[j] = '\0';
-	argc = 0;
-	if ((*cmd)->argv)
-	{
-		while ((*cmd)->argv[argc])
-			argc++;
-	}
-	new_argv = (char **)malloc(sizeof(char *) * (argc + 2));
-	for (int i = 0; i < argc; i++)
-		new_argv[i] = (*cmd)->argv[i];
-	new_argv[argc] = ft_strdup(new_arg);
-	new_argv[argc + 1] = NULL;
-	if ((*cmd)->argv)
-		free((*cmd)->argv);
-	(*cmd)->argv = new_argv;
-	free(new_arg);
+
+void append_argument(t_command **cmd, char *arg)
+{
+    int i = 0;
+    int j = 0;
+    char *new_arg = (char *)malloc(strlen(arg) + 1);
+    char quote;
+
+    while (arg[i] != '\0')
+    {
+        if (arg[i] == '\'' || arg[i] == '\"')
+        {
+            quote = arg[i++];
+            while (arg[i] != quote)
+            {
+                new_arg[j++] = arg[i++];
+            }
+            i++; // Skip the closing quote
+        }
+        else
+        {
+            new_arg[j++] = arg[i++];
+        }
+    }
+    new_arg[j] = '\0';
+
+    char **updated_argv = create_and_copy_new_argv(cmd, new_arg);
+
+    if ((*cmd)->argv)
+        free((*cmd)->argv);
+    (*cmd)->argv = updated_argv;
+
+    free(new_arg);
 }
 
 t_command	*parse(t_token *token)
