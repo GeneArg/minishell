@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/07 00:25:04 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/07 12:54:01 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,8 +156,8 @@ void	ft_exit(t_program **program, t_command *current_command)
 	}
 	if (is_digit)
 		i = ft_atoi(current_command->argv[1]);
-	printf("array len : %zu\n", ft_array_len(current_command->argv));
-	printf("is_digit : %d\n", is_digit);
+	//printf("array len : %zu\n", ft_array_len(current_command->argv));
+	//printf("is_digit : %d\n", is_digit);
 	if (ft_array_len(current_command->argv) > 2 && is_digit)
 	{
 		ft_putstr_fd("bash: exit: too many arguments\n", 2);
