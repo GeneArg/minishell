@@ -17,6 +17,12 @@
 
 // Structures
 
+typedef struct s_redirection
+{
+	char *file;
+	struct s_redirection *next;
+}					t_redirection;
+
 typedef enum
 {
 	TOKEN_WORD = 1,
@@ -36,14 +42,13 @@ typedef struct s_token
 
 typedef struct s_command
 {
-	char **argv;
-		// Arguments vector,including the command itself as the first element
-	char *redirect_in;      // Filename for input redirection,or heredoc delimiter
-	char *redirect_out;     // Filename for output redirection
-	int append;             // Flag for append redirection
+	char **argv;			// Arguments vector,including the command itself as the first element
 	int ret;                // Return value of the command
 	char *heredoc_content;  // Heredoc content
 	struct s_command *next; // Pointer to the next command in a pipeline, if any
+	t_redirection *redirect_in;	// Input redirection
+	char *redirect_out;     // Filename for output redirection
+	int append;					// 1 if output redirection should append, 0 otherwise
 }					t_command;
 
 typedef struct s_program

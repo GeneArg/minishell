@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/08 00:11:11 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/08 20:43:58 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,14 +315,33 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 
 void	execute(t_program **program)
 {
-	t_command	*current_command;
-	int			pipefds[2];
+	t_command		*current_command;
+	int				pipefds[2];
+	t_redirection	*current_redirection;
+	int				new_in_fd;
 
 	current_command = (*program)->commands;
 	int in_fd = 0;  // Standard input by default
 	int out_fd = 1; // Standard output by default
 	while (current_command)
 	{
+		// Handle input redirections
+		current_redirection = current_command->redirect_in;
+		while (current_redirection)
+		{
+			new_in_fd = open(current_redirection->file, O_RDONLY);
+			if (new_in_fd < 0)
+			{
+				perror("Failed to open input file for redirection");
+				exit(EXIT_FAILURE);
+			}
+			if (in_fd != 0)
+			{
+				close(in_fd);
+			}
+			in_fd = new_in_fd;
+			current_redirection = current_redirection->next;
+		}
 		// Handle output redirection
 		if (current_command->redirect_out)
 		{
@@ -340,32 +359,28 @@ void	execute(t_program **program)
 		{
 			if (pipe(pipefds) == -1)
 			{
-				perror("pipe");
-				exit(1);
+				perror("Failed to create pipe");
+				exit(EXIT_FAILURE);
 			}
-			out_fd = pipefds[1];
 		}
-		// Determine if command is a built-in
+		// Execute the command
 		if (is_builtin(current_command->argv[0]))
-		{
 			execute_builtin_with_redirection(current_command, program, in_fd,
 				out_fd);
-		}
 		else
-		{
 			execute_in_child(current_command, program, in_fd, out_fd);
-		}
-		// Manage file descriptors for the next command
-		if (current_command->next)
-		{
-			close(pipefds[1]); // Close the write end of the pipe in the parent
-			if (in_fd != 0)
-				close(in_fd);   // Close the old in_fd if it was redirected
-			in_fd = pipefds[0]; // Next command reads from here
-		}
-		else if (out_fd != 1)
+		// If there was output redirection, close the output file
+		if (out_fd != 1)
 		{
 			close(out_fd);
+			out_fd = 1;
+		}
+		// If there was a pipe,
+		// close the read end and make the write end the new input
+		if (current_command->next)
+		{
+			close(pipefds[1]);
+			in_fd = pipefds[0];
 		}
 		current_command = current_command->next;
 	}
