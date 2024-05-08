@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:47:48 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 13:29:48 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/08 21:58:10 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void test_display(t_program *program)
 			current_command->argv++;
 		}
 		if (current_command->redirect_in)
-			printf("Redirect in: %s\n", current_command->redirect_in);
+			printf("Redirect in: %s\n", current_command->redirect_in->file);
 		if (current_command->redirect_out)
 			printf("Redirect out: %s\n", current_command->redirect_out);
 		if (current_command->heredoc_content)
