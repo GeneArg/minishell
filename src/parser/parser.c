@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/08 21:54:58 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/08 23:05:22 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,15 +85,11 @@ void	append_argument(t_command **cmd, char *arg)
 		{
 			quote = arg[i++];
 			while (arg[i] != quote)
-			{
 				new_arg[j++] = arg[i++];
-			}
 			i++; // Skip the closing quote
 		}
 		else
-		{
 			new_arg[j++] = arg[i++];
-		}
 	}
 	new_arg[j] = '\0';
 	updated_argv = create_and_copy_new_argv(cmd, new_arg);
@@ -103,14 +99,54 @@ void	append_argument(t_command **cmd, char *arg)
 	free(new_arg);
 }
 
+t_redirection *create_new_redirection(char *file)
+{
+    t_redirection *new_redirection = malloc(sizeof(t_redirection));
+    if (!new_redirection)
+    {
+        ft_putstr_fd("Failed to allocate memory for redirection\n",2);
+        return NULL;
+    }
+
+    new_redirection->file = strdup(file);
+    if (!new_redirection->file)
+    {
+        ft_putstr_fd("Failed to allocate memory for file name\n", 2);
+        free(new_redirection);
+        return NULL;
+    }
+
+    new_redirection->next = NULL;
+
+    return new_redirection;
+}
+
+void	handle_redirect_in(t_command **cmd, char *file)
+{
+	t_redirection	*new_redirection;
+	t_redirection	*current_redirection;
+
+	new_redirection = create_new_redirection(file);
+	if (!new_redirection)
+		return ;
+	if (!(*cmd)->redirect_in)
+		(*cmd)->redirect_in = new_redirection;
+	else
+	{
+		current_redirection = (*cmd)->redirect_in;
+		while (current_redirection->next)
+			current_redirection = current_redirection->next;
+		current_redirection->next = new_redirection;
+	}
+}
+
 t_command	*parse(t_token *token)
 {
 	t_command		*head;
 	t_command		*current_cmd;
 	t_command		*new_cmd;
 	char			*heredoc_delimiter;
-	t_redirection	*new_redirection;
-	t_redirection	*last;
+	char *temp;
 
 	head = NULL;
 	current_cmd = NULL;
@@ -135,30 +171,27 @@ t_command	*parse(t_token *token)
 		if (token->type == TOKEN_REDIRECT_IN)
 		{
 			token = token->next;
-			if (token)
-			{
-				new_redirection = malloc(sizeof(t_redirection));
-				if (new_redirection == NULL)
-				{
-					ft_putstr_fd("Error: Failed to allocate memory for the redirection\n", 2);
-					exit(EXIT_FAILURE);
-				}
-				new_redirection->file = ft_strdup(token->value);
-				new_redirection->next = NULL;
-				if (current_cmd->redirect_in == NULL)
-				{
-					current_cmd->redirect_in = new_redirection;
-				}
-				else
-				{
-					last = current_cmd->redirect_in;
-					while (last->next != NULL)
-					{
-						last = last->next;
-					}
-					last->next = new_redirection;
-				}
-			}
+			if (!token || token->type != TOKEN_WORD)
+				ft_putstr_fd("syntax error\n", 2);
+			else
+			            {
+                if (token->value[0] == '\"')
+                {
+                    while (token && token->value[strlen(token->value) - 1] != '\"')
+                    {
+                        temp = ft_strjoin(token->value, " ");
+                        free(token->value);
+                        token->value = temp;
+                        token = token->next;
+                        temp = ft_strjoin(token->value, token->next->value);
+                        free(token->next->value);
+                        token->next->value = temp;
+                    }
+                    token->value++;
+                    token->value[strlen(token->value) - 1] = '\0';
+                }
+                handle_redirect_in(&current_cmd, token->value);
+            }
 		}
 		if (token->type == TOKEN_REDIRECT_OUT)
 		{
