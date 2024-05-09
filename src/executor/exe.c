@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/09 14:29:13 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:46:03 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,17 +284,36 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		if (execstat == -1)
 		{
 			if (errno == EACCES) {
-				printf("minishell: %s: Permission denied\n", cmd->argv[0]);
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->argv[0], 2);
+				ft_putstr_fd(": Permission denied\n", 2);
+				ft_export(program, (char *[]){"export", ft_strjoin("?=",
+					ft_itoa(127)), NULL});
+
+
 			} else if (errno == ENOENT) {
-				printf("minishell: %s: No such file or directory\n", cmd->argv[0]);
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->argv[0], 2);
+				ft_putstr_fd(": No such file or directory\n", 2);
+
+
 			} else if (errno == EISDIR) {
-				printf("minishell: %s: Is a directory\n", cmd->argv[0]);
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->argv[0], 2);
+				ft_putstr_fd(": Is a directory\n", 2);
+
+
 			} else {
-				printf("minishell: %s: Command not found\n", cmd->argv[0]);
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->argv[0], 2);
+				ft_putstr_fd(": command not found\n", 2);
+				exit(127);
+
 			}
 
 			free(cmd_path);
-			exit(EXIT_FAILURE);
+			exit(126);
+			
 		}
 		free(cmd_path);
 		exit(0);
@@ -304,14 +323,14 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 		{
-			printf("Program exited with status %d\n", WEXITSTATUS(status));
+			//printf("Program exited with status %d\n", WEXITSTATUS(status));
 			ft_export(program, (char *[]){"export", ft_strjoin("?=",
 					ft_itoa(WEXITSTATUS(status))), NULL});
 		}
 		if (WIFSIGNALED(status))
 		{
-			printf("Program was killed by signal %d\n", WTERMSIG(status));
-			printf("Program exited with status %d\n", status);
+			//printf("Program was killed by signal %d\n", WTERMSIG(status));
+			//printf("Program exited with status %d\n", status);
 			ft_export(program, (char *[]){"export", ft_strjoin("?=",
 					ft_itoa(status + 128)), NULL});
 		}

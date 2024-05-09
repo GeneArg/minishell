@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/09 13:10:45 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:48:48 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,15 @@ void replace_env_variables(char **arg, char **env) {
     *arg = output;
 }
 
+void remove_empty_args(char ***argv) {
+	int count = 0;
+	for (int i = 0; (*argv)[i] != NULL; i++) {
+		if (strlen((*argv)[i]) > 0) {
+			(*argv)[count++] = (*argv)[i];
+		}
+	}
+	(*argv)[count] = NULL;
+}
 
 void expand(t_command *commands, char **envp) {
     for (t_command *current = commands; current != NULL; current = current->next) {
@@ -120,5 +129,6 @@ void expand(t_command *commands, char **envp) {
                 replace_env_variables(&(current->argv[i]), envp);
             }
         }
+		remove_empty_args(&(current->argv));
     }
 }
