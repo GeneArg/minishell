@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/08 23:05:22 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/09 12:22:27 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,35 +68,37 @@ char	**create_and_copy_new_argv(t_command **cmd, char *new_arg)
 	return (updated_argv);
 }
 
-void	append_argument(t_command **cmd, char *arg)
+void append_argument(t_command **cmd, char *arg)
 {
-	int		i;
-	int		j;
-	char	*new_arg;
-	char	quote;
-	char	**updated_argv;
+    int i = 0;
+    int j = 0;
+    char *new_arg = (char *)malloc(strlen(arg) + 1);
+    if (new_arg == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return;
+    }
 
-	i = 0;
-	j = 0;
-	new_arg = (char *)malloc(strlen(arg) + 1);
-	while (arg[i] != '\0')
-	{
-		if (arg[i] == '\'' || arg[i] == '\"')
-		{
-			quote = arg[i++];
-			while (arg[i] != quote)
-				new_arg[j++] = arg[i++];
-			i++; // Skip the closing quote
-		}
-		else
-			new_arg[j++] = arg[i++];
-	}
-	new_arg[j] = '\0';
-	updated_argv = create_and_copy_new_argv(cmd, new_arg);
-	if ((*cmd)->argv)
-		free((*cmd)->argv);
-	(*cmd)->argv = updated_argv;
-	free(new_arg);
+    while (arg[i] != '\0') {
+        if (arg[i] == '\'' || arg[i] == '\"') {
+            char quote = arg[i];
+            new_arg[j++] = arg[i++]; // Copy opening quote
+            while (arg[i] != '\0' && arg[i] != quote) {
+                new_arg[j++] = arg[i++];
+            }
+            if (arg[i] == quote) {
+                new_arg[j++] = arg[i++]; // Copy closing quote
+            }
+        } else {
+            new_arg[j++] = arg[i++];
+        }
+    }
+    new_arg[j] = '\0';
+
+    char **updated_argv = create_and_copy_new_argv(cmd, new_arg);
+    if ((*cmd)->argv)
+        free((*cmd)->argv);
+    (*cmd)->argv = updated_argv;
+    free(new_arg);
 }
 
 t_redirection *create_new_redirection(char *file)

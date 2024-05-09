@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/07 22:59:53 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/09 12:31:04 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,35 @@
 //     ft_putstr_fd("\033[1;35m|_| |_| |_|_|_| |_|_|___/_| |_|\\___|_|_|\n\n\033[0m", 2);
 // }
 
+
+void display_lexer_output(t_token *tokens)
+{
+	t_token	*tmp;
+	tmp = tokens;
+	while (tmp)
+	{
+		printf("type: %d, value: %s\n", tmp->type, tmp->value);
+		tmp = tmp->next;
+	}
+}
+
+void display_args(t_command *commands)
+{
+	t_command	*tmp;
+	int			i;
+	
+	tmp = commands;
+	while (tmp)
+	{
+		i = 0;
+		while (tmp->argv[i])
+		{
+			printf("args[%d]: %s\n", i, tmp->argv[i]);
+			i++;
+		}
+		tmp = tmp->next;
+	}
+}
 t_program	*init_program()
 {
 	t_program	*program;
@@ -52,9 +81,14 @@ t_program	*init_program()
 void run(t_program **program)
 {
 	(*program)->tokens = lex((*program)->input);
+	//printf("LEXER OUTPUT\n");
+	//display_lexer_output((*program)->tokens);
 	(*program)->commands = parse((*program)->tokens);
+	//printf("PARSER OUTPUT\n");
+	//display_args((*program)->commands);
 	expand((*program)->commands, (*program)->envp);
-	//test_display(*program);
+	//printf("EXPANDER OUTPUT\n");
+	//display_args((*program)->commands);
 	execute(program);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/08 23:29:02 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/09 13:18:20 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,7 @@ void	ft_exit(t_program **program, t_command *current_command)
 		else
 		{
 			ft_putstr_fd("bash: exit: numeric argument required\n", 2);
-			exit_code = 255;
+			exit_code = 2;
 		}
 		i = 0;
 		while (current_command->argv[++i])
