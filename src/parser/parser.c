@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/09 12:22:27 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/09 13:26:48 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,59 +68,69 @@ char	**create_and_copy_new_argv(t_command **cmd, char *new_arg)
 	return (updated_argv);
 }
 
-void append_argument(t_command **cmd, char *arg)
+void	append_argument(t_command **cmd, char *arg)
 {
-    int i = 0;
-    int j = 0;
-    char *new_arg = (char *)malloc(strlen(arg) + 1);
-    if (new_arg == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        return;
-    }
+	int		i;
+	int		j;
+	char	*new_arg;
+	char	quote;
+	char	**updated_argv;
 
-    while (arg[i] != '\0') {
-        if (arg[i] == '\'' || arg[i] == '\"') {
-            char quote = arg[i];
-            new_arg[j++] = arg[i++]; // Copy opening quote
-            while (arg[i] != '\0' && arg[i] != quote) {
-                new_arg[j++] = arg[i++];
-            }
-            if (arg[i] == quote) {
-                new_arg[j++] = arg[i++]; // Copy closing quote
-            }
-        } else {
-            new_arg[j++] = arg[i++];
-        }
-    }
-    new_arg[j] = '\0';
-
-    char **updated_argv = create_and_copy_new_argv(cmd, new_arg);
-    if ((*cmd)->argv)
-        free((*cmd)->argv);
-    (*cmd)->argv = updated_argv;
-    free(new_arg);
+	i = 0;
+	j = 0;
+	new_arg = (char *)malloc(strlen(arg) + 1);
+	if (new_arg == NULL)
+	{
+		fprintf(stderr, "Memory allocation failed\n");
+		return ;
+	}
+	while (arg[i] != '\0')
+	{
+		if (arg[i] == '\'' || arg[i] == '\"')
+		{
+			quote = arg[i];
+			new_arg[j++] = arg[i++]; // Copy opening quote
+			while (arg[i] != '\0' && arg[i] != quote)
+			{
+				new_arg[j++] = arg[i++];
+			}
+			if (arg[i] == quote)
+			{
+				new_arg[j++] = arg[i++]; // Copy closing quote
+			}
+		}
+		else
+		{
+			new_arg[j++] = arg[i++];
+		}
+	}
+	new_arg[j] = '\0';
+	updated_argv = create_and_copy_new_argv(cmd, new_arg);
+	if ((*cmd)->argv)
+		free((*cmd)->argv);
+	(*cmd)->argv = updated_argv;
+	free(new_arg);
 }
 
-t_redirection *create_new_redirection(char *file)
+t_redirection	*create_new_redirection(char *file)
 {
-    t_redirection *new_redirection = malloc(sizeof(t_redirection));
-    if (!new_redirection)
-    {
-        ft_putstr_fd("Failed to allocate memory for redirection\n",2);
-        return NULL;
-    }
+	t_redirection	*new_redirection;
 
-    new_redirection->file = strdup(file);
-    if (!new_redirection->file)
-    {
-        ft_putstr_fd("Failed to allocate memory for file name\n", 2);
-        free(new_redirection);
-        return NULL;
-    }
-
-    new_redirection->next = NULL;
-
-    return new_redirection;
+	new_redirection = malloc(sizeof(t_redirection));
+	if (!new_redirection)
+	{
+		ft_putstr_fd("Failed to allocate memory for redirection\n", 2);
+		return (NULL);
+	}
+	new_redirection->file = strdup(file);
+	if (!new_redirection->file)
+	{
+		ft_putstr_fd("Failed to allocate memory for file name\n", 2);
+		free(new_redirection);
+		return (NULL);
+	}
+	new_redirection->next = NULL;
+	return (new_redirection);
 }
 
 void	handle_redirect_in(t_command **cmd, char *file)
@@ -144,11 +154,11 @@ void	handle_redirect_in(t_command **cmd, char *file)
 
 t_command	*parse(t_token *token)
 {
-	t_command		*head;
-	t_command		*current_cmd;
-	t_command		*new_cmd;
-	char			*heredoc_delimiter;
-	char *temp;
+	t_command	*head;
+	t_command	*current_cmd;
+	t_command	*new_cmd;
+	char		*heredoc_delimiter;
+	char		*temp;
 
 	head = NULL;
 	current_cmd = NULL;
@@ -176,24 +186,25 @@ t_command	*parse(t_token *token)
 			if (!token || token->type != TOKEN_WORD)
 				ft_putstr_fd("syntax error\n", 2);
 			else
-			            {
-                if (token->value[0] == '\"')
-                {
-                    while (token && token->value[strlen(token->value) - 1] != '\"')
-                    {
-                        temp = ft_strjoin(token->value, " ");
-                        free(token->value);
-                        token->value = temp;
-                        token = token->next;
-                        temp = ft_strjoin(token->value, token->next->value);
-                        free(token->next->value);
-                        token->next->value = temp;
-                    }
-                    token->value++;
-                    token->value[strlen(token->value) - 1] = '\0';
-                }
-                handle_redirect_in(&current_cmd, token->value);
-            }
+			{
+				if (token->value[0] == '\"')
+				{
+					while (token && token->value[strlen(token->value)
+						- 1] != '\"')
+					{
+						temp = ft_strjoin(token->value, " ");
+						free(token->value);
+						token->value = temp;
+						token = token->next;
+						temp = ft_strjoin(token->value, token->next->value);
+						free(token->next->value);
+						token->next->value = temp;
+					}
+					token->value++;
+					token->value[strlen(token->value) - 1] = '\0';
+				}
+				handle_redirect_in(&current_cmd, token->value);
+			}
 		}
 		if (token->type == TOKEN_REDIRECT_OUT)
 		{

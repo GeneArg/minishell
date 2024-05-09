@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/09 13:18:20 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/09 14:29:13 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,17 +54,21 @@ char	**get_paths(char **envp)
 	char	*sub;
 	char	**paths;
 	char	*pwd;
+	int		i;
 
 	// char	**temp_envp;
 	// temp_envp = envp;
-	while (*envp && !ft_strnstr(*envp, "PATH=", 5))
-		envp++;
-	sub = ft_substr(*envp, 5, ft_strlen(*envp) - 5);
+	i = 0;
+	while (envp[i] && !ft_strnstr(envp[i], "PATH=", 5))
+		i++;
+	sub = ft_substr(envp[i], 5, ft_strlen(envp[i]) - 5);
 	paths = ft_split(sub, ':');
 	free(sub);
-	while (*envp && !ft_strnstr(*envp, "PWD=", 4))
-		envp++;
-	pwd = ft_substr(*envp, 4, ft_strlen(*envp) - 4);
+	i = 0;
+	while (envp[i] && !ft_strnstr(envp[i], "PWD=", 4))
+		i++;
+
+	pwd = ft_substr(envp[i], 4, ft_strlen(envp[i]) - 4);
 	// for (int i = 0; paths[i]; i++)
 	// 	printf("paths[%d]: %s\n", i, paths[i]);
 	append_str_to_array(&paths, pwd);
@@ -85,6 +89,7 @@ char	*find_path(char **envp, char *cmd)
 	paths = get_paths(envp);
 	temp_paths = paths;
 	sub = ft_strjoin("/", cmd);
+
 	// printf("cmd: %s\n", cmd);
 	while (*temp_paths)
 	{
@@ -278,7 +283,16 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		execstat = execve(cmd_path, cmd->argv, (*program)->envp);
 		if (execstat == -1)
 		{
-			printf("minishell: %s: command not found\n", cmd->argv[0]);
+			if (errno == EACCES) {
+				printf("minishell: %s: Permission denied\n", cmd->argv[0]);
+			} else if (errno == ENOENT) {
+				printf("minishell: %s: No such file or directory\n", cmd->argv[0]);
+			} else if (errno == EISDIR) {
+				printf("minishell: %s: Is a directory\n", cmd->argv[0]);
+			} else {
+				printf("minishell: %s: Command not found\n", cmd->argv[0]);
+			}
+
 			free(cmd_path);
 			exit(EXIT_FAILURE);
 		}
@@ -370,6 +384,7 @@ void	execute(t_program **program)
 		else
 			execute_in_child(current_command, program, in_fd, out_fd);
 		// If there was output redirection, close the output file
+
 		if (out_fd != 1)
 		{
 			close(out_fd);
