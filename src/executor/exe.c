@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/09 15:46:03 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/09 15:54:31 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,6 +358,11 @@ void	execute(t_program **program)
 	int out_fd = 1; // Standard output by default
 	while (current_command)
 	{
+		if (!current_command->argv[0])
+		{
+			current_command = current_command->next;
+			continue;
+		}
 		// Handle input redirections
 		current_redirection = current_command->redirect_in;
 		while (current_redirection)
