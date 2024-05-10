@@ -13,6 +13,7 @@
 # include <errno.h>
 # include <readline/history.h>
 # include <readline/readline.h>
+#include <sys/stat.h>
 
 
 // Structures

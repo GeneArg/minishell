@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/09 15:54:31 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/10 10:24:52 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ char	**get_paths(char **envp)
 	i = 0;
 	while (envp[i] && !ft_strnstr(envp[i], "PWD=", 4))
 		i++;
-
 	pwd = ft_substr(envp[i], 4, ft_strlen(envp[i]) - 4);
 	// for (int i = 0; paths[i]; i++)
 	// 	printf("paths[%d]: %s\n", i, paths[i]);
@@ -89,7 +88,6 @@ char	*find_path(char **envp, char *cmd)
 	paths = get_paths(envp);
 	temp_paths = paths;
 	sub = ft_strjoin("/", cmd);
-
 	// printf("cmd: %s\n", cmd);
 	while (*temp_paths)
 	{
@@ -255,6 +253,38 @@ void	execute_builtin_with_redirection(t_command *cmd, t_program **program,
 	close(saved_stdout);
 }
 
+void check_access(char *cmd_path, t_command *cmd) {
+    struct stat statbuf;
+    int stat_result = stat(cmd_path, &statbuf);
+
+    if (stat_result == 0) {
+        if (S_ISDIR(statbuf.st_mode)) {
+            ft_putstr_fd("minishell: ", 2);
+            ft_putstr_fd(cmd->argv[0], 2);
+            ft_putstr_fd(": Is a directory\n", 2);
+            exit(126);
+        } else if (access(cmd_path, X_OK) != 0) {
+            ft_putstr_fd("minishell: ", 2);
+            ft_putstr_fd(cmd->argv[0], 2);
+            ft_putstr_fd(": ", 2);
+            ft_putstr_fd(strerror(errno), 2);
+            ft_putstr_fd("\n", 2);
+            exit(126);
+        }
+    } else {
+        if (errno == EACCES) {
+            ft_putstr_fd("minishell: ", 2);
+            ft_putstr_fd(cmd->argv[0], 2);
+            ft_putstr_fd(": No Permission denied\n", 2);
+            exit(127);
+        } else {
+            ft_putstr_fd("minishell: ", 2);
+            ft_putstr_fd(cmd->argv[0], 2);
+            ft_putstr_fd(": No such file or directory\n", 2);
+            exit(127);
+        }
+    }
+}
 void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		int out_fd)
 {
@@ -280,40 +310,18 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 			cmd_path = ft_strdup(cmd->argv[0]);
 		else
 			cmd_path = find_path((*program)->envp, cmd->argv[0]);
+		if (cmd->argv[0][0] == '.' || cmd->argv[0][0] == '/')
+			check_access(cmd_path, cmd);
 		execstat = execve(cmd_path, cmd->argv, (*program)->envp);
 		if (execstat == -1)
 		{
-			if (errno == EACCES) {
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(cmd->argv[0], 2);
-				ft_putstr_fd(": Permission denied\n", 2);
-				ft_export(program, (char *[]){"export", ft_strjoin("?=",
-					ft_itoa(127)), NULL});
-
-
-			} else if (errno == ENOENT) {
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(cmd->argv[0], 2);
-				ft_putstr_fd(": No such file or directory\n", 2);
-
-
-			} else if (errno == EISDIR) {
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(cmd->argv[0], 2);
-				ft_putstr_fd(": Is a directory\n", 2);
-
-
-			} else {
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(cmd->argv[0], 2);
-				ft_putstr_fd(": command not found\n", 2);
-				exit(127);
-
-			}
-
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->argv[0], 2);
+			ft_putstr_fd(": command not found", 2);
 			free(cmd_path);
-			exit(126);
-			
+			ft_export(program, (char *[]){"export", ft_strjoin("?=",
+					ft_itoa(127)), NULL});
+			exit(127);
 		}
 		free(cmd_path);
 		exit(0);
@@ -323,14 +331,14 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 		{
-			//printf("Program exited with status %d\n", WEXITSTATUS(status));
+			// printf("Program exited with status %d\n", WEXITSTATUS(status));
 			ft_export(program, (char *[]){"export", ft_strjoin("?=",
 					ft_itoa(WEXITSTATUS(status))), NULL});
 		}
 		if (WIFSIGNALED(status))
 		{
-			//printf("Program was killed by signal %d\n", WTERMSIG(status));
-			//printf("Program exited with status %d\n", status);
+			// printf("Program was killed by signal %d\n", WTERMSIG(status));
+			// printf("Program exited with status %d\n", status);
 			ft_export(program, (char *[]){"export", ft_strjoin("?=",
 					ft_itoa(status + 128)), NULL});
 		}
@@ -361,7 +369,7 @@ void	execute(t_program **program)
 		if (!current_command->argv[0])
 		{
 			current_command = current_command->next;
-			continue;
+			continue ;
 		}
 		// Handle input redirections
 		current_redirection = current_command->redirect_in;
@@ -408,7 +416,6 @@ void	execute(t_program **program)
 		else
 			execute_in_child(current_command, program, in_fd, out_fd);
 		// If there was output redirection, close the output file
-
 		if (out_fd != 1)
 		{
 			close(out_fd);
