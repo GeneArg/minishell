@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/09 14:16:06 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/10 11:16:21 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void	handle_sigint(int sig)
 	(void)sig;
 	write(1, "\n", 1);
 	rl_on_new_line();
-	// rl_replace_line("", 0);
+	rl_replace_line("", 0);
 	rl_redisplay();
 }
 void init_env(t_program **program, char **envp)
@@ -125,7 +125,7 @@ int	main(int argc, char **argv, char **envp)
 	ft_export(&program, (char *[]){"export", ft_strjoin("?=", ft_itoa(0)), NULL});
 	init_pwd(&program);
 	program->test = "FAILURE";
-	// signal(SIGINT, handle_sigint);
+	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
 
 	while (1)

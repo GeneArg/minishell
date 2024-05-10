@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/10 10:24:52 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/10 11:40:43 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,38 +253,50 @@ void	execute_builtin_with_redirection(t_command *cmd, t_program **program,
 	close(saved_stdout);
 }
 
-void check_access(char *cmd_path, t_command *cmd) {
-    struct stat statbuf;
-    int stat_result = stat(cmd_path, &statbuf);
+void	check_access(char *cmd_path, t_command *cmd)
+{
+	struct stat	statbuf;
+	int			stat_result;
 
-    if (stat_result == 0) {
-        if (S_ISDIR(statbuf.st_mode)) {
-            ft_putstr_fd("minishell: ", 2);
-            ft_putstr_fd(cmd->argv[0], 2);
-            ft_putstr_fd(": Is a directory\n", 2);
-            exit(126);
-        } else if (access(cmd_path, X_OK) != 0) {
-            ft_putstr_fd("minishell: ", 2);
-            ft_putstr_fd(cmd->argv[0], 2);
-            ft_putstr_fd(": ", 2);
-            ft_putstr_fd(strerror(errno), 2);
-            ft_putstr_fd("\n", 2);
-            exit(126);
-        }
-    } else {
-        if (errno == EACCES) {
-            ft_putstr_fd("minishell: ", 2);
-            ft_putstr_fd(cmd->argv[0], 2);
-            ft_putstr_fd(": No Permission denied\n", 2);
-            exit(127);
-        } else {
-            ft_putstr_fd("minishell: ", 2);
-            ft_putstr_fd(cmd->argv[0], 2);
-            ft_putstr_fd(": No such file or directory\n", 2);
-            exit(127);
-        }
-    }
+	stat_result = stat(cmd_path, &statbuf);
+	if (stat_result == 0)
+	{
+		if (S_ISDIR(statbuf.st_mode))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->argv[0], 2);
+			ft_putstr_fd(": Is a directory\n", 2);
+			exit(126);
+		}
+		else if (access(cmd_path, X_OK) != 0)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->argv[0], 2);
+			ft_putstr_fd(": ", 2);
+			ft_putstr_fd(strerror(errno), 2);
+			ft_putstr_fd("\n", 2);
+			exit(126);
+		}
+	}
+	else
+	{
+		if (errno == EACCES)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->argv[0], 2);
+			ft_putstr_fd(": No Permission denied\n", 2);
+			exit(127);
+		}
+		else
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->argv[0], 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
+			exit(127);
+		}
+	}
 }
+
 void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		int out_fd)
 {
@@ -408,6 +420,7 @@ void	execute(t_program **program)
 				perror("Failed to create pipe");
 				exit(EXIT_FAILURE);
 			}
+			out_fd = pipefds[1];
 		}
 		// Execute the command
 		if (is_builtin(current_command->argv[0]))
