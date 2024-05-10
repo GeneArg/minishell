@@ -101,6 +101,5 @@ int					find_env_var(char **envp, char *var);
 
 // Test functions
 
-void				test_display(t_program *program);
 
 #endif
