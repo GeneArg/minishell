@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/10 18:54:11 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/10 23:31:01 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -371,7 +371,7 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		{
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd->argv[0], 2);
-			ft_putstr_fd(": command not found", 2);
+			ft_putstr_fd(": command not found\n", 2);
 			free(cmd_path);
 			ft_export(program, (char *[]){"export", ft_strjoin("?=",
 					ft_itoa(127)), NULL});
