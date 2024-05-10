@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/10 11:16:21 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/10 15:18:28 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,46 @@ t_program	*init_program()
 	// print_welcome_msg();
 	return (program);
 }
+int check_syntax(t_token *token, t_program **program)
+{
+	t_token *current = token;
+	if (current->type == TOKEN_PIPE)
+	{
+		ft_putstr_fd("bash: syntax error near unexpected token `|'\n", 2);
+		ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(2)), NULL});
+		return (1);
+	}
+	while (current)
+	{
+		if (current->type != TOKEN_WORD && current->next == NULL)
+		{
+			ft_putstr_fd("bash: syntax error near unexpected token `newline'\n", 2);
+			ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(2)), NULL});
+			return (1);
+		}
+
+		if (current->type != TOKEN_WORD && current->next && current->next->type != TOKEN_WORD  && current->next->type != TOKEN_REDIRECT_IN)
+		{
+			ft_putstr_fd("bash: syntax error near unexpected token `", 2);
+			ft_putstr_fd(current->next->value, 2);
+			ft_putstr_fd("'\n", 2);
+			ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(2)), NULL});
+			return (1);
+		}
+		current = current->next;
+	}
+	return (0);
+}
+
+
 
 void run(t_program **program)
 {
 	(*program)->tokens = lex((*program)->input);
 	//printf("LEXER OUTPUT\n");
 	//display_lexer_output((*program)->tokens);
+	if (check_syntax((*program)->tokens, program))
+		return;
 	(*program)->commands = parse((*program)->tokens);
 	//printf("PARSER OUTPUT\n");
 	//display_args((*program)->commands);
