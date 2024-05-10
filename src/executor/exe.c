@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/10 18:19:57 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/10 18:54:11 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -403,7 +403,7 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 	}
 	else
 	{
-		perror("fork failed");
+		ft_putstr_fd("Failed to fork process\n", 2);
 		exit(EXIT_FAILURE);
 	}
 }
@@ -432,7 +432,7 @@ void	execute(t_program **program)
 			new_in_fd = open(current_redirection->file, O_RDONLY);
 			if (new_in_fd < 0)
 			{
-				perror("Failed to open input file for redirection");
+				ft_putstr_fd("Failed to open input file for redirection\n", 2);
 				exit(EXIT_FAILURE);
 			}
 			if (in_fd != 0)
@@ -450,7 +450,7 @@ void	execute(t_program **program)
 					0777);
 			if (out_fd < 0)
 			{
-				perror("Failed to open output file for redirection");
+				ft_putstr_fd("Failed to open output file for redirection\n", 2);
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -459,7 +459,7 @@ void	execute(t_program **program)
 		{
 			if (pipe(pipefds) == -1)
 			{
-				perror("Failed to create pipe");
+				ft_putstr_fd("Failed to create pipe\n", 2);
 				exit(EXIT_FAILURE);
 			}
 			out_fd = pipefds[1];
