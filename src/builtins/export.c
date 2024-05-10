@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/07 23:35:28 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/10 18:12:01 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,12 +139,12 @@ int ft_export(t_program **program, char **argv)
     }
     else
     {
-		if (check_if_valid_name(args[1]))
-			return (1);
-        for (i = 1; args[i]; i++)
-        {
-            add_env(&((*program)->envp), args[i]);
-        }
+		for (i = 1; args[i]; i++)
+		{
+			if (check_if_valid_name(args[i]))
+				return (1);
+			add_env(&((*program)->envp), args[i]);
+		}
     }
 	return (0);
 }

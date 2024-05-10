@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 13:13:44 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/08 00:12:58 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:21:21 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdlib.h>
 # include <stddef.h>
 # include <unistd.h>
+# include <stdint.h>
 
 typedef struct s_list
 {

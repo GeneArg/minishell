@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/10 12:47:51 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/10 18:19:57 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,11 +140,45 @@ bool	is_builtin(char *cmd)
 		|| !strcmp(cmd, "exit"));
 }
 
+long long	mod_atoi(const char *str)
+{
+	long long	result;
+	int			sign;
+
+	result = 0;
+	sign = 1;
+	if (*str == '-' || *str == '+')
+	{
+		if (*str == '-')
+			sign = -1;
+		str++;
+	}
+	while (*str)
+	{
+		if (*str < '0' || *str > '9')
+		{
+			if (sign == 1)
+				return (-1);
+			else
+				return (0);
+		}
+		if (sign == 1 && result > (9223372036854775807LL - (*str - '0')) / 10)
+			return (-1);
+		else if (sign == -1
+			&& (unsigned long long)result > (9223372036854775808ULL - (*str
+					- '0')) / 10)
+			return (-1);
+		result = result * 10 + (*str - '0');
+		str++;
+	}
+	return (result * sign);
+}
+
 void	ft_exit(t_program **program, t_command *current_command)
 {
-	bool	is_digit;
-	int		exit_code;
-	int		i;
+	bool		is_digit;
+	long long	exit_code;
+	int			i;
 
 	is_digit = true;
 	i = 0;
@@ -167,8 +201,15 @@ void	ft_exit(t_program **program, t_command *current_command)
 		}
 		if (is_digit)
 		{
-			exit_code = ft_atoi(current_command->argv[1]);
-			if (exit_code > 255)
+			exit_code = mod_atoi(current_command->argv[1]);
+			if (exit_code == -1)
+			{
+				ft_putstr_fd("bash: exit: ", 2);
+				ft_putstr_fd(current_command->argv[1], 2);
+				ft_putstr_fd(": numeric argument required\n", 2);
+				exit_code = 2;
+			}
+			else if (exit_code > 255 || exit_code < -255)
 				exit_code = exit_code % 256;
 		}
 		else
@@ -236,7 +277,8 @@ void	execute_builtin_with_redirection(t_command *cmd, t_program **program,
 	{
 		for (int i = 0; (*program)->envp[i]; i++)
 		{
-			if (ft_strncmp((*program)->envp[i], "_=", 2))
+			if (ft_strncmp((*program)->envp[i], "_=", 2)
+				&& ft_strncmp((*program)->envp[i], "?=", 2))
 				printf("%s\n", (*program)->envp[i]);
 		}
 	}
