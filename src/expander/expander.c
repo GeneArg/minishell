@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/09 15:48:48 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/11 08:09:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,12 +72,12 @@ void replace_env_variables(char **arg, char **env) {
         } else if (*cur == '\'' && in_single_quotes) {
             in_single_quotes = false;
             *out++ = *cur++; // Copy closing single quote to output
-        } else if (!in_single_quotes && *cur == '$' && 
-            (*(cur + 1) == '?' || isalnum((unsigned char)*(cur + 1)) || *(cur + 1) == '_')) {
+        } else if (!in_single_quotes && *cur == '$' &&
+            (*(cur + 1) == '?' || ft_isalnum((unsigned char)*(cur + 1)) || *(cur + 1) == '_')) {
             // Process environment variable replacement
             char *end = cur + 1;
             if (*end != '?') {
-                while (isalnum((unsigned char)*end) || *end == '_' || *end == '?') end++;
+                while (ft_isalnum((unsigned char)*end) || *end == '_' || *end == '?') end++;
             } else {
                 end++;
             }

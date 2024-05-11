@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/10 23:29:06 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/11 08:30:59 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,16 +125,16 @@ int	check_syntax(t_token *token, t_program **program)
 void	run(t_program **program)
 {
 	(*program)->tokens = lex((*program)->input);
-	// printf("LEXER OUTPUT\n");
-	// display_lexer_output((*program)->tokens);
+	//printf("LEXER OUTPUT\n");
+	//display_lexer_output((*program)->tokens);
 	if (check_syntax((*program)->tokens, program))
 		return ;
 	(*program)->commands = parse((*program)->tokens);
-	// printf("PARSER OUTPUT\n");
-	// display_args((*program)->commands);
+	//printf("PARSER OUTPUT\n");
+	//display_args((*program)->commands);
 	expand((*program)->commands, (*program)->envp);
-	// printf("EXPANDER OUTPUT\n");
-	// display_args((*program)->commands);
+	//printf("EXPANDER OUTPUT\n");
+	//display_args((*program)->commands);
 	execute(program);
 }
 
@@ -177,9 +177,9 @@ char	*ft_prompt(t_program *program)
     prompt = ft_strjoin(user, "@");
     prompt = ft_strjoin(prompt, ":");
     if (!ft_strncmp(pwd, home, ft_strlen(home)))
-	prompt = ft_strjoin(ft_strjoin(prompt, "~"), pwd + ft_strlen(home));
+		prompt = ft_strjoin(ft_strjoin(prompt, "~"), pwd + ft_strlen(home));
     else
-     prompt = ft_strjoin(prompt, pwd);
+    	prompt = ft_strjoin(prompt, pwd);
     prompt = ft_strjoin(prompt, " $ ");
     color_prompt = ft_strjoin(color_user, prompt);
     color_prompt = ft_strjoin(color_prompt, color_reset);
@@ -203,10 +203,8 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		program->input = readline(ft_prompt(program));
-		// test_display(program);
 		run(&program);
 		add_history(program->input);
-		free_program_nonpersistent_values(program);
 	}
 	(void)argc;
 	(void)argv;

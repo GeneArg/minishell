@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/10 23:31:01 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/11 08:08:38 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ void	ft_exit(t_program **program, t_command *current_command)
 			i++;
 		while (current_command->argv[1][i])
 		{
-			if (!isdigit(current_command->argv[1][i]))
+			if (!ft_isdigit(current_command->argv[1][i]))
 			{
 				is_digit = false;
 				break ;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   freeing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 00:42:25 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 14:44:18 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/11 08:28:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void free_program_nonpersistent_values(t_program *program)
 	t_command	*command;
 	t_command	*next_command;
 	int			i;
-	
+
 	if (program->input)
 		free(program->input);
 	token = program->tokens;
@@ -35,8 +35,11 @@ void free_program_nonpersistent_values(t_program *program)
 	{
 		next_command = command->next;
 		i = 0;
-		while (command->argv[i])
-			free(command->argv[i++]);
+		if (command->argv)
+		{
+			while (command->argv[i])
+				free(command->argv[i++]);
+		}
 		if (command->redirect_in)
 			free(command->redirect_in);
 		if (command->redirect_out)
