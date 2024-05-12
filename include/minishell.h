@@ -87,6 +87,10 @@ void 				add_env(char ***envp, char *new_env);
 int					ft_echo(char **argv);
 int					ft_cd(t_program **program, char **argv);
 int 				ft_unset(t_program **program, char **argv);
+void				ft_exit(t_program **program, t_command *current_command);
+int	ft_pwd(void);
+int ft_env(t_program **program);
+
 
 // Quitting & Error Handling
 
