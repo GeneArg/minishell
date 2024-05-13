@@ -1,8 +1,3 @@
-check_syntax broken, segaults empty prompts
-
-
-cd with no arguments says "cd too many arguments" instead of going home
-
 
 
 

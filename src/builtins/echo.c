@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 15:52:31 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/07 21:58:40 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/13 09:55:12 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ int	ft_echo(char **argv)
 	int	i;
 	// char	*arg;
 	bool	n_option;
-
 	n_option = false;
 	i = 1;
 	while (argv[i] && !ft_strncmp(argv[i], "-n", 2) && ft_strlen(argv[i]) == 2)

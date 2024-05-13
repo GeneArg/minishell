@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/09 13:26:48 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 09:44:39 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_command	*init_command(void)
 	cmd->append = 0;
 	cmd->heredoc_content = NULL;
 	cmd->next = NULL;
+	cmd->flag_error = 0;
 	return (cmd);
 }
 

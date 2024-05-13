@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 07:58:41 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 09:20:00 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ void	handle_sigint(int sig)
 	(void)sig;
 	write(1, "\n", 1);
 	rl_on_new_line();
-	// rl_replace_line("", 0);
+	rl_replace_line("", 0);
 	rl_redisplay();
 }
 void	init_env(t_program **program, char **envp)
@@ -171,7 +171,7 @@ char	*ft_prompt(t_program *program)
     home = find_env_var_value(program->envp, "HOME");
     user = find_env_var_value(program->envp, "USER");
 	if (!pwd || !home || !user)
-		return (ft_strdup("\033[0;34myou broke our prompt $ "));
+		return (ft_strdup("\033[0;34mminishell $ "));
     char *color_user = "\033[1;34m"; // Blue
     char *color_path = "\033[0;35m"; // Purple (zsh)
     char *color_reset = "\033[0m"; // Reset color

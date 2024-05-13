@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/12 20:40:15 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 10:05:27 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,7 +235,6 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 	pid_t	pid;
 	int		execstat;
 	int		status;
-
 	pid = fork();
 	if (pid == 0)
 	{ // Child process
@@ -297,6 +296,17 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 	}
 }
 
+
+void ft_error(t_program **program, char *cmd, char *error, int exit_status)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(error, 2);
+	ft_putstr_fd("\n", 2);
+	ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(exit_status)), NULL});
+}
+
 void	execute(t_program **program)
 {
 	t_command		*current_command;
@@ -321,8 +331,13 @@ void	execute(t_program **program)
 			new_in_fd = open(current_redirection->file, O_RDONLY);
 			if (new_in_fd < 0)
 			{
-				ft_putstr_fd("Failed to open input file for redirection\n", 2);
-				exit(EXIT_FAILURE);
+				//ft_putstr_fd("minishell: ", 2);
+				//ft_putstr_fd(current_redirection->file, 2);
+				//ft_putstr_fd(": No such file or directory\n", 2);
+				//ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(1)), NULL});
+				ft_error(program, current_redirection->file, "No such file or directory", 1);
+				current_command->flag_error = 1;
+				break;
 			}
 			if (in_fd != 0)
 			{
@@ -339,9 +354,15 @@ void	execute(t_program **program)
 					0777);
 			if (out_fd < 0)
 			{
-				ft_putstr_fd("Failed to open output file for redirection\n", 2);
-				exit(EXIT_FAILURE);
+				ft_putstr_fd("Permission denied\n", 2);
+				current_command = current_command->next;
+				continue ;
 			}
+		}
+		if (current_command->flag_error)
+		{
+			current_command = current_command->next;
+			continue ;
 		}
 		// Setup pipe if there is a next command
 		if (current_command->next)
@@ -349,17 +370,21 @@ void	execute(t_program **program)
 			if (pipe(pipefds) == -1)
 			{
 				ft_putstr_fd("Failed to create pipe\n", 2);
-				exit(EXIT_FAILURE);
+				current_command = current_command->next;
+				continue ;
 			}
 			out_fd = pipefds[1];
 		}
 		// Execute the command
 		if (is_builtin(current_command->argv[0]))
+		{
 			execute_builtin_with_redirection(current_command, program, in_fd,
 				out_fd);
+		}
 		else
 			execute_in_child(current_command, program, in_fd, out_fd);
 		// If there was output redirection, close the output file
+		
 		if (out_fd != 1)
 		{
 			close(out_fd);

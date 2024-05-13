@@ -50,6 +50,7 @@ typedef struct s_command
 	t_redirection *redirect_in;	// Input redirection
 	char *redirect_out;     // Filename for output redirection
 	int append;					// 1 if output redirection should append, 0 otherwise
+	int flag_error;				// 1 if there was an error in the command
 }					t_command;
 
 typedef struct s_program
