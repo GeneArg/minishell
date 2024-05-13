@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 10:44:56 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 11:04:01 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	add_env(char ***envp, char *new_env)
 	}
 	else
 	{
-		append_str_to_array(envp, new_env);
+		ft_append_str_array(envp, new_env);
 	}
 }
 

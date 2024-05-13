@@ -6,132 +6,16 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 10:58:26 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 11:10:37 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	free_split(char **split)
-{
-	char	**tmp;
 
-	tmp = split;
-	while (*split)
-	{
-		free(*split);
-		split++;
-	}
-	free(tmp);
-}
 
-void	append_str_to_array(char ***array, char *str)
-{
-	int		len;
-	char	**new_array;
 
-	len = 0;
-	if (**array)
-	{
-		while ((*array)[len])
-			len++;
-	}
-	new_array = (char **)malloc(sizeof(char *) * (len + 2));
-	for (int i = 0; i < len; i++)
-	{
-		new_array[i] = (*array)[i];
-		(*array)[i] = NULL;
-	}
-	new_array[len] = ft_strdup(str);
-	new_array[len + 1] = NULL;
-	// if (*array)
-	//     free_split(*array);
-	*array = new_array;
-}
 
-char	**get_paths(char **envp)
-{
-	char	*sub;
-	char	**paths;
-	char	*pwd;
-	int		i;
-
-	// char	**temp_envp;
-	// temp_envp = envp;
-	i = 0;
-	while (envp[i] && !ft_strnstr(envp[i], "PATH=", 5))
-		i++;
-	sub = ft_substr(envp[i], 5, ft_strlen(envp[i]) - 5);
-	paths = ft_split(sub, ':');
-	free(sub);
-	i = 0;
-	while (envp[i] && !ft_strnstr(envp[i], "PWD=", 4))
-		i++;
-	pwd = ft_substr(envp[i], 4, ft_strlen(envp[i]) - 4);
-	// for (int i = 0; paths[i]; i++)
-	// 	printf("paths[%d]: %s\n", i, paths[i]);
-	append_str_to_array(&paths, pwd);
-	// printf("pwd: %s\n", pwd);
-	return (paths);
-}
-
-char	*find_path(char **envp, char *cmd)
-{
-	char	**paths;
-	char	*cmd_path;
-	char	*sub;
-	char	**temp_paths;
-
-	// char	**cmd_split;
-	// cmd_split = ft_split(cmd, ' ');
-	// cmd = *cmd_split;
-	paths = get_paths(envp);
-	temp_paths = paths;
-	sub = ft_strjoin("/", cmd);
-	// printf("cmd: %s\n", cmd);
-	while (*temp_paths)
-	{
-		cmd_path = ft_strjoin(*temp_paths, sub);
-		// printf("cmd_path: %s\n", cmd_path);
-		if (!access(cmd_path, F_OK))
-			break ;
-		free(cmd_path);
-		cmd_path = NULL;
-		temp_paths++;
-	}
-	free(sub);
-	// free_split(cmd_split);
-	free_split(paths);
-	return (cmd_path);
-}
-
-int	find_env_var(char **envp, char *var)
-{
-	int	i;
-
-	i = 0;
-	while (envp[i])
-	{
-		if (!ft_strncmp(envp[i], var, ft_strlen(var)))
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
-char	*find_env_var_value(char **envp, char *var)
-{
-	int	i;
-
-	i = 0;
-	while (envp[i])
-	{
-		if (!ft_strncmp(envp[i], var, ft_strlen(var)))
-			return (ft_strchr(envp[i], '=') + 1);
-		i++;
-	}
-	return (NULL);
-}
 
 bool	is_builtin(char *cmd)
 {

@@ -1,22 +1,27 @@
 TD
 
-utils in utils folder
+heredoc
+
+64Kb piping problem
+
 
 IN PROCESS
+
+utils in utils folder / general tidying up
 
 ft_error function to print error message / change exit code. To replace everywhere.
 
 Use enum to clarify exit codes. To replace everywhere.
 
 
-
-
-
-
 AT THE END
+
+exit routine function that frees everything
+
+exit routine called on all failed malloc returns
 
 why ctrl+d segfaults
 
 fix leaks
 
-cleanup/separating into files/norm
+norm

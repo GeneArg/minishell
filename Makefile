@@ -43,6 +43,7 @@ SRC_FILES	:= lexer/lexer_split.c \
 				builtins/pwd.c \
 				builtins/env.c \
 				builtins/exit.c \
+				utils/env_utils.c \
 
 SRC			:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ			:= $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))

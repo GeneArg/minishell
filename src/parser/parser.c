@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 09:44:39 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 11:18:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,26 +29,6 @@ t_command	*init_command(void)
 	return (cmd);
 }
 
-// void	append_argument(t_command **cmd, char *arg)
-// {
-// 	int		argc;
-// 	char	**new_argv;
-
-// 	argc = 0;
-// 	if ((*cmd)->argv)
-// 	{
-// 		while ((*cmd)->argv[argc])
-// 			argc++;
-// 	}
-// 	new_argv = (char **)malloc(sizeof(char *) * (argc + 2));
-// 	for (int i = 0; i < argc; i++)
-// 		new_argv[i] = (*cmd)->argv[i];
-// 	new_argv[argc] = ft_strdup(arg);
-// 	new_argv[argc + 1] = NULL;
-// 	if ((*cmd)->argv)
-// 		free((*cmd)->argv);
-// 	(*cmd)->argv = new_argv;
-// }
 
 char	**create_and_copy_new_argv(t_command **cmd, char *new_arg)
 {

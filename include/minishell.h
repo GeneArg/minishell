@@ -123,6 +123,8 @@ void ft_error(t_program **program, char *cmd, char *error, int exit_status);
 
 char 				*find_env_var_value(char **envp, char *var);
 int					find_env_var(char **envp, char *var);
+char	*find_path(char **envp, char *cmd);
+char	**get_paths(char **envp);
 
 
 // Test functions
