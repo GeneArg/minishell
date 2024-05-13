@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 10:19:03 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 12:18:58 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int	check_syntax(t_token *token, t_program **program)
 	while (current)
 	{
 		if (current->type == TOKEN_PIPE
-			&& (current->next->type == TOKEN_REDIRECT_IN
+			&& current->next && (current->next->type == TOKEN_REDIRECT_IN
 				|| current->next->type == TOKEN_REDIRECT_OUT))
 		{
 			current = current->next;

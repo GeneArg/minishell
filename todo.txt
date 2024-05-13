@@ -1,8 +1,14 @@
 TD
 
-heredoc
+- Heredoc
 
-64Kb piping problem
+- 64Kb piping problem
+
+- Consecutive redirections should create all files if nonexistant but only output to last one e.g "ls > out1 > out2" 
+will create out1 and out2 but only write into out2. Currently we don't create out1.
+
+- cat | cat | ls (from eval sheet)
+
 
 
 IN PROCESS

@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 11:10:37 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 11:40:37 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,7 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		execstat = execve(cmd_path, cmd->argv, (*program)->envp);
 		if (execstat == -1)
 		{
-			ft_error(program, cmd->argv[0], ": command not found\n", COMMAND_NOT_FOUND);
+			ft_error(program, cmd->argv[0], "command not found", COMMAND_NOT_FOUND);
 			exit(COMMAND_NOT_FOUND);
 		}
 		free(cmd_path);
