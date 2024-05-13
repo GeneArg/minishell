@@ -4,8 +4,9 @@ TD
 
 - 64Kb piping problem
 
-- Consecutive redirections should create all files if nonexistant but only output to last one e.g "ls > out1 > out2" 
-will create out1 and out2 but only write into out2. Currently we don't create out1.
+- Consecutive redirect out should create all files if nonexistant but only output to last one e.g "ls > out1 > out2" 
+will create out1 and out2 but only write into out2. Currently we don't create out1. *** I think we just need to handle 
+redirect out as linked list same as you did for redirect in, I'm leaving this one for you as you're more familiar with it
 
 - cat | cat | ls (from eval sheet)
 

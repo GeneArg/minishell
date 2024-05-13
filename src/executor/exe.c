@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 11:40:37 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 12:22:23 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	check_access(char *cmd_path, t_command *cmd)
 		}
 		else if (access(cmd_path, X_OK) != 0)
 		{
-			ft_error(NULL, cmd->argv[0], "Permission denied", -1);
+			ft_error(NULL, cmd->argv[0], " Permission denied", -1);
 			exit(CANNOT_EXECUTE);
 		}
 	}
@@ -91,7 +91,7 @@ void	check_access(char *cmd_path, t_command *cmd)
 	{
 		if (errno == EACCES)
 		{
-			ft_error(NULL, cmd->argv[0], "Permission denied", -1);
+			ft_error(NULL, cmd->argv[0], " Permission denied", -1);
 			exit(COMMAND_NOT_FOUND);
 		}
 		else
@@ -208,7 +208,7 @@ void	execute(t_program **program)
 					0777);
 			if (out_fd < 0)
 			{
-				ft_putstr_fd("Permission denied\n", 2);
+				ft_putstr_fd(" Permission denied\n", 2);
 				current_command = current_command->next;
 				continue ;
 			}
