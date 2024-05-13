@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 11:11:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 11:11:16 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 16:02:00 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,21 @@ char	*find_env_var_value(char **envp, char *var)
 		i++;
 	}
 	return (NULL);
+}
+
+
+void set_env_var(t_program **program, char *key, char *value)
+{
+	int	i;
+	char	*new_env_var;
+
+	i = find_env_var((*program)->envp, key);
+	if (i == -1)
+		add_env(&(*program)->envp, ft_strjoin(key, ft_strjoin("=", value)));
+	else
+	{
+		new_env_var = ft_strjoin(key, ft_strjoin("=", value));
+		free((*program)->envp[i]);
+		(*program)->envp[i] = new_env_var;
+	}
 }
