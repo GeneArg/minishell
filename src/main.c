@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/11 08:30:59 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 07:58:41 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,10 +167,11 @@ char	*ft_prompt(t_program *program)
     char	*home;
     char	*user;
     char	*color_prompt;
-
     pwd = find_env_var_value(program->envp, "PWD");
     home = find_env_var_value(program->envp, "HOME");
     user = find_env_var_value(program->envp, "USER");
+	if (!pwd || !home || !user)
+		return (ft_strdup("\033[0;34myou broke our prompt $ "));
     char *color_user = "\033[1;34m"; // Blue
     char *color_path = "\033[0;35m"; // Purple (zsh)
     char *color_reset = "\033[0m"; // Reset color
