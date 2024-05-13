@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 09:20:00 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 10:19:03 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,9 +86,7 @@ int	check_syntax(t_token *token, t_program **program)
 		return (1);
 	if (current->type == TOKEN_PIPE)
 	{
-		ft_putstr_fd("bash: syntax error near unexpected token `|'\n", 2);
-		ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(2)),
-			NULL});
+		ft_error(program, NULL, "syntax error near unexpected token `|'", 2);
 		return (1);
 	}
 	while (current)
@@ -102,10 +100,7 @@ int	check_syntax(t_token *token, t_program **program)
 		}
 		if (current->type != TOKEN_WORD && current->next == NULL)
 		{
-			ft_putstr_fd("bash: syntax error near unexpected token `newline'\n",
-				2);
-			ft_export(program, (char *[]){"export", ft_strjoin("?=",
-					ft_itoa(2)), NULL});
+			ft_error(program, NULL, "syntax error near unexpected token `newline'", 2);
 			return (1);
 		}
 		if (current->type != TOKEN_WORD && current->next->type != TOKEN_WORD)
@@ -171,7 +166,7 @@ char	*ft_prompt(t_program *program)
     home = find_env_var_value(program->envp, "HOME");
     user = find_env_var_value(program->envp, "USER");
 	if (!pwd || !home || !user)
-		return (ft_strdup("\033[0;34mminishell $ "));
+		return (ft_strdup("\033[0;34myou broke our prompt $ "));
     char *color_user = "\033[1;34m"; // Blue
     char *color_path = "\033[0;35m"; // Purple (zsh)
     char *color_reset = "\033[0m"; // Reset color

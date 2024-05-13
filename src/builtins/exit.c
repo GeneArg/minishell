@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 10:36:36 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/12 20:40:19 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 10:50:11 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,26 +76,24 @@ void	ft_exit(t_program **program, t_command *current_command)
 			exit_code = mod_atoi(current_command->argv[1]);
 			if (exit_code == -1)
 			{
-				ft_putstr_fd("bash: exit: ", 2);
-				ft_putstr_fd(current_command->argv[1], 2);
-				ft_putstr_fd(": numeric argument required\n", 2);
-				exit_code = 2;
+				ft_error(program, "exit", "numeric argument required", -1);
+				exit_code = INVALID_ARGS;
 			}
 			else if (exit_code > 255 || exit_code < -255)
 				exit_code = exit_code % 256;
 		}
 		else
 		{
-			ft_putstr_fd("bash: exit: numeric argument required\n", 2);
-			exit_code = 2;
+			ft_error(program, "exit", "numeric argument required", -1);
+			exit_code = INVALID_ARGS;
 		}
 		i = 0;
 		while (current_command->argv[++i])
 		{
 			if (i > 1)
 			{
-				ft_putstr_fd("bash: exit: too many arguments\n", 2);
-				exit_code = 1;
+				ft_error(program, "exit", "too many arguments", -1);
+				exit_code = FAILURE;
 				break ;
 			}
 		}

@@ -33,6 +33,7 @@ SRC_FILES	:= lexer/lexer_split.c \
 				parser/parser.c \
 				main.c \
 				freeing.c \
+				errors.c \
 				executor/exe.c \
 				builtins/export.c \
 				expander/expander.c \

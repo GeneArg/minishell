@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 10:05:27 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 10:58:26 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,36 +194,26 @@ void	check_access(char *cmd_path, t_command *cmd)
 	{
 		if (S_ISDIR(statbuf.st_mode))
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->argv[0], 2);
-			ft_putstr_fd(": Is a directory\n", 2);
-			exit(126);
+			ft_error(NULL, cmd->argv[0], "Is a directory", -1);
+			exit(CANNOT_EXECUTE);
 		}
 		else if (access(cmd_path, X_OK) != 0)
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->argv[0], 2);
-			ft_putstr_fd(": ", 2);
-			ft_putstr_fd(strerror(errno), 2);
-			ft_putstr_fd("\n", 2);
-			exit(126);
+			ft_error(NULL, cmd->argv[0], "Permission denied", -1);
+			exit(CANNOT_EXECUTE);
 		}
 	}
 	else
 	{
 		if (errno == EACCES)
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->argv[0], 2);
-			ft_putstr_fd(": No Permission denied\n", 2);
-			exit(127);
+			ft_error(NULL, cmd->argv[0], "Permission denied", -1);
+			exit(COMMAND_NOT_FOUND);
 		}
 		else
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->argv[0], 2);
-			ft_putstr_fd(": No such file or directory\n", 2);
-			exit(127);
+			ft_error(NULL, cmd->argv[0], "No such file or directory", -1);
+			exit(COMMAND_NOT_FOUND);
 		}
 	}
 }
@@ -257,30 +247,22 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		execstat = execve(cmd_path, cmd->argv, (*program)->envp);
 		if (execstat == -1)
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->argv[0], 2);
-			ft_putstr_fd(": command not found\n", 2);
-			free(cmd_path);
-			ft_export(program, (char *[]){"export", ft_strjoin("?=",
-					ft_itoa(127)), NULL});
-			exit(127);
+			ft_error(program, cmd->argv[0], ": command not found\n", COMMAND_NOT_FOUND);
+			exit(COMMAND_NOT_FOUND);
 		}
 		free(cmd_path);
-		exit(0);
+		exit(SUCCESS);
 	}
 	else if (pid > 0)
 	{ // Parent process
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 		{
-			// printf("Program exited with status %d\n", WEXITSTATUS(status));
 			ft_export(program, (char *[]){"export", ft_strjoin("?=",
 					ft_itoa(WEXITSTATUS(status))), NULL});
 		}
 		if (WIFSIGNALED(status))
 		{
-			// printf("Program was killed by signal %d\n", WTERMSIG(status));
-			// printf("Program exited with status %d\n", status);
 			ft_export(program, (char *[]){"export", ft_strjoin("?=",
 					ft_itoa(status + 128)), NULL});
 		}
@@ -291,21 +273,13 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 	}
 	else
 	{
-		ft_putstr_fd("Failed to fork process\n", 2);
-		exit(EXIT_FAILURE);
+		ft_error(program, cmd->argv[0], "Failed to fork process", FAILURE);
+		exit(FAILURE);
 	}
 }
 
 
-void ft_error(t_program **program, char *cmd, char *error, int exit_status)
-{
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(cmd, 2);
-	ft_putstr_fd(": ", 2);
-	ft_putstr_fd(error, 2);
-	ft_putstr_fd("\n", 2);
-	ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(exit_status)), NULL});
-}
+
 
 void	execute(t_program **program)
 {
@@ -331,10 +305,6 @@ void	execute(t_program **program)
 			new_in_fd = open(current_redirection->file, O_RDONLY);
 			if (new_in_fd < 0)
 			{
-				//ft_putstr_fd("minishell: ", 2);
-				//ft_putstr_fd(current_redirection->file, 2);
-				//ft_putstr_fd(": No such file or directory\n", 2);
-				//ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(1)), NULL});
 				ft_error(program, current_redirection->file, "No such file or directory", 1);
 				current_command->flag_error = 1;
 				break;
@@ -384,7 +354,6 @@ void	execute(t_program **program)
 		else
 			execute_in_child(current_command, program, in_fd, out_fd);
 		// If there was output redirection, close the output file
-		
 		if (out_fd != 1)
 		{
 			close(out_fd);

@@ -34,6 +34,22 @@ typedef enum
 	TOKEN_HEREDOC,         // Heredoc '<<'
 }					TokenType;
 
+
+typedef enum {
+    SUCCESS = 0,            // Successful operation
+	FAILURE = 1,            // General failure
+    COMMAND_NOT_FOUND = 127, // Command not found
+    CANNOT_EXECUTE = 126,   // Command invoked cannot execute
+    INVALID_ARGS = 2,       // Invalid arguments provided
+    EXEC_FAIL = 3,          // Execution failure
+    ENV_FAIL = 4,           // Environment handling failure
+    PERMISSION_DENIED = 5,  // Permission denied error
+    MEMORY_ERROR = 6,       // Memory allocation failed
+    PIPE_FAIL = 7,          // Pipe creation failed
+    FORK_FAIL = 8,          // Fork failed
+    OTHER_ERROR = 99        // Other unspecified errors
+} ShellExitCode;
+
 typedef struct s_token
 {
 	TokenType		type;
@@ -93,10 +109,15 @@ int	ft_pwd(void);
 int ft_env(t_program **program);
 
 
-// Quitting & Error Handling
+// Quitting & Freeing
 
 void				free_program(t_program *program, int exit_status);
 void				free_program_nonpersistent_values(t_program *program);
+
+// Errors
+
+void ft_error(t_program **program, char *cmd, char *error, int exit_status);
+
 
 // Utils
 

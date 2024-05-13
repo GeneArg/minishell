@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 17:12:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 07:53:32 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 10:50:51 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,6 @@ int ft_unset(t_program **program, char **argv)
         free(env_var);
         i++;
     }
-    return 0;
+    return (SUCCESS);
 }
 

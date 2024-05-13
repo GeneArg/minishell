@@ -1,5 +1,19 @@
+TD
+
+utils in utils folder
+
+IN PROCESS
+
+ft_error function to print error message / change exit code. To replace everywhere.
+
+Use enum to clarify exit codes. To replace everywhere.
 
 
+
+
+
+
+AT THE END
 
 why ctrl+d segfaults
 

@@ -3,24 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/10 18:12:01 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/13 10:44:56 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-
-
-char **sort_env(t_program *program)
+char	**sort_env(t_program *program)
 {
-	char **sorted_envp;
-	int i = 0;
-	int j = 0;
-	int len = 0;
+	char	**sorted_envp;
+	int		i;
+	int		j;
+	int		len;
+	char	*tmp;
 
+	i = 0;
+	j = 0;
+	len = 0;
 	while (program->envp[len])
 		len++;
 	sorted_envp = (char **)malloc(sizeof(char *) * (len + 1));
@@ -36,9 +38,10 @@ char **sort_env(t_program *program)
 		j = 0;
 		while (j < len - 1)
 		{
-			if (ft_strncmp(sorted_envp[j], sorted_envp[j + 1], ft_strlen(sorted_envp[j + 1])) > 0)
+			if (ft_strncmp(sorted_envp[j], sorted_envp[j + 1],
+					ft_strlen(sorted_envp[j + 1])) > 0)
 			{
-				char *tmp = sorted_envp[j];
+				tmp = sorted_envp[j];
 				sorted_envp[j] = sorted_envp[j + 1];
 				sorted_envp[j + 1] = tmp;
 			}
@@ -49,104 +52,101 @@ char **sort_env(t_program *program)
 	return (sorted_envp);
 }
 
-void add_env(char ***envp, char *new_env)
+void	add_env(char ***envp, char *new_env)
 {
-    int i = 0;
-    int new_env_len = ft_strlen(new_env);
-    int new_env_key_len = ft_strchr(new_env, '=') - new_env;
+	int	i;
+	int	new_env_len;
+	int	new_env_key_len;
 
-    // Find the existing variable or the end of the array
-    while ((*envp)[i] != NULL && ft_strncmp((*envp)[i], new_env, new_env_key_len))
-    {
-        i++;
-    }
-
-    // If variable exists, update it
-    if ((*envp)[i] != NULL && ft_strchr((*envp)[i], '='))
-    {
-        free((*envp)[i]);
-        (*envp)[i] = (char *)malloc((new_env_len + 1) * sizeof(char));
-        if ((*envp)[i] != NULL)
-        {
-            ft_strlcpy((*envp)[i], new_env, new_env_len + 1);
-        }
-    }
-    else
-    {
-        append_str_to_array(envp, new_env);
-    }
+	i = 0;
+	new_env_len = ft_strlen(new_env);
+	new_env_key_len = ft_strchr(new_env, '=') - new_env;
+	while ((*envp)[i] != NULL && ft_strncmp((*envp)[i], new_env,
+			new_env_key_len))
+		i++;
+	// If variable exists, update it
+	if ((*envp)[i] != NULL && ft_strchr((*envp)[i], '='))
+	{
+		free((*envp)[i]);
+		(*envp)[i] = (char *)malloc((new_env_len + 1) * sizeof(char));
+		if ((*envp)[i] != NULL)
+		{
+			ft_strlcpy((*envp)[i], new_env, new_env_len + 1);
+		}
+	}
+	else
+	{
+		append_str_to_array(envp, new_env);
+	}
 }
 
 int	check_if_valid_name(char *name)
 {
-	int i = 0;
+	int	i;
 
+	i = 0;
 	if (!ft_isalpha(name[0]) && name[0] != '_' && ft_strncmp(name, "?=", 2))
 	{
-		ft_putstr_fd("bash: export: `", 2);
-		ft_putstr_fd(name, 2);
-		ft_putstr_fd("': not a valid identifier\n", 2);
-		return (1);
+		ft_error(NULL, "export", "not a valid identifier", -1);
+		return (FAILURE);
 	}
 	while (name[++i])
 	{
 		if (name[i] == '=')
-			break;
+			break ;
 		if (!ft_isalnum(name[i]) && name[i] != '_' && ft_strncmp(name, "?=", 2))
 		{
-			ft_putstr_fd("bash: export: `", 2);
-			ft_putstr_fd(name, 2);
-			ft_putstr_fd("': not a valid identifier\n", 2);
-			return (1);
+			ft_error(NULL, "export", "not a valid identifier", -1);
+			return (FAILURE);
 		}
 	}
-	return (0);
+	return (SUCCESS);
 }
 
-int ft_export(t_program **program, char **argv)
+int	ft_export(t_program **program, char **argv)
 {
-    char **args;
-    int i = 0;
+	char	**args;
+	int		i;
+	char	**sorted_envp;
+	char	*env;
+	int		key_len;
 
-    args = argv;
-    if (!args[1])
-    {
-        char **sorted_envp = sort_env(*program);
-        while (sorted_envp[i])
-        {
-            char *env = sorted_envp[i];
-            int key_len = 0;
-            while (env[key_len] && env[key_len] != '=')
-            {
-                key_len++;
-            }
-
-            ft_putstr_fd("declare -x ", 1);
-            write(1, env, key_len);
-
-            if (env[key_len] == '=')
-            {
-                ft_putstr_fd("=\"", 1);
-                write(1, env + key_len + 1, ft_strlen(env) - key_len - 1);
-                ft_putstr_fd("\"\n", 1);
-            }
-            else
-            {
-                ft_putchar_fd('\n', 1);
-            }
-            i++;
-        }
-    }
-    else
-    {
+	i = 0;
+	args = argv;
+	if (!args[1])
+	{
+		sorted_envp = sort_env(*program);
+		while (sorted_envp[i])
+		{
+			env = sorted_envp[i];
+			key_len = 0;
+			while (env[key_len] && env[key_len] != '=')
+			{
+				key_len++;
+			}
+			ft_putstr_fd("declare -x ", 1);
+			write(1, env, key_len);
+			if (env[key_len] == '=')
+			{
+				ft_putstr_fd("=\"", 1);
+				write(1, env + key_len + 1, ft_strlen(env) - key_len - 1);
+				ft_putstr_fd("\"\n", 1);
+			}
+			else
+			{
+				ft_putchar_fd('\n', 1);
+			}
+			i++;
+		}
+	}
+	else
+	{
 		for (i = 1; args[i]; i++)
 		{
 			if (check_if_valid_name(args[i]))
-				return (1);
+				return (FAILURE);
 			add_env(&((*program)->envp), args[i]);
 		}
-    }
-	return (0);
+	}
+	return (SUCCESS);
 }
-
-

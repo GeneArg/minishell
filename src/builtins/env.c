@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 20:39:38 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/12 20:39:44 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/13 10:38:06 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,5 @@ int ft_env(t_program **program)
 			&& ft_strncmp((*program)->envp[i], "?=", 2))
 			printf("%s\n", (*program)->envp[i]);
 	}
-	return (0);
+	return (SUCCESS);
 }
