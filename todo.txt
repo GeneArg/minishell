@@ -12,15 +12,6 @@ redirect out as linked list same as you did for redirect in, I'm leaving this on
 
 
 
-IN PROCESS
-
-utils in utils folder / general tidying up
-
-ft_error function to print error message / change exit code. To replace everywhere.
-
-Use enum to clarify exit codes. To replace everywhere.
-
-
 AT THE END
 
 exit routine function that frees everything

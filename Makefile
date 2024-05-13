@@ -31,9 +31,12 @@ HDR_FILES :=	minishell.h
 SRC_FILES	:= lexer/lexer_split.c \
 				lexer/lexer_list.c \
 				parser/parser.c \
+				parser/syntax.c \
 				main.c \
 				freeing.c \
 				errors.c \
+				init.c \
+				debug.c \
 				executor/exe.c \
 				builtins/export.c \
 				expander/expander.c \
@@ -44,6 +47,8 @@ SRC_FILES	:= lexer/lexer_split.c \
 				builtins/env.c \
 				builtins/exit.c \
 				utils/env_utils.c \
+				utils/pretty.c \
+
 
 SRC			:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ			:= $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
