@@ -1,16 +1,17 @@
 TD
 
-
 - export GHOST=123 | env | grep GHOST shouldn't output anything as env doesnt know about export yet
 
 - Heredoc
 
 
+SIGNALS
+
+- CtrlC on blocking command displays prompt twice
+- Ctrl\ on blocking command should: Quit, core dumped
 
 
 IN PROGRESS // replace everywhere
-
-- use set_env_var(t_program **program, char *key, char *value) instead of ugly call to ft_export every time
 
 - enum for exit codes
 
