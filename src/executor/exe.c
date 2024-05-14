@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 12:12:23 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 12:25:23 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,7 @@ void	execute(t_program **program)
 		{
 			ft_export(program, (char *[]){"export", ft_strjoin("?=", "0"), NULL});
 			current_command = current_command->next;
+			pids[i] = -1;
 			if (!current_command)
 				return ;
 			continue ;
@@ -206,6 +207,8 @@ void	execute(t_program **program)
 			if (new_in_fd < 0)
 			{
 				ft_error(program, current_redirection->file, "No such file or directory", 1);
+				ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+				pids[i] = -1;
 				current_command->flag_error = 1;
 				break;
 			}
