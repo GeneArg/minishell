@@ -5,10 +5,6 @@ TD
 - Heredoc
 
 
-SIGNALS
-
-- CtrlC on blocking command displays prompt twice
-- Ctrl\ on blocking command should: Quit, core dumped
 
 
 IN PROGRESS // replace everywhere

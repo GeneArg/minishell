@@ -6,13 +6,14 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/14 11:56:30 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 17:01:00 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
 
+int g_in_blocking_mode = 0;  // Global variable to check blocking mode
 
 
 
@@ -32,14 +33,28 @@ void	run(t_program **program)
 	execute(program);
 }
 
-void	handle_sigint(int sig)
+void handle_sigint(int sig)
 {
-	(void)sig;
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+    (void)sig;
+	if (!g_in_blocking_mode)
+	{
+		write(1, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	else
+		write(1, "\n", 1);
 }
+
+void handle_sigquit(int sig)
+{
+    (void)sig;
+    if (g_in_blocking_mode) {
+        write(1, "Quit (core dumped)\n", 19);
+    }
+}
+
 
 
 
@@ -53,13 +68,16 @@ int	main(int argc, char **argv, char **envp)
 		NULL});
 	increase_shlvl(&program);
 	init_pwd(&program);
-	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, SIG_IGN);
+    signal(SIGINT, handle_sigint);
 	// print_welcome_msg();
 
 	while (1)
 	{
+		g_in_blocking_mode = 0;
+		signal(SIGQUIT, SIG_IGN);
 		program->input = readline(ft_prompt(program));
+		g_in_blocking_mode = 1;
+		signal(SIGQUIT, handle_sigquit);
 		if (!program->input)
 		{
 			ft_putstr_fd("exit\n", 1);
