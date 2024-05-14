@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 12:25:23 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 12:33:45 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,13 +228,18 @@ void	execute(t_program **program)
 			if (out_fd < 0)
 			{
 				ft_putstr_fd(" Permission denied\n", 2);
+				
 				current_command = current_command->next;
+				pids[i] = -1;
+				ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
 				continue ;
 			}
 		}
 		if (current_command->flag_error)
 		{
 			current_command = current_command->next;
+			pids[i] = -1;
+			ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
 			continue ;
 		}
 		// Setup pipe if there is a next command
