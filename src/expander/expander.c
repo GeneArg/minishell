@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 11:22:20 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 13:14:25 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,10 @@ void remove_empty_args(char ***argv) {
 }
 
 void expand(t_command *commands, char **envp) {
+
     for (t_command *current = commands; current != NULL; current = current->next) {
+
+		// expand arguments
         for (int i = 0; current->argv[i] != NULL; i++) {
             if (is_enclosed_in_single_quotes(current->argv[i])) {
                 // Just trim quotes for single-quoted arguments, no expansion
@@ -130,5 +133,27 @@ void expand(t_command *commands, char **envp) {
             }
         }
 		remove_empty_args(&(current->argv));
+
+		// expand redirect ins
+		for (t_redirection *redir = current->redirect_in; redir != NULL; redir = redir->next) {
+			if (is_enclosed_in_single_quotes(redir->file)) {
+				trim_quotes(&(redir->file));
+			} else {
+				trim_quotes(&(redir->file));
+				replace_env_variables(&(redir->file), envp);
+			}
+		}
+
+		
+		////// expand redirect outs, change logic here when using linked list
+		if (current->redirect_out == NULL) {
+			return ;
+		}
+		if (is_enclosed_in_single_quotes(current->redirect_out)) {
+			trim_quotes(&(current->redirect_out));
+		} else {
+			trim_quotes(&(current->redirect_out));
+			replace_env_variables(&(current->redirect_out), envp);
+		}	
     }
 }
