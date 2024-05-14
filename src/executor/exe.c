@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 15:41:14 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 17:42:55 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	check_access(char *cmd_path, t_command *cmd)
 		}
 		else if (access(cmd_path, X_OK) != 0)
 		{
-			ft_error(NULL, cmd->argv[0], " Permission denied", -1);
+			ft_error(NULL, cmd->argv[0], "Permission denied", -1);
 			exit(CANNOT_EXECUTE);
 		}
 	}
@@ -97,7 +97,7 @@ void	check_access(char *cmd_path, t_command *cmd)
 	{
 		if (errno == EACCES)
 		{
-			ft_error(NULL, cmd->argv[0], " Permission denied", -1);
+			ft_error(NULL, cmd->argv[0], "Permission denied", -1);
 			exit(COMMAND_NOT_FOUND);
 		}
 		else
@@ -165,7 +165,19 @@ pid_t	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 }
 
 
-
+void handle_open_error(t_program **program, char *file)
+{
+    char *error_message;
+    if (errno == ENOENT) {
+        error_message = "No such file or directory";
+    } else if (errno == EACCES) {
+        error_message = "Permission denied";
+    } else {
+        error_message = strerror(errno);
+    }
+    ft_error(program, file, error_message, 1);
+    ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+}
 
 void execute(t_program **program)
 {
@@ -216,50 +228,25 @@ void execute(t_program **program)
             new_in_fd = open(current_redirection->file, O_RDONLY);
             if (new_in_fd < 0)
             {
-                ft_error(program, current_redirection->file, "No such file or directory", 1);
-                ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+                handle_open_error(program, current_redirection->file);
                 current_command->flag_error = 1;
                 break;
             }
             if (in_fd != 0)
-            {
                 close(in_fd);
-            }
             in_fd = new_in_fd;
             current_redirection = current_redirection->next;
+			if (current_command->flag_error)
+				break;
         }
-
-        // Handle output redirections
-        current_redirection = current_command->redirect_out;
-        while (current_redirection)
-        {
-            new_out_fd = open(current_redirection->file,
-                              current_command->append ? (O_WRONLY | O_CREAT | O_APPEND) : (O_WRONLY | O_CREAT | O_TRUNC),
-                              0777);
-            if (new_out_fd < 0)
-            {
-                ft_error(program, current_redirection->file, "No such file or directory", 1);
-                ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-                current_command->flag_error = 1;
-                break;
-            }
-            if (out_fd != 1)
-            {
-                close(out_fd);
-            }
-            out_fd = new_out_fd;
-            current_redirection = current_redirection->next;
-        }
-
-        if (current_command->flag_error)
-        {
-            pids[i] = -1;
-            current_command = current_command->next;
-            ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-            i++;
-            continue;
-        }
-
+		if (current_command->flag_error)
+		{
+			pids[i] = -1;
+			current_command = current_command->next;
+			ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+			i++;
+			continue;
+		}
         // Setup pipe if there is a next command
         if (current_command->next)
         {
@@ -274,6 +261,39 @@ void execute(t_program **program)
             }
             out_fd = pipefds[1];
         }
+
+        // Handle output redirections
+        current_redirection = current_command->redirect_out;
+        while (current_redirection)
+        {
+            new_out_fd = open(current_redirection->file,
+                              current_command->append ? (O_WRONLY | O_CREAT | O_APPEND) : (O_WRONLY | O_CREAT | O_TRUNC),
+                              0777);
+            if (new_out_fd < 0)
+            {
+                handle_open_error(program, current_redirection->file);
+                current_command->flag_error = 1;
+                break;
+            }
+            if (out_fd != 1)
+            {
+                close(out_fd);
+            }
+            out_fd = new_out_fd;
+            current_redirection = current_redirection->next;
+			if (current_command->flag_error)
+				break;
+        }
+
+        if (current_command->flag_error)
+        {
+            pids[i] = -1;
+            current_command = current_command->next;
+            ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+            i++;
+            continue;
+        }
+
 
         // Execute the command
         if (is_builtin(current_command->argv[0]))
