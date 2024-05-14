@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 11:27:17 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 12:12:23 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ pid_t	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 	char	*cmd_path;
 	pid_t	pid;
 	int		execstat;
-
 	pid = fork();
 	if (pid == 0)
 	{ // Child process
@@ -129,13 +128,17 @@ pid_t	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		if (cmd->argv[0][0] == '.' || cmd->argv[0][0] == '/')
 			check_access(cmd_path, cmd);
 		execstat = execve(cmd_path, cmd->argv, (*program)->envp);
+	
 		if (execstat == -1)
-		{
-			if (errno == ENOENT)
+		{	
+			//printf("errno: %d\n", errno);
+			//printf("cmd->argv[0]: %s\n", cmd->argv[0]);
+			if (errno == ENOENT || errno == EFAULT || errno == EACCES)
 			{
 				ft_error(program, cmd->argv[0], "command not found", COMMAND_NOT_FOUND);
 				exit(COMMAND_NOT_FOUND);
 			}
+			
 		}
 		free(cmd_path);
 		exit(SUCCESS);
@@ -189,7 +192,10 @@ void	execute(t_program **program)
 	{
 		if (!current_command->argv[0])
 		{
+			ft_export(program, (char *[]){"export", ft_strjoin("?=", "0"), NULL});
 			current_command = current_command->next;
+			if (!current_command)
+				return ;
 			continue ;
 		}
 		// Handle input redirections
