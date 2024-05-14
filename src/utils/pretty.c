@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pretty.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:31:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 15:32:02 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 19:25:20 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,8 @@ char	*ft_prompt(t_program *program)
     pwd = find_env_var_value(program->envp, "PWD");
     home = find_env_var_value(program->envp, "HOME");
     user = find_env_var_value(program->envp, "USER");
-	if (!pwd || !home || !user)
-		return (ft_strdup("\033[0;34myou broke our prompt $ "));
+	// if (!pwd || !home || !user)
+	// 	return (ft_strdup("\033[0;34myou broke our prompt $ "));
     char *color_user = "\033[1;34m"; // Blue
     char *color_path = "\033[0;35m"; // Purple (zsh)
     char *color_reset = "\033[0m"; // Reset color

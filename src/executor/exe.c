@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 17:42:55 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/14 19:15:23 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,6 +317,19 @@ void execute(t_program **program)
             close(pipefds[1]);
             in_fd = pipefds[0];
         }
+		// if the command failed and there's a next command, execute the next command
+		if (current_command->flag_error && current_command->next)
+		{
+			current_command = current_command->next;
+			if (is_builtin(current_command->argv[0]))
+			{
+				execute_builtin_with_redirection(current_command, program, in_fd, out_fd);
+				pids[i] = -1;
+			}
+			else
+				pids[i] = execute_in_child(current_command, program, in_fd, out_fd);
+		}
+		
         i++;
         current_command = current_command->next;
     }

@@ -6,7 +6,7 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 12:07:05 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 14:45:47 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/14 18:26:48 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ char	**splitter(char *input)
 	in_simple_quotes = false;
 	while (*input)
 	{
+		if (*input == '#' && !in_double_quotes && !in_simple_quotes)
+			break;
 		if (*input == '"' && !in_simple_quotes)
 		{
 			in_double_quotes = !in_double_quotes;
