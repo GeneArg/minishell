@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 12:22:23 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 10:32:20 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,13 +102,13 @@ void	check_access(char *cmd_path, t_command *cmd)
 	}
 }
 
-void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
+pid_t	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		int out_fd)
 {
 	char	*cmd_path;
 	pid_t	pid;
 	int		execstat;
-	int		status;
+
 	pid = fork();
 	if (pid == 0)
 	{ // Child process
@@ -131,25 +131,17 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		execstat = execve(cmd_path, cmd->argv, (*program)->envp);
 		if (execstat == -1)
 		{
-			ft_error(program, cmd->argv[0], "command not found", COMMAND_NOT_FOUND);
-			exit(COMMAND_NOT_FOUND);
+			if (errno == ENOENT)
+			{
+				ft_error(program, cmd->argv[0], "command not found", COMMAND_NOT_FOUND);
+				exit(COMMAND_NOT_FOUND);
+			}
 		}
 		free(cmd_path);
 		exit(SUCCESS);
 	}
 	else if (pid > 0)
 	{ // Parent process
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-		{
-			ft_export(program, (char *[]){"export", ft_strjoin("?=",
-					ft_itoa(WEXITSTATUS(status))), NULL});
-		}
-		if (WIFSIGNALED(status))
-		{
-			ft_export(program, (char *[]){"export", ft_strjoin("?=",
-					ft_itoa(status + 128)), NULL});
-		}
 		if (in_fd != 0)
 			close(in_fd);
 		if (out_fd != 1)
@@ -160,6 +152,7 @@ void	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 		ft_error(program, cmd->argv[0], "Failed to fork process", FAILURE);
 		exit(FAILURE);
 	}
+	return (pid);
 }
 
 
@@ -171,10 +164,27 @@ void	execute(t_program **program)
 	int				pipefds[2];
 	t_redirection	*current_redirection;
 	int				new_in_fd;
-
-	current_command = (*program)->commands;
+	pid_t			*pids;
+	int				i;
+	int				num_commands = 0;
 	int in_fd = 0;  // Standard input by default
 	int out_fd = 1; // Standard output by default
+
+	current_command = (*program)->commands;
+	while (current_command)
+	{
+		num_commands++;
+		current_command = current_command->next;
+	}
+
+	pids = malloc(sizeof(pid_t) * num_commands);
+	if (!pids)
+	{
+		ft_error(program, NULL, "Failed to allocate memory", FAILURE);
+		exit(FAILURE);
+	}
+	current_command = (*program)->commands;
+	i = 0;
 	while (current_command)
 	{
 		if (!current_command->argv[0])
@@ -236,8 +246,7 @@ void	execute(t_program **program)
 				out_fd);
 		}
 		else
-			execute_in_child(current_command, program, in_fd, out_fd);
-		// If there was output redirection, close the output file
+			pids[i] = execute_in_child(current_command, program, in_fd, out_fd);
 		if (out_fd != 1)
 		{
 			close(out_fd);
@@ -250,6 +259,17 @@ void	execute(t_program **program)
 			close(pipefds[1]);
 			in_fd = pipefds[0];
 		}
+		i++;
 		current_command = current_command->next;
 	}
+	for(i = 0; i < num_commands; i++)
+	{
+		int status;
+		waitpid(pids[i], &status, 0);
+		if (WIFEXITED(status))
+			ft_export(program, (char *[]){"export", ft_strjoin("?", ft_itoa(WEXITSTATUS(status))), NULL});
+		if (WIFSIGNALED(status))
+			ft_export(program, (char *[]){"export", ft_strjoin("?", ft_itoa(WTERMSIG(status))), NULL});
+	}
+	free(pids);
 }
