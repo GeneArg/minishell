@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 15:49:17 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 11:56:30 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,11 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		program->input = readline(ft_prompt(program));
+		if (!program->input)
+		{
+			ft_putstr_fd("exit\n", 1);
+			exit(1);
+		}
 		run(&program);
 		add_history(program->input);
 	}
