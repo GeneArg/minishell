@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 10:32:20 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/14 11:27:17 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,6 +244,7 @@ void	execute(t_program **program)
 		{
 			execute_builtin_with_redirection(current_command, program, in_fd,
 				out_fd);
+			pids[i] = -1;
 		}
 		else
 			pids[i] = execute_in_child(current_command, program, in_fd, out_fd);
@@ -264,12 +265,14 @@ void	execute(t_program **program)
 	}
 	for(i = 0; i < num_commands; i++)
 	{
+		if (pids[i] == -1)
+			continue ;
 		int status;
 		waitpid(pids[i], &status, 0);
 		if (WIFEXITED(status))
-			ft_export(program, (char *[]){"export", ft_strjoin("?", ft_itoa(WEXITSTATUS(status))), NULL});
+			ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WEXITSTATUS(status))), NULL});
 		if (WIFSIGNALED(status))
-			ft_export(program, (char *[]){"export", ft_strjoin("?", ft_itoa(WTERMSIG(status))), NULL});
+			ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WTERMSIG(status))), NULL});
 	}
 	free(pids);
 }
