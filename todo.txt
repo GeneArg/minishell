@@ -2,8 +2,6 @@ TD
 
 - Consecutive redirect out 
 
-- lost exit codes for ./tester extras (command not found exits 0 and not 127, used to work before exec change)
-
 - export GHOST=123 | env | grep GHOST shouldn't output anything as env doesnt know about export yet
 
 - Heredoc
@@ -18,6 +16,8 @@ IN PROGRESS // replace everywhere
 - enum for exit codes
 
 - call to ft_error instead of consecutive ft_putstr_fd
+
+
 
 AT THE END
 
