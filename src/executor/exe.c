@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 15:02:58 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 15:41:14 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,152 +167,165 @@ pid_t	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 
 
 
-void	execute(t_program **program)
+void execute(t_program **program)
 {
-	t_command		*current_command;
-	int				pipefds[2];
-	t_redirection	*current_redirection;
-	int				new_in_fd;
-	int				new_out_fd;
-	pid_t			*pids;
-	int				i;
-	int				num_commands = 0;
-	int in_fd = 0;  // Standard input by default
-	int out_fd = 1; // Standard output by default
+    t_command *current_command;
+    int pipefds[2];
+    t_redirection *current_redirection;
+    int new_in_fd;
+    int new_out_fd;
+    pid_t *pids;
+    int i;
+    int num_commands = 0;
+    int in_fd = 0;  // Standard input by default
+    int out_fd = 1; // Standard output by default
 
-	current_command = (*program)->commands;
-	while (current_command)
-	{
-		num_commands++;
-		current_command = current_command->next;
-	}
+    current_command = (*program)->commands;
+    while (current_command)
+    {
+        num_commands++;
+        current_command = current_command->next;
+    }
 
-	pids = malloc(sizeof(pid_t) * num_commands);
-	if (!pids)
-	{
-		ft_error(program, NULL, "Failed to allocate memory", FAILURE);
-		exit(FAILURE);
-	}
-	current_command = (*program)->commands;
-	i = 0;
-	while (current_command)
-	{
-		if (!current_command->argv[0])
-		{
-			ft_export(program, (char *[]){"export", ft_strjoin("?=", "0"), NULL});
-			current_command = current_command->next;
-			pids[i] = -1;
-			if (!current_command)
-				return ;
-			i++;
-			continue ;
-		}
-		// Handle input redirections
-		current_redirection = current_command->redirect_in;
-		while (current_redirection)
-		{
-			new_in_fd = open(current_redirection->file, O_RDONLY);
-			if (new_in_fd < 0)
-			{
-				ft_error(program, current_redirection->file, "No such file or directory", 1);
-				ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-				current_command->flag_error = 1;
-				break;
-			}
-			if (in_fd != 0)
-			{
-				close(in_fd);
-			}
-			in_fd = new_in_fd;
-			current_redirection = current_redirection->next;
-		}
-		// Handle output redirection
+    pids = malloc(sizeof(pid_t) * num_commands);
+    if (!pids)
+    {
+        ft_error(program, NULL, "Failed to allocate memory", FAILURE);
+        exit(FAILURE);
+    }
 
-		current_redirection = current_command->redirect_out;
-		while (current_redirection)
-		{
-			new_out_fd = open(current_command->redirect_out->file,
-					current_command->append ? (O_WRONLY | O_CREAT | O_APPEND) : (O_WRONLY | O_CREAT | O_TRUNC),
-					0777);
-			if (new_out_fd < 0)
-			{
-				ft_error(program, current_redirection->file, "No such file or directory", 1);
-				ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-				current_command->flag_error = 1;
-				break;
-			}
-			if (out_fd != 0)
-			{
-				close(out_fd);
-			}
-			out_fd = new_out_fd;
-			current_redirection = current_redirection->next;
-		}
+    current_command = (*program)->commands;
+    i = 0;
+    while (current_command)
+    {
+        if (!current_command->argv[0])
+        {
+            ft_export(program, (char *[]){"export", ft_strjoin("?=", "0"), NULL});
+            current_command = current_command->next;
+            pids[i] = -1;
+            if (!current_command)
+                return;
+            i++;
+            continue;
+        }
 
+        // Handle input redirections
+        current_redirection = current_command->redirect_in;
+        while (current_redirection)
+        {
+            new_in_fd = open(current_redirection->file, O_RDONLY);
+            if (new_in_fd < 0)
+            {
+                ft_error(program, current_redirection->file, "No such file or directory", 1);
+                ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+                current_command->flag_error = 1;
+                break;
+            }
+            if (in_fd != 0)
+            {
+                close(in_fd);
+            }
+            in_fd = new_in_fd;
+            current_redirection = current_redirection->next;
+        }
 
+        // Handle output redirections
+        current_redirection = current_command->redirect_out;
+        while (current_redirection)
+        {
+            new_out_fd = open(current_redirection->file,
+                              current_command->append ? (O_WRONLY | O_CREAT | O_APPEND) : (O_WRONLY | O_CREAT | O_TRUNC),
+                              0777);
+            if (new_out_fd < 0)
+            {
+                ft_error(program, current_redirection->file, "No such file or directory", 1);
+                ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+                current_command->flag_error = 1;
+                break;
+            }
+            if (out_fd != 1)
+            {
+                close(out_fd);
+            }
+            out_fd = new_out_fd;
+            current_redirection = current_redirection->next;
+        }
 
+        if (current_command->flag_error)
+        {
+            pids[i] = -1;
+            current_command = current_command->next;
+            ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+            i++;
+            continue;
+        }
 
-		
-		if (current_command->flag_error)
-		{
-			pids[i] = -1;
-			current_command = current_command->next;
-			ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-			i++;
-			continue ;
-		}
-		// Setup pipe if there is a next command
-		if (current_command->next)
-		{
-			if (pipe(pipefds) == -1)
-			{
-				ft_putstr_fd("Failed to create pipe\n", 2);
-				pids[i] = -1;
-				current_command = current_command->next;
-				ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-				i++;
-				continue ;
-			}
-			out_fd = pipefds[1];
-		}
-		// Execute the command
-		if (is_builtin(current_command->argv[0]))
-		{
-			execute_builtin_with_redirection(current_command, program, in_fd,
-				out_fd);
-			pids[i] = -1;
-		}
-		else
-			pids[i] = execute_in_child(current_command, program, in_fd, out_fd);
-		if (out_fd != 1)
-		{
-			close(out_fd);
-			out_fd = 1;
-		}
-		// If there was a pipe,
-		// close the read end and make the write end the new input
-		if (current_command->next)
-		{
-			close(pipefds[1]);
-			in_fd = pipefds[0];
-		}
-		i++;
-		current_command = current_command->next;
-	}
-	for(i = 0; i < num_commands; i++)
-	{
-		if (pids[i] == -1)
-			continue ;
-		int status;
-		waitpid(pids[i], &status, 0);
-		if (WIFEXITED(status))
-		{
-			ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WEXITSTATUS(status))), NULL});
-		}
-		if (WIFSIGNALED(status))
-		{
-			ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WTERMSIG(status))), NULL});
-		}
-	}
-	free(pids);
+        // Setup pipe if there is a next command
+        if (current_command->next)
+        {
+            if (pipe(pipefds) == -1)
+            {
+                ft_putstr_fd("Failed to create pipe\n", 2);
+                pids[i] = -1;
+                current_command = current_command->next;
+                ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+                i++;
+                continue;
+            }
+            out_fd = pipefds[1];
+        }
+
+        // Execute the command
+        if (is_builtin(current_command->argv[0]))
+        {
+            execute_builtin_with_redirection(current_command, program, in_fd, out_fd);
+            pids[i] = -1;
+        }
+        else
+            pids[i] = execute_in_child(current_command, program, in_fd, out_fd);
+
+        if (out_fd != 1)
+        {
+            close(out_fd);
+            out_fd = 1;
+        }
+
+        // If there was a pipe,
+        // close the read end and make the write end the new input
+        if (current_command->next)
+        {
+            close(pipefds[1]);
+            in_fd = pipefds[0];
+        }
+        i++;
+        current_command = current_command->next;
+    }
+
+    for (i = 0; i < num_commands; i++)
+    {
+        if (pids[i] == -1)
+            continue;
+        int status;
+        waitpid(pids[i], &status, 0);
+        if (WIFEXITED(status))
+        {
+            ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WEXITSTATUS(status))), NULL});
+        }
+        if (WIFSIGNALED(status))
+        {
+            ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WTERMSIG(status))), NULL});
+        }
+    }
+
+    free(pids);
+
+    // Ensure all file descriptors are closed
+    if (in_fd != 0)
+    {
+        close(in_fd);
+    }
+    if (out_fd != 1)
+    {
+        close(out_fd);
+    }
 }
