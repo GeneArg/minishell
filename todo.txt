@@ -1,6 +1,5 @@
 TD
 
-- Consecutive redirect out 
 
 - export GHOST=123 | env | grep GHOST shouldn't output anything as env doesnt know about export yet
 

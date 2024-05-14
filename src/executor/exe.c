@@ -6,14 +6,20 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 13:49:07 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 15:02:58 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
 
-
+void print_pids(pid_t *pids, int num_commands)
+{
+	for (int i = 0; i < num_commands; i++)
+	{
+		printf("pids[%d]: %d\n", i, pids[i]);
+	}
+}
 
 
 
@@ -167,6 +173,7 @@ void	execute(t_program **program)
 	int				pipefds[2];
 	t_redirection	*current_redirection;
 	int				new_in_fd;
+	int				new_out_fd;
 	pid_t			*pids;
 	int				i;
 	int				num_commands = 0;
@@ -197,6 +204,7 @@ void	execute(t_program **program)
 			pids[i] = -1;
 			if (!current_command)
 				return ;
+			i++;
 			continue ;
 		}
 		// Handle input redirections
@@ -208,7 +216,6 @@ void	execute(t_program **program)
 			{
 				ft_error(program, current_redirection->file, "No such file or directory", 1);
 				ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-				pids[i] = -1;
 				current_command->flag_error = 1;
 				break;
 			}
@@ -220,28 +227,38 @@ void	execute(t_program **program)
 			current_redirection = current_redirection->next;
 		}
 		// Handle output redirection
-		if (current_command->redirect_out)
+
+		current_redirection = current_command->redirect_out;
+		while (current_redirection)
 		{
-			out_fd = open(current_command->redirect_out,
+			new_out_fd = open(current_command->redirect_out->file,
 					current_command->append ? (O_WRONLY | O_CREAT | O_APPEND) : (O_WRONLY | O_CREAT | O_TRUNC),
 					0777);
-			if (out_fd < 0)
+			if (new_out_fd < 0)
 			{
-				ft_putstr_fd(" Permission denied\n", 2);
-				
-				current_command = current_command->next;
-				pids[i] = -1;
+				ft_error(program, current_redirection->file, "No such file or directory", 1);
 				ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-				continue ;
+				current_command->flag_error = 1;
+				break;
 			}
+			if (out_fd != 0)
+			{
+				close(out_fd);
+			}
+			out_fd = new_out_fd;
+			current_redirection = current_redirection->next;
 		}
+
+
+
 
 		
 		if (current_command->flag_error)
 		{
-			current_command = current_command->next;
 			pids[i] = -1;
+			current_command = current_command->next;
 			ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+			i++;
 			continue ;
 		}
 		// Setup pipe if there is a next command
@@ -250,7 +267,10 @@ void	execute(t_program **program)
 			if (pipe(pipefds) == -1)
 			{
 				ft_putstr_fd("Failed to create pipe\n", 2);
+				pids[i] = -1;
 				current_command = current_command->next;
+				ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+				i++;
 				continue ;
 			}
 			out_fd = pipefds[1];
@@ -286,9 +306,13 @@ void	execute(t_program **program)
 		int status;
 		waitpid(pids[i], &status, 0);
 		if (WIFEXITED(status))
+		{
 			ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WEXITSTATUS(status))), NULL});
+		}
 		if (WIFSIGNALED(status))
+		{
 			ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WTERMSIG(status))), NULL});
+		}
 	}
 	free(pids);
 }

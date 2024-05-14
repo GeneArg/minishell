@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 11:18:15 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/14 13:55:11 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,26 @@ void	handle_redirect_in(t_command **cmd, char *file)
 	}
 }
 
+
+void	handle_redirect_out(t_command **cmd, char *file)
+{
+	t_redirection	*new_redirection;
+	t_redirection	*current_redirection;
+
+	new_redirection = create_new_redirection(file);
+	if (!new_redirection)
+		return ;
+	if (!(*cmd)->redirect_out)
+		(*cmd)->redirect_out = new_redirection;
+	else
+	{
+		current_redirection = (*cmd)->redirect_out;
+		while (current_redirection->next)
+			current_redirection = current_redirection->next;
+		current_redirection->next = new_redirection;
+	}
+}
+
 t_command	*parse(t_token *token)
 {
 	t_command	*head;
@@ -187,19 +207,32 @@ t_command	*parse(t_token *token)
 				handle_redirect_in(&current_cmd, token->value);
 			}
 		}
-		if (token->type == TOKEN_REDIRECT_OUT)
+		if (token->type == TOKEN_REDIRECT_OUT || token->type == TOKEN_REDIRECT_APPEND)
 		{
-			token = token->next;
-			if (token)
-				current_cmd->redirect_out = ft_strdup(token->value);
-		}
-		if (token->type == TOKEN_REDIRECT_APPEND)
-		{
-			token = token->next;
-			if (token)
-			{
-				current_cmd->redirect_out = ft_strdup(token->value);
+			if (token->type == TOKEN_REDIRECT_APPEND)
 				current_cmd->append = 1;
+			token = token->next;
+			if (!token || token->type != TOKEN_WORD)
+				ft_putstr_fd("syntax error\n", 2);
+			else
+			{
+				if (token->value[0] == '\"')
+				{
+					while (token && token->value[strlen(token->value)
+						- 1] != '\"')
+					{
+						temp = ft_strjoin(token->value, " ");
+						free(token->value);
+						token->value = temp;
+						token = token->next;
+						temp = ft_strjoin(token->value, token->next->value);
+						free(token->next->value);
+						token->next->value = temp;
+					}
+					token->value++;
+					token->value[strlen(token->value) - 1] = '\0';
+				}
+				handle_redirect_out(&current_cmd, token->value);
 			}
 		}
 		if (token->type == TOKEN_HEREDOC)
