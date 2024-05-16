@@ -123,8 +123,11 @@ char						*ft_prompt(t_program *program);
 
 // Quitting & Freeing
 
-void						free_program(t_program *program, int exit_status);
-void						free_program_nonpersistent_values(t_program *program);
+void free_and_exit(t_program *program, int exit_status);
+void free_program(t_program *program);
+void free_commands(t_command *commands);
+void free_tokens(t_token *tokens);
+void free_redirects(t_redirection *redirects);
 
 // Errors
 

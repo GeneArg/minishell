@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pretty.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:31:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/14 19:25:20 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/16 11:03:45 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,25 +44,57 @@ char	*ft_prompt(t_program *program)
     char	*pwd;
     char	*home;
     char	*user;
-    char	*color_prompt;
+    char	*temp;
+
     pwd = find_env_var_value(program->envp, "PWD");
     home = find_env_var_value(program->envp, "HOME");
     user = find_env_var_value(program->envp, "USER");
-	// if (!pwd || !home || !user)
-	// 	return (ft_strdup("\033[0;34myou broke our prompt $ "));
+
     char *color_user = "\033[1;34m"; // Blue
     char *color_path = "\033[0;35m"; // Purple (zsh)
     char *color_reset = "\033[0m"; // Reset color
+
     prompt = ft_strjoin(user, "@");
+    temp = prompt;
     prompt = ft_strjoin(prompt, ":");
+    free(temp);
+
     if (!ft_strncmp(pwd, home, ft_strlen(home)))
-		prompt = ft_strjoin(ft_strjoin(prompt, "~"), pwd + ft_strlen(home));
+    {
+        temp = prompt;
+        prompt = ft_strjoin(prompt, "~");
+        free(temp);
+
+        temp = prompt;
+        prompt = ft_strjoin(prompt, pwd + ft_strlen(home));
+        free(temp);
+    }
     else
-    	prompt = ft_strjoin(prompt, pwd);
+    {
+        temp = prompt;
+        prompt = ft_strjoin(prompt, pwd);
+        free(temp);
+    }
+
+    temp = prompt;
     prompt = ft_strjoin(prompt, " $ ");
-    color_prompt = ft_strjoin(color_user, prompt);
-    color_prompt = ft_strjoin(color_prompt, color_reset);
-    color_prompt = ft_strjoin(color_path, color_prompt);
-    color_prompt = ft_strjoin(color_prompt, color_reset);
-    return (color_prompt);
+    free(temp);
+
+    temp = prompt;
+    prompt = ft_strjoin(color_user, prompt);
+    free(temp);
+
+    temp = prompt;
+    prompt = ft_strjoin(prompt, color_reset);
+    free(temp);
+
+    temp = prompt;
+    prompt = ft_strjoin(color_path, prompt);
+    free(temp);
+
+    temp = prompt;
+    prompt = ft_strjoin(prompt, color_reset);
+    free(temp);
+
+    return (prompt);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/14 19:15:23 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/16 11:20:18 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -339,14 +339,17 @@ void execute(t_program **program)
         if (pids[i] == -1)
             continue;
         int status;
+		char *exit_status;
         waitpid(pids[i], &status, 0);
         if (WIFEXITED(status))
         {
-            ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WEXITSTATUS(status))), NULL});
+			exit_status = ft_itoa(WEXITSTATUS(status));
+            ft_export(program, (char *[]){"export", ft_strjoin("?=", exit_status), NULL});
         }
         if (WIFSIGNALED(status))
         {
-            ft_export(program, (char *[]){"export", ft_strjoin("?=", ft_itoa(WTERMSIG(status))), NULL});
+			exit_status = ft_itoa(WTERMSIG(status));
+            ft_export(program, (char *[]){"export", ft_strjoin("?=", exit_status), NULL});
         }
     }
 

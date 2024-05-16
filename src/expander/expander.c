@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/14 13:53:44 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 12:50:35 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ bool is_enclosed_in_single_quotes(char *arg) {
 void trim_quotes(char **arg) {
     char *input = *arg;
     int length = strlen(input);
-    char *output = malloc(length - 1);  // Allocate slightly less assuming we'll remove at least two characters (quotes)
+    char *output = malloc(length + 1);  // Allocate same size to ensure no overflow
     if (!output) {
         fprintf(stderr, "Memory allocation failed\n");
         return;
@@ -41,8 +41,7 @@ void trim_quotes(char **arg) {
                 inside_quotes = false;  // Closing quote found
                 current_quote = 0;  // Reset the quote type
             }
-        } else if (!inside_quotes || (inside_quotes && current_quote != input[i])) {
-            // Copy characters only if not inside a different type of quote
+        } else {
             output[j++] = input[i];
         }
         i++;

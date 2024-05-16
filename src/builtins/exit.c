@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/11 10:36:36 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 10:50:11 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 10:48:47 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	ft_exit(t_program **program, t_command *current_command)
 	i = 0;
 	ft_putstr_fd("exit\n", 1);
 	if (ft_array_len(current_command->argv) == 1)
-		free_program((*program), 0);
+		free_and_exit((*program), 0);
 	else
 	{
 		if (current_command->argv[1][0] == '-'
@@ -97,6 +97,6 @@ void	ft_exit(t_program **program, t_command *current_command)
 				break ;
 			}
 		}
-		free_program((*program), exit_code);
+		free_and_exit((*program), exit_code);
 	}
 }

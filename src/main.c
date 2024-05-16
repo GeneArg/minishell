@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/14 19:30:37 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/16 13:02:23 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,13 @@ int g_in_blocking_mode = 0;  // Global variable to check blocking mode
 void	run(t_program **program)
 {
 	(*program)->tokens = lex((*program)->input);
-	//printf("LEXER OUTPUT\n");
-	//display_lexer_output((*program)->tokens);
 	if (check_syntax((*program)->tokens, program))
 		return ;
 	(*program)->commands = parse((*program)->tokens);
-	//printf("PARSER OUTPUT\n");
 	//display_args((*program)->commands);
+	free_tokens((*program)->tokens);
+	(*program)->tokens = NULL;
 	expand((*program)->commands, (*program)->envp);
-	//printf("EXPANDER OUTPUT\n");
-	//display_args((*program)->commands);
 	execute(program);
 }
 
@@ -61,11 +58,11 @@ void handle_sigquit(int sig)
 int	main(int argc, char **argv, char **envp)
 {
 	t_program	*program;
+	
 
 	program = init_program();
 	program->envp = ft_copy_array(envp);
-	ft_export(&program, (char *[]){"export", ft_strjoin("?=", ft_itoa(0)),
-		NULL});
+	ft_export(&program, (char *[]){"export", "?=0", NULL});
 	increase_shlvl(&program);
 	init_pwd(&program);
     signal(SIGINT, handle_sigint);
@@ -75,7 +72,9 @@ int	main(int argc, char **argv, char **envp)
 	{
 		g_in_blocking_mode = 0;
 		signal(SIGQUIT, SIG_IGN);
-		program->input = readline(ft_prompt(program));
+		char *prompt = ft_prompt(program);
+		program->input = readline(prompt);
+		free(prompt);
 		g_in_blocking_mode = 1;
 		signal(SIGQUIT, handle_sigquit);
 		if (!program->input)
@@ -85,6 +84,7 @@ int	main(int argc, char **argv, char **envp)
 		}
 		run(&program);
 		add_history(program->input);
+		free(program->input);
 	}
 	(void)argc;
 	(void)argv;

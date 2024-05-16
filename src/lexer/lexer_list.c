@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_list.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 11:24:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/06 14:45:39 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/16 11:44:27 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,15 @@ t_token	*populate_list(char **split)
 			if (!head)
 				return (NULL);
 			head->type = determine_type(split[i]);
-			head->value = split[i];
+			head->value = ft_strdup(split[i]);
 			head->next = NULL;
 			current = head;
 		}
 		else
-			append_token(&current, determine_type(split[i]), split[i]);
+		{
+			char *token = ft_strdup(split[i]);
+			append_token(&current, determine_type(split[i]), token);
+		}
 		i++;
 	}
 	return (head);
@@ -80,5 +83,6 @@ t_token	*lex(char *input)
 
 	split = splitter(input);
 	token = populate_list(split);
+	ft_free_array(split);
 	return (token);
 }

@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/14 13:55:11 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 13:01:43 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ t_redirection	*create_new_redirection(char *file)
 		ft_putstr_fd("Failed to allocate memory for redirection\n", 2);
 		return (NULL);
 	}
-	new_redirection->file = strdup(file);
+	new_redirection->file = ft_strdup(file);
 	if (!new_redirection->file)
 	{
 		ft_putstr_fd("Failed to allocate memory for file name\n", 2);
@@ -159,7 +159,6 @@ t_command	*parse(t_token *token)
 	t_command	*current_cmd;
 	t_command	*new_cmd;
 	char		*heredoc_delimiter;
-	char		*temp;
 
 	head = NULL;
 	current_cmd = NULL;
@@ -188,25 +187,10 @@ t_command	*parse(t_token *token)
 				ft_putstr_fd("syntax error\n", 2);
 			else
 			{
-				if (token->value[0] == '\"')
-				{
-					while (token && token->value[strlen(token->value)
-						- 1] != '\"')
-					{
-						temp = ft_strjoin(token->value, " ");
-						free(token->value);
-						token->value = temp;
-						token = token->next;
-						temp = ft_strjoin(token->value, token->next->value);
-						free(token->next->value);
-						token->next->value = temp;
-					}
-					token->value++;
-					token->value[strlen(token->value) - 1] = '\0';
-				}
 				handle_redirect_in(&current_cmd, token->value);
 			}
 		}
+
 		if (token->type == TOKEN_REDIRECT_OUT || token->type == TOKEN_REDIRECT_APPEND)
 		{
 			if (token->type == TOKEN_REDIRECT_APPEND)
@@ -216,25 +200,10 @@ t_command	*parse(t_token *token)
 				ft_putstr_fd("syntax error\n", 2);
 			else
 			{
-				if (token->value[0] == '\"')
-				{
-					while (token && token->value[strlen(token->value)
-						- 1] != '\"')
-					{
-						temp = ft_strjoin(token->value, " ");
-						free(token->value);
-						token->value = temp;
-						token = token->next;
-						temp = ft_strjoin(token->value, token->next->value);
-						free(token->next->value);
-						token->next->value = temp;
-					}
-					token->value++;
-					token->value[strlen(token->value) - 1] = '\0';
-				}
 				handle_redirect_out(&current_cmd, token->value);
 			}
 		}
+
 		if (token->type == TOKEN_HEREDOC)
 		{
 			token = token->next;
