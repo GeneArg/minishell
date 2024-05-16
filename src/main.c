@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 13:30:35 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 15:06:51 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,11 @@ int	main(int argc, char **argv, char **envp)
 		{
 			ft_putstr_fd("exit\n", 1);
 			exit(1);
+		}
+		if (ft_strlen(program->input) == 0)
+		{
+			free(program->input);
+			continue;
 		}
 		run(&program);
 		add_history(program->input);

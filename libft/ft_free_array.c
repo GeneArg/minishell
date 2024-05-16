@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 11:09:01 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 11:09:07 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 15:01:04 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ void	ft_free_array(char **arr)
 	tmp = arr;
 	while (*arr)
 	{
-		free(*arr);
+		if (*arr)
+			free(*arr);
 		arr++;
 	}
 	free(tmp);

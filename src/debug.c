@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 12:57:14 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 15:02:03 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,20 +39,10 @@ void	display_args(t_command *commands)
 			printf("args[%d]: %s\n", i, tmp->argv[i]);
 			i++;
 		}
-		if (tmp->redirect_in)
+		if (tmp->redirects)
 		{
-			printf("redirect_in:\n");
-			t_redirection *redir = tmp->redirect_in;
-			while (redir)
-			{
-				printf("file: %s\n", redir->file);
-				redir = redir->next;
-			}
-		}
-		if (tmp->redirect_out)
-		{
-			printf("redirect_out:\n");
-			t_redirection *redir = tmp->redirect_out;
+			printf("redirect:\n");
+			t_redirection *redir = tmp->redirects;
 			while (redir)
 			{
 				printf("file: %s\n", redir->file);
