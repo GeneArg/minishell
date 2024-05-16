@@ -15,22 +15,13 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-// Structures
+// Enums
 
 typedef enum
 {
 	REDIRECT_IN = 1,
 	REDIRECT_OUT,
 }							RedirectionType;
-
-typedef struct s_redirection
-{
-	char					*file;
-	RedirectionType			type;
-	struct s_redirection	*next;
-}							t_redirection;
-
-
 typedef enum
 {
 	TOKEN_WORD = 1,
@@ -56,6 +47,18 @@ typedef enum
 	FORK_FAIL = 8,           // Fork failed
 	OTHER_ERROR = 99         // Other unspecified errors
 }							ShellExitCode;
+
+
+// Structures
+
+typedef struct s_redirection
+{
+	char					*file;
+	RedirectionType			type;
+	struct s_redirection	*next;
+}							t_redirection;
+
+
 
 typedef struct s_token
 {
