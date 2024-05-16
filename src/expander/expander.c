@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 15:14:02 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 15:26:55 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,24 +55,12 @@ void trim_quotes(char **arg) {
 
 void replace_env_variables(char **arg, char **env) {
     char *input = *arg;
-    bool in_single_quotes = false;
     char *output = malloc(strlen(input) + 1024); // Larger buffer for expanded variables
-    if (!output) {
-        fprintf(stderr, "Memory allocation failed\n");
-        return;
-    }
 
     char *cur = input;
     char *out = output;
     while (*cur) {
-        if (*cur == '\'' && !in_single_quotes) {
-            in_single_quotes = true;
-            *out++ = *cur++; // Copy single quote to output
-        } else if (*cur == '\'' && in_single_quotes) {
-            in_single_quotes = false;
-            *out++ = *cur++; // Copy closing single quote to output
-        } else if (!in_single_quotes && *cur == '$' &&
-            (*(cur + 1) == '?' || ft_isalnum((unsigned char)*(cur + 1)) || *(cur + 1) == '_')) {
+        if (*cur == '$' && (*(cur + 1) == '?' || ft_isalnum((unsigned char)*(cur + 1)) || *(cur + 1) == '_')) {
             // Process environment variable replacement
             char *end = cur + 1;
             if (*end != '?') {
