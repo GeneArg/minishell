@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 11:04:01 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 13:52:02 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char	**sort_env(t_program *program)
 	sorted_envp = (char **)malloc(sizeof(char *) * (len + 1));
 	while (i < len)
 	{
-		sorted_envp[i] = program->envp[i];
+		sorted_envp[i] = ft_strdup(program->envp[i]);
 		i++;
 	}
 	sorted_envp[i] = NULL;
@@ -138,6 +138,7 @@ int	ft_export(t_program **program, char **argv)
 			}
 			i++;
 		}
+		ft_free_array(sorted_envp);
 	}
 	else
 	{

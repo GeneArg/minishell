@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 17:12:50 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 10:50:51 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 13:54:56 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,7 @@ int ft_unset(t_program **program, char **argv)
                 k++;
             }
             new_envp[m] = NULL;
-            free((*program)->envp[j]);
-            free((*program)->envp);
+			ft_free_array((*program)->envp);
             (*program)->envp = new_envp;
         }
         free(env_var);
