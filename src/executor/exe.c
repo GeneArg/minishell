@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/16 11:20:18 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 13:42:35 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,11 @@ void	execute_builtin_with_redirection(t_command *cmd, t_program **program,
 		exit_code = ft_cd(program, cmd->argv);
 	else if (!ft_strncmp(cmd->argv[0], "exit", 5))
 		ft_exit(program, cmd);
-	ft_export(program, (char *[]){"export", ft_strjoin("?=",
-			ft_itoa(exit_code)), NULL});
+	char *exit_code_str = ft_itoa(exit_code);
+	char *exit_code_env = ft_strjoin("?=", exit_code_str);
+	ft_export(program, (char *[]){"export", exit_code_env, NULL});
+	free(exit_code_str);
+	free(exit_code_env);
 	// Restore STDIN and STDOUT
 	dup2(saved_stdin, 0);
 	dup2(saved_stdout, 1);
@@ -176,7 +179,7 @@ void handle_open_error(t_program **program, char *file)
         error_message = strerror(errno);
     }
     ft_error(program, file, error_message, 1);
-    ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+    ft_export(program, (char *[]){"export", "?=1", NULL});
 }
 
 void execute(t_program **program)
@@ -212,7 +215,7 @@ void execute(t_program **program)
     {
         if (!current_command->argv[0])
         {
-            ft_export(program, (char *[]){"export", ft_strjoin("?=", "0"), NULL});
+            ft_export(program, (char *[]){"export", "?=0", NULL});
             current_command = current_command->next;
             pids[i] = -1;
             if (!current_command)
@@ -243,7 +246,7 @@ void execute(t_program **program)
 		{
 			pids[i] = -1;
 			current_command = current_command->next;
-			ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+			ft_export(program, (char *[]){"export", "?=1", NULL});
 			i++;
 			continue;
 		}
@@ -255,7 +258,7 @@ void execute(t_program **program)
                 ft_putstr_fd("Failed to create pipe\n", 2);
                 pids[i] = -1;
                 current_command = current_command->next;
-                ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
+                ft_export(program, (char *[]){"export", "?=1", NULL});
                 i++;
                 continue;
             }
@@ -291,6 +294,16 @@ void execute(t_program **program)
             current_command = current_command->next;
             ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
             i++;
+			if (in_fd != 0)
+			{
+				close(in_fd);
+				in_fd = 0;
+			}
+			if (out_fd != 1)
+			{
+				close(out_fd);
+				out_fd = 1;
+			}
             continue;
         }
 
@@ -339,17 +352,25 @@ void execute(t_program **program)
         if (pids[i] == -1)
             continue;
         int status;
-		char *exit_status;
+		char *exit_status_str;
+		char *exit_code_env;
         waitpid(pids[i], &status, 0);
         if (WIFEXITED(status))
         {
-			exit_status = ft_itoa(WEXITSTATUS(status));
-            ft_export(program, (char *[]){"export", ft_strjoin("?=", exit_status), NULL});
+			exit_status_str = ft_itoa(WEXITSTATUS(status));
+			exit_code_env = ft_strjoin("?=", exit_status_str);
+            ft_export(program, (char *[]){"export", exit_code_env, NULL});
+			free(exit_status_str);
+			free(exit_code_env);
+			
         }
         if (WIFSIGNALED(status))
         {
-			exit_status = ft_itoa(WTERMSIG(status));
-            ft_export(program, (char *[]){"export", ft_strjoin("?=", exit_status), NULL});
+			exit_status_str = ft_itoa(WTERMSIG(status));
+			exit_code_env = ft_strjoin("?=", exit_status_str);
+            ft_export(program, (char *[]){"export", exit_code_env, NULL});
+			free(exit_status_str);
+			free(exit_code_env);
         }
     }
 

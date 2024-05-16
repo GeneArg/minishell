@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:39:51 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/13 10:38:32 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 13:36:24 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,14 @@ int	ft_cd(t_program **program, char **argv)
 		ft_error(program, "cd", "No such file or directory", 1);
 		return (FAILURE);
 	}
-	ft_export(program, (char *[]){"export", ft_strjoin("OLDPWD=", pwd), NULL});
-	ft_export(program, (char *[]){"export", ft_strjoin("PWD=", getcwd(NULL, 0)), NULL});
+	char *cwd = getcwd(NULL, 0);
+	char *old_pwd_env_var = ft_strjoin("OLDPWD=", pwd);
+	char *pwd_env_var = ft_strjoin("PWD=", cwd);
+	ft_export(program, (char *[]){"export", old_pwd_env_var, NULL});
+	ft_export(program, (char *[]){"export", pwd_env_var, NULL});
+
+	free(cwd);
+	free(old_pwd_env_var);
+	free(pwd_env_var);
 	return (SUCCESS);
 }

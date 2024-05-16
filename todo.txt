@@ -2,25 +2,13 @@ TD
 
 - export GHOST=123 | env | grep GHOST shouldn't output anything as env doesnt know about export yet
 
+
+
 - Heredoc
 
+- Leaks
 
+- free_program called on all failed malloc returns // must pass program to all functions
 
+- norm
 
-IN PROGRESS // replace everywhere
-
-- enum for exit codes
-
-- call to ft_error instead of consecutive ft_putstr_fd
-
-
-
-AT THE END
-
-exit routine function that frees everything
-
-exit routine called on all failed malloc returns
-
-fix leaks
-
-norm
