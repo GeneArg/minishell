@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 11:11:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 16:02:00 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 14:00:53 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ char	**get_paths(char **envp)
 		i++;
 	pwd = ft_substr(envp[i], 4, ft_strlen(envp[i]) - 4);
 	ft_append_str_array(&paths, pwd);
+	free(pwd);
 	return (paths);
 }
 

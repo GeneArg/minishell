@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/16 13:42:35 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 14:09:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,19 @@ void execute(t_program **program)
             continue;
         }
 
+        if (current_command->next)
+        {
+            if (pipe(pipefds) == -1)
+            {
+                ft_putstr_fd("Failed to create pipe\n", 2);
+                pids[i] = -1;
+                current_command = current_command->next;
+                ft_export(program, (char *[]){"export", "?=1", NULL});
+                i++;
+                continue;
+            }
+            out_fd = pipefds[1];
+        }
         // Handle input redirections
         current_redirection = current_command->redirect_in;
         while (current_redirection)
@@ -248,22 +261,19 @@ void execute(t_program **program)
 			current_command = current_command->next;
 			ft_export(program, (char *[]){"export", "?=1", NULL});
 			i++;
+			if (in_fd != 0)
+			{
+				close(in_fd);
+				in_fd = 0;
+			}
+			if (out_fd != 1)
+			{
+				close(out_fd);
+				out_fd = 1;
+			}
+
 			continue;
 		}
-        // Setup pipe if there is a next command
-        if (current_command->next)
-        {
-            if (pipe(pipefds) == -1)
-            {
-                ft_putstr_fd("Failed to create pipe\n", 2);
-                pids[i] = -1;
-                current_command = current_command->next;
-                ft_export(program, (char *[]){"export", "?=1", NULL});
-                i++;
-                continue;
-            }
-            out_fd = pipefds[1];
-        }
 
         // Handle output redirections
         current_redirection = current_command->redirect_out;
