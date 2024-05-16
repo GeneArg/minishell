@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 13:01:43 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 14:31:58 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@ t_command	*init_command(void)
 	if (!cmd)
 		return (NULL);
 	cmd->argv = NULL;
-	cmd->redirect_in = NULL;
-	cmd->redirect_out = NULL;
+	cmd->redirects = NULL;
 	cmd->append = 0;
 	cmd->heredoc_content = NULL;
 	cmd->next = NULL;
@@ -93,7 +92,7 @@ void	append_argument(t_command **cmd, char *arg)
 	free(new_arg);
 }
 
-t_redirection	*create_new_redirection(char *file)
+t_redirection	*create_new_redirection(char *file, RedirectionType type)
 {
 	t_redirection	*new_redirection;
 
@@ -110,23 +109,24 @@ t_redirection	*create_new_redirection(char *file)
 		free(new_redirection);
 		return (NULL);
 	}
+	new_redirection->type = type;
 	new_redirection->next = NULL;
 	return (new_redirection);
 }
 
-void	handle_redirect_in(t_command **cmd, char *file)
+void	handle_redirect(t_command **cmd, char *file, RedirectionType type)
 {
 	t_redirection	*new_redirection;
 	t_redirection	*current_redirection;
 
-	new_redirection = create_new_redirection(file);
+	new_redirection = create_new_redirection(file, type);
 	if (!new_redirection)
 		return ;
-	if (!(*cmd)->redirect_in)
-		(*cmd)->redirect_in = new_redirection;
+	if (!(*cmd)->redirects)
+		(*cmd)->redirects = new_redirection;
 	else
 	{
-		current_redirection = (*cmd)->redirect_in;
+		current_redirection = (*cmd)->redirects;
 		while (current_redirection->next)
 			current_redirection = current_redirection->next;
 		current_redirection->next = new_redirection;
@@ -134,24 +134,6 @@ void	handle_redirect_in(t_command **cmd, char *file)
 }
 
 
-void	handle_redirect_out(t_command **cmd, char *file)
-{
-	t_redirection	*new_redirection;
-	t_redirection	*current_redirection;
-
-	new_redirection = create_new_redirection(file);
-	if (!new_redirection)
-		return ;
-	if (!(*cmd)->redirect_out)
-		(*cmd)->redirect_out = new_redirection;
-	else
-	{
-		current_redirection = (*cmd)->redirect_out;
-		while (current_redirection->next)
-			current_redirection = current_redirection->next;
-		current_redirection->next = new_redirection;
-	}
-}
 
 t_command	*parse(t_token *token)
 {
@@ -187,7 +169,7 @@ t_command	*parse(t_token *token)
 				ft_putstr_fd("syntax error\n", 2);
 			else
 			{
-				handle_redirect_in(&current_cmd, token->value);
+				handle_redirect(&current_cmd, token->value, REDIRECT_IN);
 			}
 		}
 
@@ -200,7 +182,7 @@ t_command	*parse(t_token *token)
 				ft_putstr_fd("syntax error\n", 2);
 			else
 			{
-				handle_redirect_out(&current_cmd, token->value);
+				handle_redirect(&current_cmd, token->value, REDIRECT_OUT);
 			}
 		}
 

@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 12:50:35 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 14:29:09 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ void expand(t_command *commands, char **envp) {
 		remove_empty_args(&(current->argv));
 
 		// expand redirect ins
-		for (t_redirection *redir = current->redirect_in; redir != NULL; redir = redir->next) {
+		for (t_redirection *redir = current->redirects; redir != NULL; redir = redir->next) {
 			if (is_enclosed_in_single_quotes(redir->file)) {
 				trim_quotes(&(redir->file));
 			} else {
@@ -144,14 +144,5 @@ void expand(t_command *commands, char **envp) {
 		}
 
 		
-		////// expand redirect outs, change logic here when using linked list
-		for (t_redirection *redir = current->redirect_out; redir != NULL; redir = redir->next) {
-			if (is_enclosed_in_single_quotes(redir->file)) {
-				trim_quotes(&(redir->file));
-			} else {
-				trim_quotes(&(redir->file));
-				replace_env_variables(&(redir->file), envp);
-			}
-		}
     }
 }

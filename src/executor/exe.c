@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/16 14:09:15 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/16 14:34:29 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,20 +237,41 @@ void execute(t_program **program)
             }
             out_fd = pipefds[1];
         }
-        // Handle input redirections
-        current_redirection = current_command->redirect_in;
+        // Handle redirections
+        current_redirection = current_command->redirects;
         while (current_redirection)
         {
-            new_in_fd = open(current_redirection->file, O_RDONLY);
-            if (new_in_fd < 0)
-            {
-                handle_open_error(program, current_redirection->file);
-                current_command->flag_error = 1;
-                break;
-            }
-            if (in_fd != 0)
-                close(in_fd);
-            in_fd = new_in_fd;
+			if (current_redirection->type == REDIRECT_IN)
+			{
+				new_in_fd = open(current_redirection->file, O_RDONLY);
+				if (new_in_fd < 0)
+				{
+					handle_open_error(program, current_redirection->file);
+					current_command->flag_error = 1;
+					break;
+				}
+				if (in_fd != 0)
+					close(in_fd);
+				in_fd = new_in_fd;
+				
+			}
+			else if (current_redirection->type == REDIRECT_OUT)
+			{
+				new_out_fd = open(current_redirection->file,
+								current_command->append ? (O_WRONLY | O_CREAT | O_APPEND) : (O_WRONLY | O_CREAT | O_TRUNC),
+								0777);
+				if (new_out_fd < 0)
+				{
+					handle_open_error(program, current_redirection->file);
+					current_command->flag_error = 1;
+					break;
+				}
+				if (out_fd != 1)
+				{
+					close(out_fd);
+				}
+				out_fd = new_out_fd;
+			}
             current_redirection = current_redirection->next;
 			if (current_command->flag_error)
 				break;
@@ -274,48 +295,6 @@ void execute(t_program **program)
 
 			continue;
 		}
-
-        // Handle output redirections
-        current_redirection = current_command->redirect_out;
-        while (current_redirection)
-        {
-            new_out_fd = open(current_redirection->file,
-                              current_command->append ? (O_WRONLY | O_CREAT | O_APPEND) : (O_WRONLY | O_CREAT | O_TRUNC),
-                              0777);
-            if (new_out_fd < 0)
-            {
-                handle_open_error(program, current_redirection->file);
-                current_command->flag_error = 1;
-                break;
-            }
-            if (out_fd != 1)
-            {
-                close(out_fd);
-            }
-            out_fd = new_out_fd;
-            current_redirection = current_redirection->next;
-			if (current_command->flag_error)
-				break;
-        }
-
-        if (current_command->flag_error)
-        {
-            pids[i] = -1;
-            current_command = current_command->next;
-            ft_export(program, (char *[]){"export", ft_strjoin("?=", "1"), NULL});
-            i++;
-			if (in_fd != 0)
-			{
-				close(in_fd);
-				in_fd = 0;
-			}
-			if (out_fd != 1)
-			{
-				close(out_fd);
-				out_fd = 1;
-			}
-            continue;
-        }
 
 
         // Execute the command
