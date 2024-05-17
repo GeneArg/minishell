@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 09:51:31 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 11:18:46 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,15 @@ void	run(t_program **program)
 		(*program)->input = NULL;
 		return ;
 	}
+	//display_lexer_output((*program)->tokens);
 	(*program)->commands = parse((*program)->tokens);
+	//display_args((*program)->commands);
 	free_tokens((*program)->tokens);
 	(*program)->tokens = NULL;
 	expand((*program)->commands, (*program)->envp);
 	execute(program);
 }
+
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -46,15 +49,25 @@ int	main(int argc, char **argv, char **envp)
 		signal(SIGQUIT, SIG_IGN);
 		signal(SIGINT, handle_sigint_non_blocking);
 		prompt = ft_prompt(program);
+		
 		program->input = readline(prompt);
 		free(prompt);
-		signal(SIGQUIT, handle_sigquit);
-		signal(SIGINT, handle_sigint_blocking);
 		if (!program->input)
 		{
 			ft_putstr_fd("exit\n", 1);
 			free_and_exit(program, 1);
 		}
+		if (is_heredoc(program->input))
+		{
+			program->input = handle_heredoc(program->input);
+			if (!program->input)
+			{
+				free_program(program);
+				continue ;
+			}
+		}
+		signal(SIGQUIT, handle_sigquit);
+		signal(SIGINT, handle_sigint_blocking);
 		if (ft_strlen(program->input) == 0)
 		{
 			free(program->input);

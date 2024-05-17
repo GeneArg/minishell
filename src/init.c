@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:42:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 11:13:20 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 09:59:42 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,31 +28,28 @@ void	init_env(t_program **program, char **envp)
 	(*program)->envp = ft_copy_array(envp);
 }
 
-void init_pwd(t_program **program)
+void	init_pwd(t_program **program)
 {
-    char *cwd;
-    char *pwd;
-    char *oldpwd;
+	char	*cwd;
+	char	*pwd;
+	char	*oldpwd;
 
-    cwd = getcwd(NULL, 0);
-
-    pwd = ft_strjoin("PWD=", cwd);
-    oldpwd = ft_strjoin("OLDPWD=", cwd);
-    ft_export(program, (char *[]){"export", pwd, NULL});
-    ft_export(program, (char *[]){"export", oldpwd, NULL});
-
-    free(cwd);
-    free(pwd);
-    free(oldpwd);
+	cwd = getcwd(NULL, 0);
+	pwd = ft_strjoin("PWD=", cwd);
+	oldpwd = ft_strjoin("OLDPWD=", cwd);
+	ft_export(program, (char *[]){"export", pwd, NULL});
+	ft_export(program, (char *[]){"export", oldpwd, NULL});
+	free(cwd);
+	free(pwd);
+	free(oldpwd);
 }
 
-
-void increase_shlvl(t_program **program)
+void	increase_shlvl(t_program **program)
 {
 	char	*shlvl;
 	int		shlvl_int;
 	char	*new_shlvl;
-	char 	*shlvl_var;
+	char	*shlvl_var;
 
 	shlvl = find_env_var_value((*program)->envp, "SHLVL");
 	if (!shlvl)

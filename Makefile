@@ -48,7 +48,8 @@ SRC_FILES	:= lexer/lexer_split.c \
 				builtins/exit.c \
 				utils/env_utils.c \
 				utils/pretty.c \
-				signals.c
+				signals.c \
+				heredoc.c
 
 
 SRC			:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))

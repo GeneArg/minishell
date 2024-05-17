@@ -157,6 +157,11 @@ void						handle_sigint_blocking(int sig);
 void						handle_sigint_non_blocking(int sig);
 void						handle_sigquit(int sig);
 
+// Heredoc
+
+char *handle_heredoc(char *input);
+bool is_heredoc(char *input);
+
 // Debug
 
 void						display_lexer_output(t_token *tokens);
