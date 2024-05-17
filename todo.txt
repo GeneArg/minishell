@@ -2,7 +2,9 @@ TD
 
 - export GHOST=123 | env | grep GHOST shouldn't output anything as env doesnt know about export yet
 
-- Heredoc
+- a failed redirect eg. cat < missing piped into cat (cat < missing | cat) waits for input on cat, but bash doesnt
+
+- Heredoc weird cases from manual tester
 
 - Leaks
 
