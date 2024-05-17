@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 10:11:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 09:12:54 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 09:47:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ void ft_error(t_program **program, char *cmd, char *error, int exit_status)
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": ", 2);
 	}
-	ft_putstr_fd(error, 2);
+	if (error)
+		ft_putstr_fd(error, 2);
 	ft_putstr_fd("\n", 2);
 	
 	if (exit_status != -1)

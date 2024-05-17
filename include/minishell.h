@@ -151,6 +151,12 @@ int							find_env_var(char **envp, char *var);
 char						*find_path(char **envp, char *cmd);
 char						**get_paths(char **envp);
 
+// Signals
+
+void						handle_sigint_blocking(int sig);
+void						handle_sigint_non_blocking(int sig);
+void						handle_sigquit(int sig);
+
 // Debug
 
 void						display_lexer_output(t_token *tokens);
