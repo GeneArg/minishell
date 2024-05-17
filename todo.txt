@@ -10,7 +10,10 @@ TD
 
 - a failed redirect eg. cat < missing piped into cat (cat < missing | cat) waits for input on cat, but bash doesnt
 
+- Heredoc expand
+
 - Heredoc weird cases from manual tester
+
 
 
 
@@ -18,6 +21,8 @@ TD
 - Leaks
 
 - free_program called on all failed malloc returns
+
+- replace forbidden functions
 
 - norm
 
