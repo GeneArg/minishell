@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 00:42:25 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 14:34:13 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 12:45:54 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,11 @@ void free_commands(t_command *commands)
 	while (current_command)
 	{
 		next_command = current_command->next;
+		
 		if (current_command->argv)
 			ft_free_array(current_command->argv);
 		if (current_command->redirects)
 			free_redirects(current_command->redirects);
-		if (current_command->heredoc_content)
-			free(current_command->heredoc_content);
 		free(current_command);
 		current_command = next_command;
 	}

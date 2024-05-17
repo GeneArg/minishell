@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:33:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 11:17:38 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 11:50:37 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,19 +68,33 @@ char *read_heredoc_input(char *delimiter) {
 
     while (1) {
         input_line = readline("> ");
-        if (strcmp(input_line, delimiter) == 0) {
+        if (input_line == NULL || strcmp(input_line, delimiter) == 0) {
             free(input_line);
             break;
         }
 
         size_t line_len = strlen(input_line);
         heredoc_content = realloc(heredoc_content, total_len + line_len + 2); // +2 for newline and null terminator
+        if (heredoc_content == NULL) {
+            perror("realloc");
+            exit(EXIT_FAILURE);
+        }
         strcpy(heredoc_content + total_len, input_line);
         total_len += line_len;
         heredoc_content[total_len++] = '\n';
         heredoc_content[total_len] = '\0';
 
         free(input_line);
+    }
+
+    // If heredoc_content is still NULL, allocate an empty string
+    if (heredoc_content == NULL) {
+        heredoc_content = malloc(1);
+        if (heredoc_content == NULL) {
+            perror("malloc");
+            exit(EXIT_FAILURE);
+        }
+        heredoc_content[0] = '\0';
     }
 
     return heredoc_content;

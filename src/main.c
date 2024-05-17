@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 11:18:46 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 13:17:02 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ int	main(int argc, char **argv, char **envp)
 		add_history(program->input);
 		free(program->input);
 		free_commands(program->commands);
+		program->commands = NULL;
 	}
 	(void)argc;
 	(void)argv;

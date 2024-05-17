@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 11:24:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 11:44:27 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 11:28:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,7 @@ TokenType	determine_type(char *token)
 	if (token[0] == '|')
 		return (TOKEN_PIPE);
 	else if (token[0] == '<')
-	{
-		if (token[1] == '<')
-			return (TOKEN_HEREDOC);
 		return (TOKEN_REDIRECT_IN);
-	}
 	else if (token[0] == '>')
 	{
 		if (token[1] == '>')

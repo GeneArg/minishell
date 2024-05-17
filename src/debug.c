@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 09:59:26 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 11:30:12 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,6 @@ void	display_args(t_command *commands)
 				redir = redir->next;
 			}
 		}
-		if (tmp->heredoc_content)
-			printf("heredoc_content: %s\n", tmp->heredoc_content);
 		
 		tmp = tmp->next;
 	}

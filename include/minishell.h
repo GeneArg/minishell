@@ -29,7 +29,6 @@ typedef enum
 	TOKEN_REDIRECT_IN,     // Input redirection '<'
 	TOKEN_REDIRECT_OUT,    // Output redirection '>'
 	TOKEN_REDIRECT_APPEND, // Append redirection '>>'
-	TOKEN_HEREDOC,         // Heredoc '<<'
 }							TokenType;
 
 typedef enum
@@ -72,7 +71,6 @@ typedef struct s_command
 	char **argv;               
 		// Arguments vector,including the command itself as the first element
 	int ret;                    // Return value of the command
-	char *heredoc_content;      // Heredoc content
 	struct s_command *next;     // Pointer to the next command in a pipeline, if any
 	t_redirection *redirects; // Input redirection
 	int append;                 // 1 if output redirection should append, 0 otherwise

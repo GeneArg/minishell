@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 14:31:58 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 11:28:49 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ t_command	*init_command(void)
 	cmd->argv = NULL;
 	cmd->redirects = NULL;
 	cmd->append = 0;
-	cmd->heredoc_content = NULL;
 	cmd->next = NULL;
 	cmd->flag_error = 0;
 	return (cmd);
@@ -140,7 +139,6 @@ t_command	*parse(t_token *token)
 	t_command	*head;
 	t_command	*current_cmd;
 	t_command	*new_cmd;
-	char		*heredoc_delimiter;
 
 	head = NULL;
 	current_cmd = NULL;
@@ -186,27 +184,6 @@ t_command	*parse(t_token *token)
 			}
 		}
 
-		if (token->type == TOKEN_HEREDOC)
-		{
-			token = token->next;
-			if (token)
-			{
-				heredoc_delimiter = ft_strdup(token->value);
-				token = token->next;
-				while (token->value && strcmp(token->value,
-						heredoc_delimiter) != 0)
-				{
-					if (current_cmd->heredoc_content)
-						current_cmd->heredoc_content = ft_strjoin(current_cmd->heredoc_content,
-								" ");
-					else
-						current_cmd->heredoc_content = ft_strdup("");
-					current_cmd->heredoc_content = ft_strjoin(current_cmd->heredoc_content,
-							token->value);
-					token = token->next;
-				}
-			}
-		}
 		token = token->next;
 	}
 	return (head);
