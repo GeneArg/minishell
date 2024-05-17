@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 10:11:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 09:10:46 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 09:12:54 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void ft_error(t_program **program, char *cmd, char *error, int exit_status)
 	char *env_exit_status;
 
 	exit_status_str = ft_itoa(exit_status);
-	env_exit_status = ft_strjoin("?", exit_status_str);
+	env_exit_status = ft_strjoin("?=", exit_status_str);
 	free(exit_status_str);
 	
 	ft_putstr_fd("minishell: ", 2);
