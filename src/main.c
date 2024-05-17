@@ -6,14 +6,11 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 15:06:51 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/17 09:32:52 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-
-int g_in_blocking_mode = 0;  // Global variable to check blocking mode
 
 
 
@@ -30,26 +27,25 @@ void	run(t_program **program)
 	execute(program);
 }
 
-void handle_sigint(int sig)
+void handle_sigint_blocking(int sig)
 {
     (void)sig;
-	if (!g_in_blocking_mode)
-	{
-		write(1, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-	else
-		write(1, "\n", 1);
+	write(1, "\n", 1);
+}
+
+void handle_sigint_non_blocking(int sig)
+{
+	(void)sig;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
 void handle_sigquit(int sig)
 {
-    (void)sig;
-    if (g_in_blocking_mode) {
-        write(1, "Quit (core dumped)\n", 19);
-    }
+	(void)sig;
+    write(1, "Quit (core dumped)\n", 19);
 }
 
 
@@ -65,18 +61,17 @@ int	main(int argc, char **argv, char **envp)
 	ft_export(&program, (char *[]){"export", "?=0", NULL});
 	increase_shlvl(&program);
 	init_pwd(&program);
-    signal(SIGINT, handle_sigint);
 	// print_welcome_msg();
 
 	while (1)
 	{
-		g_in_blocking_mode = 0;
 		signal(SIGQUIT, SIG_IGN);
+		signal(SIGINT, handle_sigint_non_blocking);
 		char *prompt = ft_prompt(program);
 		program->input = readline(prompt);
 		free(prompt);
-		g_in_blocking_mode = 1;
 		signal(SIGQUIT, handle_sigquit);
+		signal(SIGINT, handle_sigint_blocking);
 		if (!program->input)
 		{
 			ft_putstr_fd("exit\n", 1);
