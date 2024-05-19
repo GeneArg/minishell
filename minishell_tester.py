@@ -1,4 +1,14 @@
-#!/usr/bin/env python3
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    minishell_tester.py                                :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/05/19 23:46:49 by eagranat          #+#    #+#              #
+#    Updated: 2024/05/19 23:48:13 by eagranat         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 import subprocess
 import os
@@ -136,7 +146,6 @@ def main():
         {"command": "echo \"Backtick test: `echo nested`\"\n", "description": "Backtick command substitution"},
         {"command": "echo \"$(echo Subshell test)\"\n", "description": "Subshell command substitution"},
         {"command": "for i in 1 2 3; do echo \"Loop $i\"; done\n", "description": "For loop"},
-        {"command": "if [ -d test_dir ]; then echo \"Directory exists\"; fi\n", "description": "Conditional test"},
         {"command": "echo \"Arithmetic: $((2 + 2))\"\n", "description": "Arithmetic expansion"},
         {"command": "echo \"Brace expansion: {A,B,C}{1,2,3}\"\n", "description": "Brace expansion"},
         {"command": "echo \"Command grouping\"; (echo \"Inside grouping\"; echo \"Still inside\")\n", "description": "Command grouping"},
@@ -147,6 +156,25 @@ def main():
         {"command": "echo \"Redirect stderr to stdout\"; ls non_existent_file 2>&1\n", "description": "Redirect stderr to stdout"},
         {"command": "echo \"Advanced test: (cd /tmp; pwd); echo Done\"\n", "description": "Advanced test with subshell"},
         {"command": "echo \"Advanced redirection: echo Test > testfile; cat < testfile\"\n", "description": "Advanced redirection"},
+        {"command": "date\n", "description": "Print current date"},
+        {"command": "cal\n", "description": "Print calendar"},
+        {"command": "uname -a\n", "description": "Print system information"},
+        {"command": "whoami\n", "description": "Print current user"},
+        {"command": "uptime\n", "description": "Print system uptime"},
+        {"command": "id\n", "description": "Print user ID"},
+        {"command": "echo 'Hello\nWorld'\n", "description": "Echo multi-line string"},
+        {"command": "wc -w < infile\n", "description": "Word count from infile"},
+        {"command": "sort infile > sortedfile\n", "description": "Sort infile and output to sortedfile"},
+        {"command": "head -n 1 infile\n", "description": "Print first line of infile"},
+        {"command": "tail -n 1 infile\n", "description": "Print last line of infile"},
+        {"command": "cut -d' ' -f1 infile\n", "description": "Cut first word of each line in infile"},
+        {"command": "grep 'content' infile\n", "description": "Grep 'content' in infile"},
+        {"command": "tr 'a-z' 'A-Z' < infile\n", "description": "Translate lowercase to uppercase in infile"},
+        {"command": "awk '{print $1}' infile\n", "description": "Print first column of infile"},
+        {"command": "sed 's/content/CONTENTS/' infile\n", "description": "Replace 'content' with 'CONTENTS' in infile"},
+        {"command": "cat infile | tee tee_output\n", "description": "Tee command example"},
+        {"command": "cat infile | xargs echo\n", "description": "Xargs command example"},
+        {"command": "echo 'ls\npwd' > commands.sh; sh commands.sh\n", "description": "Execute script with multiple commands"},
     ]
 
     for test in tests:
@@ -154,7 +182,8 @@ def main():
 
     # Run file redirection tests
     file_tests = [
-        {"command": "cat infile > outfile\n", "input_file": "infile", "expected_output_file": "outfile", "description": "File redirection test"}
+        {"command": "cat infile > outfile\n", "input_file": "infile", "expected_output_file": "outfile", "description": "File redirection test"},
+        {"command": "sort infile > sortedfile\n", "input_file": "infile", "expected_output_file": "sortedfile", "description": "Sort infile and output to sortedfile"}
     ]
 
     for test in file_tests:
