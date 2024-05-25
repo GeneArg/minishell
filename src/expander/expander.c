@@ -6,124 +6,213 @@
 /*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/25 23:49:13 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/26 00:25:49 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-bool is_enclosed_in_single_quotes(char *arg) {
-    int len = strlen(arg);
-    return (len >= 2 && arg[0] == '\'' && arg[len-1] == '\'');
+bool	is_enclosed_in_single_quotes(char *arg)
+{
+	int	len;
+
+	len = ft_strlen(arg);
+	return (len >= 2 && arg[0] == '\'' && arg[len - 1] == '\'');
 }
 
-void trim_quotes(char **arg) {
-    char *input = *arg;
-    int length = strlen(input);
-    char *output = malloc(length + 1);  // Allocate same size to ensure no overflow
-    if (!output) {
-        perror("Memory allocation failed");
-        return;
-    }
+void	trim_quotes_helper(char *input, char *output)
+{
+	int		i;
+	int		j;
+	bool	inside_quotes;
+	char	current_quote;
 
-    int i = 0, j = 0;
-    bool inside_quotes = false;
-    char current_quote = 0;
-
-    while (input[i] != '\0') {
-        if ((input[i] == '\'' || input[i] == '\"') && (!inside_quotes || current_quote == input[i])) {
-            if (!inside_quotes) {
-                inside_quotes = true;  // Opening quote found
-                current_quote = input[i];  // Set the type of quote we're inside
-            } else {
-                inside_quotes = false;  // Closing quote found
-                current_quote = 0;  // Reset the quote type
-            }
-        } else {
-            output[j++] = input[i];
-        }
-        i++;
-    }
-
-    output[j] = '\0';  // Null-terminate the output string
-    free(*arg);  // Free the original argument string
-    *arg = output;  // Replace original with trimmed output
+	i = 0;
+	j = 0;
+	inside_quotes = false;
+	current_quote = 0;
+	while (input[i] != '\0')
+	{
+		if ((input[i] == '\'' || input[i] == '\"') && (!inside_quotes || \
+			current_quote == input[i]))
+		{
+			if (!inside_quotes)
+			{
+				inside_quotes = true;
+				current_quote = input[i];
+			}
+			else
+			{
+				inside_quotes = false;
+				current_quote = 0;
+			}
+		}
+		else
+			output[j++] = input[i];
+		i++;
+	}
+	output[j] = '\0';
 }
 
-void replace_env_variables(char **arg, char **env) {
-    char *input = *arg;
-    char *output = malloc(strlen(input) + 1024); // Larger buffer for expanded variables
+void	trim_quotes(char **arg)
+{
+	char	*input;
+	char	*output;
 
-    char *cur = input;
-    char *out = output;
-    while (*cur) {
-        if (*cur == '$' && (*(cur + 1) == '?' || ft_isalnum((unsigned char)*(cur + 1)) || *(cur + 1) == '_')) {
-            // Process environment variable replacement
-            char *end = cur + 1;
-            if (*end != '?') {
-                while (ft_isalnum((unsigned char)*end) || *end == '_' || *end == '?') end++;
-            } else {
-                end++;
-            }
-            size_t var_len = end - (cur + 1);
-            char var_name[var_len + 1];
-            strncpy(var_name, cur + 1, var_len);
-            var_name[var_len] = '\0';
-
-            char *value = NULL;
-            for (int i = 0; env[i] != NULL; i++) {
-                if (strncmp(env[i], var_name, var_len) == 0 && env[i][var_len] == '=') {
-                    value = env[i] + var_len + 1;
-                    break;
-                }
-            }
-            if (value) {
-                strcpy(out, value);
-                out += strlen(value);
-            }
-            cur = end;
-        } else {
-            *out++ = *cur++;
-        }
-    }
-    *out = '\0';
-    free(*arg);
-    *arg = output;
+	input = *arg;
+	output = malloc(ft_strlen(input) + 1);
+	if (!output)
+	{
+		perror("Memory allocation failed");
+		return ;
+	}
+	trim_quotes_helper(input, output);
+	free(*arg);
+	*arg = output;
 }
 
-void remove_empty_args(char ***argv) {
-    int count = 0;
-    for (int i = 0; (*argv)[i] != NULL; i++) {
-        if (strlen((*argv)[i]) > 0) {
-            (*argv)[count++] = (*argv)[i];
-        }
-    }
-    (*argv)[count] = NULL;
+void	replace_env_helper(char **cur, char **out, char **env)
+{
+	char	var_name[256];
+	char	*value;
+	char	*end;
+	int		i;
+
+	end = *cur + 1;
+	if (*end != '?')
+		while (ft_isalnum((unsigned char)*end) || *end == '_' || *end == '?')
+			end++;
+	else
+		end++;
+	ft_strlcpy(var_name, *cur + 1, end - (*cur + 1) + 1);
+	value = NULL;
+	i = 0;
+	while (env[i] != NULL)
+	{
+		if (ft_strncmp(env[i], var_name, end - (*cur + 1)) == 0 && \
+			env[i][end - (*cur + 1)] == '=')
+		{
+			value = env[i] + (end - (*cur + 1)) + 1;
+			break ;
+		}
+		i++;
+	}
+	if (value)
+	{
+		ft_strlcpy(*out, value, ft_strlen(value) + 1);
+		*out += ft_strlen(value);
+	}
+	*cur = end;
 }
 
-void expand(t_command *commands, char **envp) {
-    for (t_command *current = commands; current != NULL; current = current->next) {
-        // expand arguments
-        for (int i = 0; current->argv[i] != NULL; i++) {
-            if (is_enclosed_in_single_quotes(current->argv[i])) {
-                // Just trim quotes for single-quoted arguments, no expansion
-                trim_quotes(&(current->argv[i]));
-            } else {
-                // For all other cases, trim quotes and then expand variables
-                trim_quotes(&(current->argv[i]));
-                replace_env_variables(&(current->argv[i]), envp);
-            }
-        }
-        remove_empty_args(&(current->argv));
+void	replace_env_variables(char **arg, char **env)
+{
+	char	*input;
+	char	*output;
+	char	*cur;
+	char	*out;
 
-        // expand redirect ins
-        for (t_redirection *redir = current->redirects; redir != NULL; redir = redir->next) {
-            if (is_enclosed_in_single_quotes(redir->file)) {
-                trim_quotes(&(redir->file));
-            } else {
-                trim_quotes(&(redir->file));
-                replace_env_variables(&(redir->file), envp);
-            }
-        }
-    }
+	input = *arg;
+	output = malloc(ft_strlen(input) + 1024);
+	cur = input;
+	out = output;
+	while (*cur)
+	{
+		if (*cur == '$' && (*(cur + 1) == '?' || ft_isalnum((unsigned char) \
+			*(cur + 1)) || *(cur + 1) == '_'))
+			replace_env_helper(&cur, &out, env);
+		else
+			*out++ = *cur++;
+	}
+	*out = '\0';
+	free(*arg);
+	*arg = output;
+}
+
+void	remove_empty_args_helper(char **argv, char **new_argv, int *count)
+{
+	int	i;
+
+	i = 0;
+	while (argv[i] != NULL)
+	{
+		if (ft_strlen(argv[i]) > 0)
+		{
+			new_argv[*count] = argv[i];
+			(*count)++;
+		}
+		i++;
+	}
+	new_argv[*count] = NULL;
+}
+
+void	remove_empty_args(char ***argv)
+{
+	char	**new_argv;
+	int		count;
+
+	new_argv = malloc(sizeof(char *) * (ft_array_len(*argv) + 1));
+	if (!new_argv)
+		return ;
+	count = 0;
+	remove_empty_args_helper(*argv, new_argv, &count);
+	free(*argv);
+	*argv = new_argv;
+}
+
+void	expand_args_helper(char **arg, char **envp)
+{
+	if (is_enclosed_in_single_quotes(*arg))
+		trim_quotes(arg);
+	else
+	{
+		trim_quotes(arg);
+		replace_env_variables(arg, envp);
+	}
+}
+
+void	expand_args(t_command *cmd, char **envp)
+{
+	int	i;
+
+	i = 0;
+	while (cmd->argv[i] != NULL)
+	{
+		expand_args_helper(&(cmd->argv[i]), envp);
+		i++;
+	}
+	remove_empty_args(&(cmd->argv));
+}
+
+void	expand_redirects_helper(t_redirection *redir, char **envp)
+{
+	if (is_enclosed_in_single_quotes(redir->file))
+		trim_quotes(&(redir->file));
+	else
+	{
+		trim_quotes(&(redir->file));
+		replace_env_variables(&(redir->file), envp);
+	}
+}
+
+void	expand_redirects(t_redirection *redirects, char **envp)
+{
+	while (redirects != NULL)
+	{
+		expand_redirects_helper(redirects, envp);
+		redirects = redirects->next;
+	}
+}
+
+void	expand(t_command *commands, char **envp)
+{
+	t_command	*current;
+
+	current = commands;
+	while (current != NULL)
+	{
+		expand_args(current, envp);
+		expand_redirects(current->redirects, envp);
+		current = current->next;
+	}
 }
