@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 11:38:51 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/25 23:49:13 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-
 
 bool is_enclosed_in_single_quotes(char *arg) {
     int len = strlen(arg);
@@ -24,7 +22,7 @@ void trim_quotes(char **arg) {
     int length = strlen(input);
     char *output = malloc(length + 1);  // Allocate same size to ensure no overflow
     if (!output) {
-        fprintf(stderr, "Memory allocation failed\n");
+        perror("Memory allocation failed");
         return;
     }
 
@@ -51,7 +49,6 @@ void trim_quotes(char **arg) {
     free(*arg);  // Free the original argument string
     *arg = output;  // Replace original with trimmed output
 }
-
 
 void replace_env_variables(char **arg, char **env) {
     char *input = *arg;
@@ -95,20 +92,18 @@ void replace_env_variables(char **arg, char **env) {
 }
 
 void remove_empty_args(char ***argv) {
-	int count = 0;
-	for (int i = 0; (*argv)[i] != NULL; i++) {
-		if (strlen((*argv)[i]) > 0) {
-			(*argv)[count++] = (*argv)[i];
-		}
-	}
-	(*argv)[count] = NULL;
+    int count = 0;
+    for (int i = 0; (*argv)[i] != NULL; i++) {
+        if (strlen((*argv)[i]) > 0) {
+            (*argv)[count++] = (*argv)[i];
+        }
+    }
+    (*argv)[count] = NULL;
 }
 
 void expand(t_command *commands, char **envp) {
-
     for (t_command *current = commands; current != NULL; current = current->next) {
-
-		// expand arguments
+        // expand arguments
         for (int i = 0; current->argv[i] != NULL; i++) {
             if (is_enclosed_in_single_quotes(current->argv[i])) {
                 // Just trim quotes for single-quoted arguments, no expansion
@@ -119,18 +114,16 @@ void expand(t_command *commands, char **envp) {
                 replace_env_variables(&(current->argv[i]), envp);
             }
         }
-		remove_empty_args(&(current->argv));
+        remove_empty_args(&(current->argv));
 
-		// expand redirect ins
-		for (t_redirection *redir = current->redirects; redir != NULL; redir = redir->next) {
-			if (is_enclosed_in_single_quotes(redir->file)) {
-				trim_quotes(&(redir->file));
-			} else {
-				trim_quotes(&(redir->file));
-				replace_env_variables(&(redir->file), envp);
-			}
-		}
-
-		
+        // expand redirect ins
+        for (t_redirection *redir = current->redirects; redir != NULL; redir = redir->next) {
+            if (is_enclosed_in_single_quotes(redir->file)) {
+                trim_quotes(&(redir->file));
+            } else {
+                trim_quotes(&(redir->file));
+                replace_env_variables(&(redir->file), envp);
+            }
+        }
     }
 }

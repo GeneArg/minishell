@@ -22,6 +22,7 @@ typedef enum
 	REDIRECT_IN = 1,
 	REDIRECT_OUT,
 }							RedirectionType;
+
 typedef enum
 {
 	TOKEN_WORD = 1,
@@ -47,7 +48,6 @@ typedef enum
 	OTHER_ERROR = 99         // Other unspecified errors
 }							ShellExitCode;
 
-
 // Structures
 
 typedef struct s_redirection
@@ -56,8 +56,6 @@ typedef struct s_redirection
 	RedirectionType			type;
 	struct s_redirection	*next;
 }							t_redirection;
-
-
 
 typedef struct s_token
 {
@@ -68,11 +66,11 @@ typedef struct s_token
 
 typedef struct s_command
 {
-	char **argv;               
-		// Arguments vector,including the command itself as the first element
+	char **argv;
+	// Arguments vector, including the command itself as the first element
 	int ret;                    // Return value of the command
 	struct s_command *next;     // Pointer to the next command in a pipeline, if any
-	t_redirection *redirects; // Input redirection
+	t_redirection *redirects;   // Input redirection
 	int append;                 // 1 if output redirection should append, 0 otherwise
 	int flag_error;             // 1 if there was an error in the command
 }							t_command;
@@ -99,21 +97,24 @@ t_command					*parse(t_token *tokens);
 
 void						expand(t_command *commands, char **envp);
 
-// Executer
+// Executor
+
 void						execute(t_program **program);
 char						*find_path(char **envp, char *cmd);
 char						**get_paths(char **envp);
 void						append_str_to_array(char ***array, char *str);
 void						free_split(char **split);
+void						check_access(char *cmd_path, t_command *cmd);
+pid_t						execute_in_child(t_command *cmd, t_program **program, int in_fd, int out_fd, char **env_copy);
 
 // Builtins
+
 int							ft_export(t_program **program, char **argv);
 void						add_env(char ***envp, char *new_env);
 int							ft_echo(char **argv);
 int							ft_cd(t_program **program, char **argv);
 int							ft_unset(t_program **program, char **argv);
-void						ft_exit(t_program **program,
-								t_command *current_command);
+void						ft_exit(t_program **program, t_command *current_command);
 int							ft_pwd(void);
 int							ft_env(t_program **program);
 
@@ -131,23 +132,23 @@ char						*ft_prompt(t_program *program);
 
 // Quitting & Freeing
 
-void free_and_exit(t_program *program, int exit_status);
-void free_program(t_program *program);
-void free_commands(t_command *commands);
-void free_tokens(t_token *tokens);
-void free_redirects(t_redirection *redirects);
+void						free_and_exit(t_program *program, int exit_status);
+void						free_program(t_program *program);
+void						free_commands(t_command *commands);
+void						free_tokens(t_token *tokens);
+void						free_redirects(t_redirection *redirects);
 
 // Errors
 
-void						ft_error(t_program **program, char *cmd,
-								char *error, int exit_status);
+void						ft_error(t_program **program, char *cmd, char *error, int exit_status);
 
 // Utils
 
 char						*find_env_var_value(char **envp, char *var);
 int							find_env_var(char **envp, char *var);
-char						*find_path(char **envp, char *cmd);
-char						**get_paths(char **envp);
+void						set_env_var(t_program **program, char *key, char *value);
+char						**ft_dup_array(char **array);
+void						ft_free_array(char **array);
 
 // Signals
 
@@ -165,4 +166,4 @@ bool is_heredoc(char *input);
 void						display_lexer_output(t_token *tokens);
 void						display_args(t_command *commands);
 
-#endif
+#endif // MINISHELL_H

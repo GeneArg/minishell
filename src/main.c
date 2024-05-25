@@ -3,33 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 13:17:02 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/25 23:44:18 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	run(t_program **program)
+void run(t_program **program)
 {
-	(*program)->tokens = lex((*program)->input);
-	if (check_syntax((*program)->tokens, program))
-	{
-		free_tokens((*program)->tokens);
-		(*program)->tokens = NULL;
-		free((*program)->input);
-		(*program)->input = NULL;
-		return ;
-	}
-	//display_lexer_output((*program)->tokens);
-	(*program)->commands = parse((*program)->tokens);
-	//display_args((*program)->commands);
-	free_tokens((*program)->tokens);
-	(*program)->tokens = NULL;
-	expand((*program)->commands, (*program)->envp);
-	execute(program);
+    (*program)->tokens = lex((*program)->input);
+    if (check_syntax((*program)->tokens, program))
+    {
+        free_tokens((*program)->tokens);
+        (*program)->tokens = NULL;
+        free((*program)->input);
+        (*program)->input = NULL;
+        return;
+    }
+    // display_lexer_output((*program)->tokens);
+    (*program)->commands = parse((*program)->tokens);
+    // display_args((*program)->commands);
+    free_tokens((*program)->tokens);
+    (*program)->tokens = NULL;
+    expand((*program)->commands, (*program)->envp);
+    execute(program);
 }
 
 
@@ -49,7 +49,7 @@ int	main(int argc, char **argv, char **envp)
 		signal(SIGQUIT, SIG_IGN);
 		signal(SIGINT, handle_sigint_non_blocking);
 		prompt = ft_prompt(program);
-		
+
 		program->input = readline(prompt);
 		free(prompt);
 		if (!program->input)

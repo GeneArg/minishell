@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 09:35:32 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 09:38:35 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/25 12:43:33 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void handle_sigint_non_blocking(int sig)
 	(void)sig;
 	write(1, "\n", 1);
 	rl_on_new_line();
-	rl_replace_line("", 0);
+	// rl_replace_line("", 0);
 	rl_redisplay();
 }
 
