@@ -18,8 +18,8 @@ NORM
 │   │   ├── cd.c			OK
 │   │   ├── echo.c			OK
 │   │   ├── env.c			OK
-│   │   ├── exit.c			*****
-│   │   ├── export.c		*****
+│   │   ├── exit.c			OK
+│   │   ├── export.c		OK
 │   │   ├── pwd.c			OK
 │   │   └── unset.c			OK
 │   ├── debug.c				OK
