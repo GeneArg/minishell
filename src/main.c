@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 09:59:20 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 11:50:20 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	run(t_program **program)
 	execute(program);
 }
 
-void	loop(t_program *program)
+void	setup_and_read_prompt(t_program *program)
 {
 	char	*prompt;
 
@@ -44,6 +44,10 @@ void	loop(t_program *program)
 		ft_putstr_fd("exit\n", 1);
 		free_and_exit(program, 1);
 	}
+}
+
+void	process_input(t_program *program)
+{
 	if (is_heredoc(program->input))
 	{
 		program->input = handle_heredoc(program->input);
@@ -65,6 +69,12 @@ void	loop(t_program *program)
 	free(program->input);
 	free_commands(program->commands);
 	program->commands = NULL;
+}
+
+void	loop(t_program *program)
+{
+	setup_and_read_prompt(program);
+	process_input(program);
 }
 
 int	main(int argc, char **argv, char **envp)

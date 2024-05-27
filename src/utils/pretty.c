@@ -6,98 +6,72 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:31:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/16 13:45:15 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 11:45:39 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-// static void	print_welcome_msg(void)
-// {
-//     ft_putstr_fd("\033[1;33m                                    \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m             ▄█████████▄            \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m          ▄███████████████▄         \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m       ██████▀   ██   ▀███████      \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m    ███   ▀███   ██   ███▀   ███    \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m   ██████   ██   ██   ██   ██████   \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m   ██   ██   ██  ██  ██   ██   ██   \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m  ███    ██  ██  ██  ██  ██    ███  \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m  ██ ██   ██  █  ██  █  ██   ██ ██  \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m  ██  ███  ██ ██ ██ ██ ██  ███  ██  \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m  ██    ██  ██ █ ██ █ ██  ██    ██  \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m  ████▄   ██ █  █  █  █ ██   ▄████  \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m     ████   █          █   ████     \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m        ██                ██        \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m        ████████▄  ▄████████        \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m    eagranat    ▀██▀    bperez-a    \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;31m           _       _     _          _ _ \n\033[0m", 2);
-//     ft_putstr_fd("\033[1;32m _ __ ___ (_)_ __ (_)___| |__   ___| | |\n\033[0m", 2);
-//     ft_putstr_fd("\033[1;33m| '_ ` _ \\| | '_ \\| / __| '_ \\ / _ \\ | |\n\033[0m", 2);
-//     ft_putstr_fd("\033[1;34m| | | | | | | | | | \\__ \\ | | |  __/ | |\n\033[0m", 2);
-//     ft_putstr_fd("\033[1;35m|_| |_| |_|_|_| |_|_|___/_| |_|\\___|_|_|\n\n\033[0m", 2);
-// }
+void	join_and_free(char **prompt, char *value)
+{
+	char	*temp;
 
+	temp = *prompt;
+	*prompt = ft_strjoin(*prompt, value);
+	free(temp);
+}
+
+void	set_colors(char **prompt)
+{
+	char	*color_user;
+	char	*color_path;
+	char	*color_reset;
+
+	color_user = "\033[1;34m";
+	color_path = "\033[0;35m";
+	color_reset = "\033[0m";
+	*prompt = ft_strjoin(color_user, *prompt);
+	join_and_free(prompt, color_reset);
+	*prompt = ft_strjoin(color_path, *prompt);
+	join_and_free(prompt, color_reset);
+}
+
+char	*get_env_value(t_program *program, char *key)
+{
+	return (find_env_var_value(program->envp, key));
+}
+
+void	get_user_and_path_prompt(char **prompt, char *user, char *pwd,
+		char *home)
+{
+	*prompt = ft_strjoin(user, "@");
+	join_and_free(prompt, ":");
+	if (!ft_strncmp(pwd, home, ft_strlen(home)))
+	{
+		join_and_free(prompt, "~");
+		join_and_free(prompt, pwd + ft_strlen(home));
+	}
+	else
+	{
+		join_and_free(prompt, pwd);
+	}
+	join_and_free(prompt, " $ ");
+}
 
 char	*ft_prompt(t_program *program)
 {
-    char	*prompt;
-    char	*pwd;
-    char	*home;
-    char	*user;
-    char	*temp;
+	char	*pwd;
+	char	*home;
+	char	*user;
+	char	*prompt;
 
-    pwd = find_env_var_value(program->envp, "PWD");
-    home = find_env_var_value(program->envp, "HOME");
-    user = find_env_var_value(program->envp, "USER");
-
+	pwd = get_env_value(program, "PWD");
+	home = get_env_value(program, "HOME");
+	user = get_env_value(program, "USER");
 	if (!pwd || !home || !user)
 		return (ft_strdup("minishell $ "));
-
-    char *color_user = "\033[1;34m"; // Blue
-    char *color_path = "\033[0;35m"; // Purple (zsh)
-    char *color_reset = "\033[0m"; // Reset color
-
-    prompt = ft_strjoin(user, "@");
-    temp = prompt;
-    prompt = ft_strjoin(prompt, ":");
-    free(temp);
-
-    if (!ft_strncmp(pwd, home, ft_strlen(home)))
-    {
-        temp = prompt;
-        prompt = ft_strjoin(prompt, "~");
-        free(temp);
-
-        temp = prompt;
-        prompt = ft_strjoin(prompt, pwd + ft_strlen(home));
-        free(temp);
-    }
-    else
-    {
-        temp = prompt;
-        prompt = ft_strjoin(prompt, pwd);
-        free(temp);
-    }
-
-    temp = prompt;
-    prompt = ft_strjoin(prompt, " $ ");
-    free(temp);
-
-    temp = prompt;
-    prompt = ft_strjoin(color_user, prompt);
-    free(temp);
-
-    temp = prompt;
-    prompt = ft_strjoin(prompt, color_reset);
-    free(temp);
-
-    temp = prompt;
-    prompt = ft_strjoin(color_path, prompt);
-    free(temp);
-
-    temp = prompt;
-    prompt = ft_strjoin(prompt, color_reset);
-    free(temp);
-
-    return (prompt);
+	prompt = NULL;
+	get_user_and_path_prompt(&prompt, user, pwd, home);
+	set_colors(&prompt);
+	return (prompt);
 }

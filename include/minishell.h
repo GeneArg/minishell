@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 10:11:43 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 12:04:35 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,49 +29,49 @@
 
 // Enums
 
-typedef enum
+typedef enum e_redirection_type
 {
 	REDIRECT_IN = 1,
 	REDIRECT_OUT,
-}							RedirectionType;
+}							t_redirection_type;
 
-typedef enum
+typedef enum e_token_type
 {
 	TOKEN_WORD = 1,
 	TOKEN_PIPE,
-	TOKEN_REDIRECT_IN,     // Input redirection '<'
-	TOKEN_REDIRECT_OUT,    // Output redirection '>'
+	TOKEN_REDIRECT_IN, // Input redirection '<'
+	TOKEN_REDIRECT_OUT, // Output redirection '>'
 	TOKEN_REDIRECT_APPEND, // Append redirection '>>'
-}							TokenType;
+}							t_token_type;
 
-typedef enum
+typedef enum e_shell_exit_code
 {
-	SUCCESS = 0,             // Successful operation
-	FAILURE = 1,             // General failure
+	SUCCESS = 0, // Successful operation
+	FAILURE = 1, // General failure
 	COMMAND_NOT_FOUND = 127, // Command not found
-	CANNOT_EXECUTE = 126,    // Command invoked cannot execute
-	INVALID_ARGS = 2,        // Invalid arguments provided
-	EXEC_FAIL = 3,           // Execution failure
-	ENV_FAIL = 4,            // Environment handling failure
-	PERMISSION_DENIED = 5,   // Permission denied error
-	MEMORY_ERROR = 6,        // Memory allocation failed
-	PIPE_FAIL = 7,           // Pipe creation failed
-	FORK_FAIL = 8,           // Fork failed
-	OTHER_ERROR = 99         // Other unspecified errors
-}							ShellExitCode;
+	CANNOT_EXECUTE = 126, // Command invoked cannot execute
+	INVALID_ARGS = 2, // Invalid arguments provided
+	EXEC_FAIL = 3, // Execution failure
+	ENV_FAIL = 4, // Environment handling failure
+	PERMISSION_DENIED = 5, // Permission denied error
+	MEMORY_ERROR = 6, // Memory allocation failed
+	PIPE_FAIL = 7, // Pipe creation failed
+	FORK_FAIL = 8, // Fork failed
+	OTHER_ERROR = 99 // Other unspecified errors
+}							t_shell_exit_code;
 
 // Structures
 
 typedef struct s_redirection
 {
 	char					*file;
-	RedirectionType			type;
+	t_redirection_type		type;
 	struct s_redirection	*next;
 }							t_redirection;
 
 typedef struct s_token
 {
-	TokenType				type;
+	t_token_type			type;
 	char					*value;
 	struct s_token			*next;
 }							t_token;

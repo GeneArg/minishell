@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/27 09:49:08 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 11:19:52 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ void	execute_pipeline(t_program **program)
 	current_command = (*program)->commands;
 	for (i = 0; i < num_commands; i++)
 	{
-		char **env_copy = ft_dup_array((*program)->envp);
+		char **env_copy = ft_copy_array((*program)->envp);
 			// Create a copy of the environment variables
 		if (current_command->next)
 		{
@@ -449,7 +449,7 @@ void	execute(t_program **program)
 		}
 		else
 		{
-			char **env_copy = ft_dup_array((*program)->envp);
+			char **env_copy = ft_copy_array((*program)->envp);
 				// Create a copy of the environment variables
 			pids[i] = execute_in_child(current_command, program, in_fd, out_fd,
 					env_copy);

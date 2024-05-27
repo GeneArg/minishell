@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 11:28:49 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 12:03:06 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	append_argument(t_command **cmd, char *arg)
 	free(new_arg);
 }
 
-t_redirection	*create_new_redirection(char *file, RedirectionType type)
+t_redirection	*create_new_redirection(char *file, t_redirection_type type)
 {
 	t_redirection	*new_redirection;
 
@@ -113,7 +113,7 @@ t_redirection	*create_new_redirection(char *file, RedirectionType type)
 	return (new_redirection);
 }
 
-void	handle_redirect(t_command **cmd, char *file, RedirectionType type)
+void	handle_redirect(t_command **cmd, char *file, t_redirection_type type)
 {
 	t_redirection	*new_redirection;
 	t_redirection	*current_redirection;

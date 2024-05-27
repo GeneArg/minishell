@@ -6,13 +6,13 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 11:24:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 11:12:34 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 12:02:35 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-TokenType	determine_type(char *token)
+t_token_type	determine_type(char *token)
 {
 	if (token[0] == '|')
 		return (TOKEN_PIPE);
@@ -27,7 +27,7 @@ TokenType	determine_type(char *token)
 	return (TOKEN_WORD);
 }
 
-void	append_token(t_token **current, TokenType type, char *value)
+void	append_token(t_token **current, t_token_type type, char *value)
 {
 	t_token	*new_node;
 
