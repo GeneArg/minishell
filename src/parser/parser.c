@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 14:35:37 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 12:03:06 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 12:09:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ t_command	*init_command(void)
 	cmd->flag_error = 0;
 	return (cmd);
 }
-
 
 char	**create_and_copy_new_argv(t_command **cmd, char *new_arg)
 {
@@ -60,7 +59,7 @@ void	append_argument(t_command **cmd, char *arg)
 	new_arg = (char *)malloc(strlen(arg) + 1);
 	if (new_arg == NULL)
 	{
-		fprintf(stderr, "Memory allocation failed\n");
+		ft_putstr_fd("Memory allocation failed\n", 2);
 		return ;
 	}
 	while (arg[i] != '\0')
@@ -132,8 +131,6 @@ void	handle_redirect(t_command **cmd, char *file, t_redirection_type type)
 	}
 }
 
-
-
 t_command	*parse(t_token *token)
 {
 	t_command	*head;
@@ -170,8 +167,8 @@ t_command	*parse(t_token *token)
 				handle_redirect(&current_cmd, token->value, REDIRECT_IN);
 			}
 		}
-
-		if (token->type == TOKEN_REDIRECT_OUT || token->type == TOKEN_REDIRECT_APPEND)
+		if (token->type == TOKEN_REDIRECT_OUT
+			|| token->type == TOKEN_REDIRECT_APPEND)
 		{
 			if (token->type == TOKEN_REDIRECT_APPEND)
 				current_cmd->append = 1;
@@ -183,7 +180,6 @@ t_command	*parse(t_token *token)
 				handle_redirect(&current_cmd, token->value, REDIRECT_OUT);
 			}
 		}
-
 		token = token->next;
 	}
 	return (head);

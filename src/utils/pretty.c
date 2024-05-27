@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:31:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 11:45:39 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 13:25:15 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,18 @@ void	set_colors(char **prompt)
 	char	*color_user;
 	char	*color_path;
 	char	*color_reset;
+	char 	*temp;
 
 	color_user = "\033[1;34m";
 	color_path = "\033[0;35m";
 	color_reset = "\033[0m";
-	*prompt = ft_strjoin(color_user, *prompt);
+	temp = ft_strjoin(color_user, *prompt);
+	free(*prompt);
+	*prompt = temp;
 	join_and_free(prompt, color_reset);
-	*prompt = ft_strjoin(color_path, *prompt);
+	temp = ft_strjoin(color_path, *prompt);
+	free(*prompt);
+	*prompt = temp;
 	join_and_free(prompt, color_reset);
 }
 

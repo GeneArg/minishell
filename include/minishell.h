@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 12:04:35 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 13:02:32 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,11 +79,11 @@ typedef struct s_token
 typedef struct s_command
 {
 	char					**argv;
-	int						ret;
-	struct s_command		*next;
 	t_redirection			*redirects;
 	int						append;
+	struct s_command		*next;
 	int						flag_error;
+	int						ret;
 }							t_command;
 
 typedef struct s_program

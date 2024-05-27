@@ -6,25 +6,32 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/27 10:42:19 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 13:21:04 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	handle_export(char *command)
+void handle_export(char *command)
 {
-	char	*key;
-	char	*value;
+    char *key;
+    char *value;
+    char *equal_sign;
 
-	// Assuming command is of the form "export VAR=VALUE"
-	key = strtok(command, "=");
-	value = strtok(NULL, "=");
-	if (key && value)
-	{
-		setenv(key, value, 1);
-	}
+    equal_sign = strchr(command, '=');
+    if (!equal_sign)
+        return;
+
+    key = strndup(command, equal_sign - command);
+    value = strdup(equal_sign + 1);
+
+    if (key && value)
+        setenv(key, value, 1);
+
+    free(key);
+    free(value);
 }
+
 
 char	**sort_env(t_program *program)
 {

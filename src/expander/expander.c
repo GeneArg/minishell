@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/26 00:25:49 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/27 12:15:30 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,11 @@ void	replace_env_variables(char **arg, char **env)
 
 	input = *arg;
 	output = malloc(ft_strlen(input) + 1024);
+	if (!output)
+	{
+		ft_putstr_fd("Memory allocation failed", 2);
+		return ;
+	}
 	cur = input;
 	out = output;
 	while (*cur)
