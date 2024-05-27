@@ -6,32 +6,11 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/27 13:21:04 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 13:51:46 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-void handle_export(char *command)
-{
-    char *key;
-    char *value;
-    char *equal_sign;
-
-    equal_sign = strchr(command, '=');
-    if (!equal_sign)
-        return;
-
-    key = strndup(command, equal_sign - command);
-    value = strdup(equal_sign + 1);
-
-    if (key && value)
-        setenv(key, value, 1);
-
-    free(key);
-    free(value);
-}
-
 
 char	**sort_env(t_program *program)
 {
@@ -39,36 +18,21 @@ char	**sort_env(t_program *program)
 	int		i;
 	int		j;
 	int		len;
-	char	*tmp;
 
 	i = 0;
 	j = 0;
-	len = 0;
-	while (program->envp[len])
-		len++;
-	sorted_envp = (char **)malloc(sizeof(char *) * (len + 1));
-	while (i < len)
-	{
-		sorted_envp[i] = ft_strdup(program->envp[i]);
-		i++;
-	}
-	sorted_envp[i] = NULL;
-	i = 0;
-	while (i < len)
+	sorted_envp = ft_copy_array(program->envp);
+	len = ft_array_len(sorted_envp);
+	while (i++ < len)
 	{
 		j = 0;
 		while (j < len - 1)
 		{
 			if (ft_strncmp(sorted_envp[j], sorted_envp[j + 1],
 					ft_strlen(sorted_envp[j + 1])) > 0)
-			{
-				tmp = sorted_envp[j];
-				sorted_envp[j] = sorted_envp[j + 1];
-				sorted_envp[j + 1] = tmp;
-			}
+				ft_swap(&sorted_envp[j], &sorted_envp[j + 1], sizeof(char *));
 			j++;
 		}
-		i++;
 	}
 	return (sorted_envp);
 }
@@ -85,7 +49,6 @@ void	add_env(char ***envp, char *new_env)
 	while ((*envp)[i] != NULL && ft_strncmp((*envp)[i], new_env,
 			new_env_key_len))
 		i++;
-	// If variable exists, update it
 	if ((*envp)[i] != NULL && ft_strchr((*envp)[i], '='))
 	{
 		free((*envp)[i]);
@@ -124,50 +87,58 @@ int	check_if_valid_name(char *name)
 	return (SUCCESS);
 }
 
+void	put_env(char **envp)
+{
+	int		i;
+	char	*env;
+	int		key_len;
+
+	i = 0;
+	while (envp[i])
+	{
+		env = envp[i];
+		key_len = 0;
+		while (env[key_len] && env[key_len] != '=')
+			key_len++;
+		ft_putstr_fd("declare -x ", 1);
+		write(1, env, key_len);
+		if (env[key_len] == '=')
+		{
+			ft_putstr_fd("=\"", 1);
+			write(1, env + key_len + 1, ft_strlen(env) - key_len - 1);
+			ft_putstr_fd("\"\n", 1);
+		}
+		else
+		{
+			ft_putchar_fd('\n', 1);
+		}
+		i++;
+	}
+}
+
 int	ft_export(t_program **program, char **argv)
 {
 	char	**args;
 	int		i;
 	char	**sorted_envp;
-	char	*env;
-	int		key_len;
 
 	i = 0;
 	args = argv;
 	if (!args[1])
 	{
 		sorted_envp = sort_env(*program);
-		while (sorted_envp[i])
-		{
-			env = sorted_envp[i];
-			key_len = 0;
-			while (env[key_len] && env[key_len] != '=')
-			{
-				key_len++;
-			}
-			ft_putstr_fd("declare -x ", 1);
-			write(1, env, key_len);
-			if (env[key_len] == '=')
-			{
-				ft_putstr_fd("=\"", 1);
-				write(1, env + key_len + 1, ft_strlen(env) - key_len - 1);
-				ft_putstr_fd("\"\n", 1);
-			}
-			else
-			{
-				ft_putchar_fd('\n', 1);
-			}
-			i++;
-		}
+		put_env(sorted_envp);
 		ft_free_array(sorted_envp);
 	}
 	else
 	{
-		for (i = 1; args[i]; i++)
+		i = 1;
+		while (args[i])
 		{
 			if (check_if_valid_name(args[i]))
 				return (FAILURE);
 			add_env(&((*program)->envp), args[i]);
+			i++;
 		}
 	}
 	return (SUCCESS);

@@ -47,7 +47,7 @@ SRC_FILES	:= lexer/lexer_split.c \
 				builtins/env.c \
 				builtins/exit.c \
 				utils/env_utils.c \
-				utils/pretty.c \
+				prompt.c \
 				signals.c \
 				heredoc.c
 
