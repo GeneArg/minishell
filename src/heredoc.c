@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:33:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 10:53:36 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 14:25:23 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,30 +24,20 @@ bool	is_heredoc(char *input)
 	while (*ptr)
 	{
 		if (*ptr == '\'' && !in_double_quote)
-		{
 			in_single_quote = !in_single_quote;
-		}
 		else if (*ptr == '\"' && !in_single_quote)
-		{
 			in_double_quote = !in_double_quote;
-		}
 		else if (*ptr == '<' && !in_single_quote && !in_double_quote)
 		{
 			if (*(ptr + 1) == '<')
 			{
 				ptr += 2;
 				while (*ptr && isspace(*ptr))
-				{
 					ptr++;
-				}
 				if (*ptr && !isspace(*ptr))
-				{
 					return (true);
-				}
 				else
-				{
 					return (false);
-				}
 			}
 		}
 		ptr++;

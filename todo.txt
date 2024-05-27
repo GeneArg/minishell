@@ -1,6 +1,6 @@
 TD
 
-- leaks (recheck, new leaks appeared)
+- leaks recheck
 
 - free_program called on all failed malloc returns
 
@@ -22,7 +22,6 @@ NORM
 │   │   ├── export.c		OK
 │   │   ├── pwd.c			OK
 │   │   └── unset.c			OK
-│   ├── debug.c				OK
 │   ├── errors.c			OK
 │   ├── executor			DIR
 │   │   └── exe.c			*****
@@ -33,14 +32,15 @@ NORM
 │   ├── init.c				OK
 │   ├── lexer				DIR
 │   │   ├── lexer_list.c	OK
-│   │   └── lexer_split.c	*****
+│   │   └── lexer_split.c	OK
+│   │   └── lexer_split2.c	OK
 │   ├── main.c				OK
 │   ├── parser				DIR
 │   │   ├── parser.c		*****
 │   │   └── syntax.c		OK
+│   ├── prompt.c			OK
 │   ├── signals.c			OK
 │   └── utils				DIR
 │       ├── env_utils.c		OK
-│       └── pretty.c		OK
 ├── include					DIR
 │   └── minishell.h			OK

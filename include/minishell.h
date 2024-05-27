@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 13:02:32 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 16:54:30 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,35 +39,37 @@ typedef enum e_token_type
 {
 	TOKEN_WORD = 1,
 	TOKEN_PIPE,
-	TOKEN_REDIRECT_IN, // Input redirection '<'
-	TOKEN_REDIRECT_OUT, // Output redirection '>'
+	TOKEN_REDIRECT_IN,     // Input redirection '<'
+	TOKEN_REDIRECT_OUT,    // Output redirection '>'
 	TOKEN_REDIRECT_APPEND, // Append redirection '>>'
 }							t_token_type;
 
 typedef enum e_shell_exit_code
 {
-	SUCCESS = 0, // Successful operation
-	FAILURE = 1, // General failure
+	SUCCESS = 0,             // Successful operation
+	FAILURE = 1,             // General failure
 	COMMAND_NOT_FOUND = 127, // Command not found
-	CANNOT_EXECUTE = 126, // Command invoked cannot execute
-	INVALID_ARGS = 2, // Invalid arguments provided
-	EXEC_FAIL = 3, // Execution failure
-	ENV_FAIL = 4, // Environment handling failure
-	PERMISSION_DENIED = 5, // Permission denied error
-	MEMORY_ERROR = 6, // Memory allocation failed
-	PIPE_FAIL = 7, // Pipe creation failed
-	FORK_FAIL = 8, // Fork failed
-	OTHER_ERROR = 99 // Other unspecified errors
+	CANNOT_EXECUTE = 126,    // Command invoked cannot execute
+	INVALID_ARGS = 2,        // Invalid arguments provided
+	EXEC_FAIL = 3,           // Execution failure
+	ENV_FAIL = 4,            // Environment handling failure
+	PERMISSION_DENIED = 5,   // Permission denied error
+	MEMORY_ERROR = 6,        // Memory allocation failed
+	PIPE_FAIL = 7,           // Pipe creation failed
+	FORK_FAIL = 8,           // Fork failed
+	OTHER_ERROR = 99         // Other unspecified errors
 }							t_shell_exit_code;
 
 // Structures
 
-typedef struct s_redirection
+typedef struct s_split
 {
-	char					*file;
-	t_redirection_type		type;
-	struct s_redirection	*next;
-}							t_redirection;
+	char					*current_word;
+	int						i;
+	int						j;
+	bool					in_double_quotes;
+	bool					in_simple_quotes;
+}							t_split;
 
 typedef struct s_token
 {
@@ -75,6 +77,13 @@ typedef struct s_token
 	char					*value;
 	struct s_token			*next;
 }							t_token;
+
+typedef struct s_redirection
+{
+	char					*file;
+	t_redirection_type		type;
+	struct s_redirection	*next;
+}							t_redirection;
 
 typedef struct s_command
 {
@@ -97,7 +106,23 @@ typedef struct s_program
 // Lexer
 
 char						**splitter(char *input);
+void						process_input_string(char *input, char **ret,
+								t_split *split_vars);
+t_split						*initialize_split_vars(void);
+void						finalize_current_word(char **ret,
+								t_split *split_vars);
+void						handle_space(char **ret, t_split *split_vars);
+void						handle_special_chars(char **input, char **ret,
+								t_split *split_vars);
+void						handle_quotes(char **input, t_split *split_vars,
+								char quote);
+void						add_current_word_to_ret(char **ret,
+								t_split *split_vars);
 t_token						*lex(char *input);
+t_token						*populate_list(char **split);
+void						append_token(t_token **current, t_token_type type,
+								char *value);
+t_token_type				determine_type(char *token);
 
 // Parser
 
@@ -177,9 +202,4 @@ void						handle_sigquit(int sig);
 char						*handle_heredoc(char *input);
 bool						is_heredoc(char *input);
 
-// Debug
-
-void						display_lexer_output(t_token *tokens);
-void						display_args(t_command *commands);
-
-#endif // MINISHELL_H
+#endif

@@ -29,6 +29,7 @@ HDR_FILES :=	minishell.h
 
 # Files
 SRC_FILES	:= lexer/lexer_split.c \
+				lexer/lexer_split2.c \
 				lexer/lexer_list.c \
 				parser/parser.c \
 				parser/syntax.c \
@@ -36,7 +37,6 @@ SRC_FILES	:= lexer/lexer_split.c \
 				freeing.c \
 				errors.c \
 				init.c \
-				debug.c \
 				executor/exe.c \
 				builtins/export.c \
 				expander/expander.c \
