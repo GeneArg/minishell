@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 16:54:30 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 17:28:40 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,25 +39,25 @@ typedef enum e_token_type
 {
 	TOKEN_WORD = 1,
 	TOKEN_PIPE,
-	TOKEN_REDIRECT_IN,     // Input redirection '<'
-	TOKEN_REDIRECT_OUT,    // Output redirection '>'
-	TOKEN_REDIRECT_APPEND, // Append redirection '>>'
+	TOKEN_REDIRECT_IN,
+	TOKEN_REDIRECT_OUT,
+	TOKEN_REDIRECT_APPEND,
 }							t_token_type;
 
 typedef enum e_shell_exit_code
 {
-	SUCCESS = 0,             // Successful operation
-	FAILURE = 1,             // General failure
-	COMMAND_NOT_FOUND = 127, // Command not found
-	CANNOT_EXECUTE = 126,    // Command invoked cannot execute
-	INVALID_ARGS = 2,        // Invalid arguments provided
-	EXEC_FAIL = 3,           // Execution failure
-	ENV_FAIL = 4,            // Environment handling failure
-	PERMISSION_DENIED = 5,   // Permission denied error
-	MEMORY_ERROR = 6,        // Memory allocation failed
-	PIPE_FAIL = 7,           // Pipe creation failed
-	FORK_FAIL = 8,           // Fork failed
-	OTHER_ERROR = 99         // Other unspecified errors
+	SUCCESS = 0,
+	FAILURE = 1,
+	COMMAND_NOT_FOUND = 127,
+	CANNOT_EXECUTE = 126,
+	INVALID_ARGS = 2,
+	EXEC_FAIL = 3,
+	ENV_FAIL = 4,
+	PERMISSION_DENIED = 5,
+	MEMORY_ERROR = 6,
+	PIPE_FAIL = 7,
+	FORK_FAIL = 8,
+	OTHER_ERROR = 99
 }							t_shell_exit_code;
 
 // Structures

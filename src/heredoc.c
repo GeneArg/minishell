@@ -6,43 +6,53 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:33:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 14:25:23 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 18:13:03 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-bool	is_heredoc(char *input)
-{
-	bool	in_single_quote;
-	bool	in_double_quote;
-	char	*ptr;
 
-	in_single_quote = false;
-	in_double_quote = false;
-	ptr = input;
-	while (*ptr)
-	{
-		if (*ptr == '\'' && !in_double_quote)
-			in_single_quote = !in_single_quote;
-		else if (*ptr == '\"' && !in_single_quote)
-			in_double_quote = !in_double_quote;
-		else if (*ptr == '<' && !in_single_quote && !in_double_quote)
-		{
-			if (*(ptr + 1) == '<')
-			{
-				ptr += 2;
-				while (*ptr && isspace(*ptr))
-					ptr++;
-				if (*ptr && !isspace(*ptr))
-					return (true);
-				else
-					return (false);
-			}
-		}
-		ptr++;
-	}
-	return (false);
+void check_quotes(char **ptr, bool *in_single_quote, bool *in_double_quote)
+{
+    if (**ptr == '\'' && !(*in_double_quote))
+        *in_single_quote = !(*in_single_quote);
+    else if (**ptr == '\"' && !(*in_single_quote))
+        *in_double_quote = !(*in_double_quote);
+}
+
+bool detect_heredoc(char **ptr, bool in_single_quote, bool in_double_quote)
+{
+    if (**ptr == '<' && !in_single_quote && !in_double_quote)
+    {
+        if (*(*ptr + 1) == '<')
+        {
+            *ptr += 2;
+            while (**ptr && isspace(**ptr))
+                (*ptr)++;
+            if (**ptr && !isspace(**ptr))
+                return true;
+            else
+                return false;
+        }
+    }
+    return false;
+}
+
+bool is_heredoc(char *input)
+{
+    bool in_single_quote = false;
+    bool in_double_quote = false;
+    char *ptr = input;
+
+    while (*ptr)
+    {
+        check_quotes(&ptr, &in_single_quote, &in_double_quote);
+        if (detect_heredoc(&ptr, in_single_quote, in_double_quote))
+            return true;
+        ptr++;
+    }
+    return false;
 }
 
 char	*get_delimiter(char *input)
