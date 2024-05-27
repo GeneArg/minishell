@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/25 11:24:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 11:28:08 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 11:12:34 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,8 @@ t_token	*populate_list(char **split)
 			current = head;
 		}
 		else
-		{
-			char *token = ft_strdup(split[i]);
-			append_token(&current, determine_type(split[i]), token);
-		}
+			append_token(&current, determine_type(split[i]),
+				ft_strdup(split[i]));
 		i++;
 	}
 	return (head);
@@ -78,7 +76,11 @@ t_token	*lex(char *input)
 	t_token	*token;
 
 	split = splitter(input);
+	if (!split)
+		return (NULL);
 	token = populate_list(split);
+	if (!token)
+		return (NULL);
 	ft_free_array(split);
 	return (token);
 }

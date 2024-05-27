@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:42:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 10:00:49 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 10:08:22 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	increase_shlvl(t_program **program)
 
 t_program	*init_program(char **envp)
 {
-	t_program *program;
+	t_program	*program;
 
 	program = malloc(sizeof(t_program));
 	program->input = NULL;

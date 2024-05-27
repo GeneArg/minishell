@@ -6,12 +6,11 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:44:02 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 11:30:12 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 10:46:06 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
 
 void	display_lexer_output(t_token *tokens)
 {
@@ -27,8 +26,9 @@ void	display_lexer_output(t_token *tokens)
 
 void	display_args(t_command *commands)
 {
-	t_command	*tmp;
-	int			i;
+	t_command		*tmp;
+	int				i;
+	t_redirection	*redir;
 
 	tmp = commands;
 	while (tmp)
@@ -42,14 +42,13 @@ void	display_args(t_command *commands)
 		if (tmp->redirects)
 		{
 			printf("redirect:\n");
-			t_redirection *redir = tmp->redirects;
+			redir = tmp->redirects;
 			while (redir)
 			{
 				printf("file: %s\n", redir->file);
 				redir = redir->next;
 			}
 		}
-		
 		tmp = tmp->next;
 	}
 }

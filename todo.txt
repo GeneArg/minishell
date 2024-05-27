@@ -2,27 +2,45 @@ TD
 
 
 
-
-
-
-
-- export GHOST=123 | env | grep GHOST shouldn't output anything as env doesnt know about export yet
-
-- a failed redirect eg. cat < missing piped into cat (cat < missing | cat) waits for input on cat, but bash doesnt
-
-- Heredoc expand
-
-- Heredoc weird cases from manual tester
-
-
-
-
-
-- Leaks
-
 - free_program called on all failed malloc returns
 
 - replace forbidden functions
 
 - norm
 
+
+
+
+NORM
+
+├── src						DIR
+│   ├── builtins			DIR
+│   │   ├── cd.c			OK
+│   │   ├── echo.c			OK
+│   │   ├── env.c			OK
+│   │   ├── exit.c			*****
+│   │   ├── export.c		*****
+│   │   ├── pwd.c			OK
+│   │   └── unset.c			OK
+│   ├── debug.c				OK
+│   ├── errors.c			OK
+│   ├── executor			DIR
+│   │   └── exe.c			*****
+│   ├── expander			DIR
+│   │   └── expander.c		*****
+│   ├── freeing.c			OK
+│   ├── heredoc.c			*****
+│   ├── init.c				OK
+│   ├── lexer				DIR
+│   │   ├── lexer_list.c	OK
+│   │   └── lexer_split.c	*****
+│   ├── main.c				*****
+│   ├── parser				DIR
+│   │   ├── parser.c		*****
+│   │   └── syntax.c		*****
+│   ├── signals.c			OK
+│   └── utils				DIR
+│       ├── env_utils.c		*****
+│       └── pretty.c		*****
+├── include					DIR
+│   └── minishell.h			*****

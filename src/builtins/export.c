@@ -3,24 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 14:29:43 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/25 22:45:19 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/27 10:42:19 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void handle_export(char *command)
+void	handle_export(char *command)
 {
-    // Assuming command is of the form "export VAR=VALUE"
-    char *key = strtok(command, "=");
-    char *value = strtok(NULL, "=");
+	char	*key;
+	char	*value;
 
-    if (key && value) {
-        setenv(key, value, 1);
-    }
+	// Assuming command is of the form "export VAR=VALUE"
+	key = strtok(command, "=");
+	value = strtok(NULL, "=");
+	if (key && value)
+	{
+		setenv(key, value, 1);
+	}
 }
 
 char	**sort_env(t_program *program)

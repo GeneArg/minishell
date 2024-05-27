@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:33:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 13:38:09 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 10:53:36 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,10 @@ bool	is_heredoc(char *input)
 			if (*(ptr + 1) == '<')
 			{
 				ptr += 2;
-				// Skip any spaces after "<<"
 				while (*ptr && isspace(*ptr))
 				{
 					ptr++;
 				}
-				// Check if there's a valid delimiter
 				if (*ptr && !isspace(*ptr))
 				{
 					return (true);
@@ -57,19 +55,19 @@ bool	is_heredoc(char *input)
 	return (false);
 }
 
-// Function to extract the delimiter from the input
 char	*get_delimiter(char *input)
 {
 	char	*end;
 	size_t	len;
 	char	*delimiter;
+	char	*start;
 
-	char *start = strstr(input, "<<") + 2; // Skip the "<<"
+	start = strstr(input, "<<") + 2;
 	while (*start == ' ')
-		start++; // Skip any spaces after "<<"
+		start++;
 	end = start;
 	while (*end && *end != ' ' && *end != '\n')
-		end++; // Find the end of the delimiter
+		end++;
 	len = end - start;
 	delimiter = (char *)malloc(len + 1);
 	strncpy(delimiter, start, len);
@@ -77,7 +75,6 @@ char	*get_delimiter(char *input)
 	return (delimiter);
 }
 
-// Function to read heredoc input until the delimiter is met
 char	*read_heredoc_input(char *delimiter)
 {
 	char	*input_line;
@@ -95,8 +92,8 @@ char	*read_heredoc_input(char *delimiter)
 			free(input_line);
 			break ;
 		}
-		line_len = strlen(input_line);
-		heredoc_content = realloc(heredoc_content, total_len + line_len + 2); // +2 for newline and null terminator
+		line_len = ft_strlen(input_line);
+		heredoc_content = realloc(heredoc_content, total_len + line_len + 2);
 		if (heredoc_content == NULL)
 		{
 			perror("realloc");
@@ -108,7 +105,6 @@ char	*read_heredoc_input(char *delimiter)
 		heredoc_content[total_len] = '\0';
 		free(input_line);
 	}
-	// If heredoc_content is still NULL, allocate an empty string
 	if (heredoc_content == NULL)
 	{
 		heredoc_content = malloc(1);
@@ -133,10 +129,10 @@ char	*replace_heredoc_with_filename(char *input, char *delimiter,
 	start = strstr(input, "<<");
 	end = start + 2;
 	while (*end == ' ')
-		end++;                // Skip any spaces after "<<"
-	end += strlen(delimiter); // Skip the delimiter
+		end++;
+	end += strlen(delimiter);
 	while (*end == ' ' || *end == '\n')
-		end++; // Skip spaces and newlines after delimiter
+		end++;
 	new_input_len = strlen(input) - (end - start) + strlen(filename) + 1;
 	new_input = (char *)malloc(new_input_len);
 	strncpy(new_input, input, start - input);
@@ -150,10 +146,11 @@ char	*handle_heredoc(char *input)
 {
 	char	*delimiter;
 	char	*heredoc_content;
-	char	tmp_filename[] = "/tmp/minishell_heredoc";
+	char	*tmp_filename;
 	int		fd;
 	char	*updated_input;
 
+	tmp_filename = "/tmp/minishell_heredoc";
 	delimiter = get_delimiter(input);
 	heredoc_content = read_heredoc_input(delimiter);
 	if (!heredoc_content)
@@ -161,12 +158,9 @@ char	*handle_heredoc(char *input)
 		free(delimiter);
 		return (NULL);
 	}
-	// Create a temporary file to store the heredoc content
-	// Write the heredoc content to the file
 	fd = open(tmp_filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	write(fd, heredoc_content, strlen(heredoc_content));
 	close(fd);
-	// Replace the heredoc content in input with the filename
 	updated_input = replace_heredoc_with_filename(input, delimiter,
 			tmp_filename);
 	free(delimiter);
