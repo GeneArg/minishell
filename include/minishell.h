@@ -66,13 +66,12 @@ typedef struct s_token
 
 typedef struct s_command
 {
-	char **argv;
-	// Arguments vector, including the command itself as the first element
-	int ret;                    // Return value of the command
-	struct s_command *next;     // Pointer to the next command in a pipeline, if any
-	t_redirection *redirects;   // Input redirection
-	int append;                 // 1 if output redirection should append, 0 otherwise
-	int flag_error;             // 1 if there was an error in the command
+	char					**argv;
+	int						ret;
+	struct s_command		*next;
+	t_redirection			*redirects;
+	int						append;
+	int						flag_error;
 }							t_command;
 
 typedef struct s_program
@@ -105,7 +104,9 @@ char						**get_paths(char **envp);
 void						append_str_to_array(char ***array, char *str);
 void						free_split(char **split);
 void						check_access(char *cmd_path, t_command *cmd);
-pid_t						execute_in_child(t_command *cmd, t_program **program, int in_fd, int out_fd, char **env_copy);
+pid_t						execute_in_child(t_command *cmd,
+								t_program **program, int in_fd, int out_fd,
+								char **env_copy);
 
 // Builtins
 
@@ -114,16 +115,17 @@ void						add_env(char ***envp, char *new_env);
 int							ft_echo(char **argv);
 int							ft_cd(t_program **program, char **argv);
 int							ft_unset(t_program **program, char **argv);
-void						ft_exit(t_program **program, t_command *current_command);
+void						ft_exit(t_program **program,
+								t_command *current_command);
 int							ft_pwd(void);
 int							ft_env(t_program **program);
 
 // Initializations
 
-t_program					*init_program(void);
+t_program					*init_program(char **envp);
 void						init_env(t_program **program, char **envp);
 void						init_pwd(t_program **program);
-void 						increase_shlvl(t_program **program);
+void						increase_shlvl(t_program **program);
 
 // Pretty
 
@@ -140,13 +142,15 @@ void						free_redirects(t_redirection *redirects);
 
 // Errors
 
-void						ft_error(t_program **program, char *cmd, char *error, int exit_status);
+void						ft_error(t_program **program, char *cmd,
+								char *error, int exit_status);
 
 // Utils
 
 char						*find_env_var_value(char **envp, char *var);
 int							find_env_var(char **envp, char *var);
-void						set_env_var(t_program **program, char *key, char *value);
+void						set_env_var(t_program **program, char *key,
+								char *value);
 char						**ft_dup_array(char **array);
 void						ft_free_array(char **array);
 
@@ -158,8 +162,8 @@ void						handle_sigquit(int sig);
 
 // Heredoc
 
-char *handle_heredoc(char *input);
-bool is_heredoc(char *input);
+char						*handle_heredoc(char *input);
+bool						is_heredoc(char *input);
 
 // Debug
 

@@ -6,22 +6,11 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 15:42:17 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/17 09:59:42 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 10:00:49 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-t_program	*init_program(void)
-{
-	t_program	*program;
-
-	program = malloc(sizeof(t_program));
-	program->input = NULL;
-	program->tokens = NULL;
-	program->commands = NULL;
-	return (program);
-}
 
 void	init_env(t_program **program, char **envp)
 {
@@ -63,4 +52,19 @@ void	increase_shlvl(t_program **program)
 	ft_export(program, (char *[]){"export", shlvl_var, NULL});
 	free(shlvl_var);
 	free(new_shlvl);
+}
+
+t_program	*init_program(char **envp)
+{
+	t_program *program;
+
+	program = malloc(sizeof(t_program));
+	program->input = NULL;
+	program->tokens = NULL;
+	program->commands = NULL;
+	program->envp = ft_copy_array(envp);
+	ft_export(&program, (char *[]){"export", "?=0", NULL});
+	increase_shlvl(&program);
+	init_pwd(&program);
+	return (program);
 }

@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:39:51 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/27 09:32:42 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 09:49:23 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ int	ft_cd(t_program **program, char **argv)
 	{
 		ft_error(program, "cd", "too many arguments", 1);
 		return (FAILURE);
-	
 	}
 	if (!argv[1] || !ft_strncmp(argv[1], "~", 2))
 		path = home;

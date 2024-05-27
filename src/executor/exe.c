@@ -6,16 +6,12 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/27 09:46:03 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 09:49:08 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-// Function declaration for set_env_var
-void	set_env_var(t_program **program, char *key, char *value);
-char	**ft_dup_array(char **array);
-void	ft_free_array(char **array);
 
 void	print_pids(pid_t *pids, int num_commands)
 {

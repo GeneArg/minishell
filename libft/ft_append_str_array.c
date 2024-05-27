@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 11:02:27 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/13 11:02:43 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/27 10:07:03 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,26 +16,25 @@ void	ft_append_str_array(char ***array, char *str)
 {
 	int		len;
 	char	**new_array;
+	int		i;
 
 	len = 0;
+	i = 0;
 	if (**array)
 	{
 		while ((*array)[len])
 			len++;
 	}
 	new_array = (char **)malloc(sizeof(char *) * (len + 2));
-	for (int i = 0; i < len; i++)
+	while (i < len)
 	{
 		new_array[i] = (*array)[i];
-		(*array)[i] = NULL;
+		(*array)[i++] = NULL;
 	}
 	new_array[len] = ft_strdup(str);
 	new_array[len + 1] = NULL;
 	while (len >= 0)
-	{
-		free((*array)[len]);
-		len--;
-	}
+		free((*array)[len--]);
 	free(*array);
 	*array = new_array;
 }
