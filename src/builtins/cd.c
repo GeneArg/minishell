@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:39:51 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/25 23:56:24 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/27 09:32:42 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,12 @@ int	ft_cd(t_program **program, char **argv)
 	home = find_env_var_value((*program)->envp, "HOME");
 	oldpwd = find_env_var_value((*program)->envp, "OLDPWD");
 	pwd = find_env_var_value((*program)->envp, "PWD");
+	if (argv[2])
+	{
+		ft_error(program, "cd", "too many arguments", 1);
+		return (FAILURE);
+	
+	}
 	if (!argv[1] || !ft_strncmp(argv[1], "~", 2))
 		path = home;
 	else if (!ft_strncmp(argv[1], "-", 2))

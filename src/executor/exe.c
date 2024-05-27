@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exe.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/26 00:06:16 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/05/27 09:46:03 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,18 +137,11 @@ pid_t	execute_in_child(t_command *cmd, t_program **program, int in_fd,
 			cmd_path = ft_strdup(cmd->argv[0]);
 		else
 			cmd_path = find_path(env_copy, cmd->argv[0]);
-		if (!cmd_path)
-		{
-			ft_error(program, cmd->argv[0], "command not found",
-				COMMAND_NOT_FOUND);
-			exit(COMMAND_NOT_FOUND);
-		}
 		if (cmd->argv[0][0] == '.' || cmd->argv[0][0] == '/')
 			check_access(cmd_path, cmd);
 		execstat = execve(cmd_path, cmd->argv, env_copy);
 		if (execstat == -1)
 		{
-			perror("execve");
 			ft_error(program, cmd->argv[0], "command not found",
 				COMMAND_NOT_FOUND);
 			exit(COMMAND_NOT_FOUND);
