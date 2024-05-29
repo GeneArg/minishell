@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/16 13:13:44 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/27 13:49:45 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/29 09:49:18 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,5 +76,6 @@ char				**ft_copy_array(char **array);
 void				ft_append_str_array(char ***array, char *str);
 void				ft_free_array(char **arr);
 void				ft_swap(void *a, void *b, size_t size);
+void				*ft_realloc(void *ptr, size_t size);
 
 #endif

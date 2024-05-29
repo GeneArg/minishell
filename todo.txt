@@ -28,7 +28,9 @@ NORM
 │   ├── expander			DIR
 │   │   └── expander.c		*****
 │   ├── freeing.c			OK
-│   ├── heredoc.c			*****
+│   ├── heredoc				DIR
+│   │   ├── check.c			OK
+│   │   └── handle.c		OK
 │   ├── init.c				OK
 │   ├── lexer				DIR
 │   │   ├── lexer_list.c	OK

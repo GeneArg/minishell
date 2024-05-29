@@ -1,59 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   heredoc.c                                          :+:      :+:    :+:   */
+/*   handle.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:33:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 18:13:03 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/29 10:21:33 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
-
-
-void check_quotes(char **ptr, bool *in_single_quote, bool *in_double_quote)
-{
-    if (**ptr == '\'' && !(*in_double_quote))
-        *in_single_quote = !(*in_single_quote);
-    else if (**ptr == '\"' && !(*in_single_quote))
-        *in_double_quote = !(*in_double_quote);
-}
-
-bool detect_heredoc(char **ptr, bool in_single_quote, bool in_double_quote)
-{
-    if (**ptr == '<' && !in_single_quote && !in_double_quote)
-    {
-        if (*(*ptr + 1) == '<')
-        {
-            *ptr += 2;
-            while (**ptr && isspace(**ptr))
-                (*ptr)++;
-            if (**ptr && !isspace(**ptr))
-                return true;
-            else
-                return false;
-        }
-    }
-    return false;
-}
-
-bool is_heredoc(char *input)
-{
-    bool in_single_quote = false;
-    bool in_double_quote = false;
-    char *ptr = input;
-
-    while (*ptr)
-    {
-        check_quotes(&ptr, &in_single_quote, &in_double_quote);
-        if (detect_heredoc(&ptr, in_single_quote, in_double_quote))
-            return true;
-        ptr++;
-    }
-    return false;
-}
+#include "../../include/minishell.h"
 
 char	*get_delimiter(char *input)
 {
@@ -62,7 +19,10 @@ char	*get_delimiter(char *input)
 	char	*delimiter;
 	char	*start;
 
-	start = strstr(input, "<<") + 2;
+	start = ft_strnstr(input, "<<", strlen(input));
+	if (!start)
+		return (NULL);
+	start += 2;
 	while (*start == ' ')
 		start++;
 	end = start;
@@ -70,49 +30,66 @@ char	*get_delimiter(char *input)
 		end++;
 	len = end - start;
 	delimiter = (char *)malloc(len + 1);
-	strncpy(delimiter, start, len);
-	delimiter[len] = '\0';
+	if (!delimiter)
+		return (NULL);
+	ft_strlcpy(delimiter, start, len + 1);
 	return (delimiter);
+}
+
+int	read_and_add_line(char **heredoc_content, size_t *total_len,
+		char *delimiter)
+{
+	char	*line;
+	size_t	del_len;
+	size_t	line_len;
+
+	del_len = ft_strlen(delimiter);
+	line = readline("> ");
+	if (line == NULL || ft_strncmp(line, delimiter, del_len) == 0)
+	{
+		free(line);
+		return (1);
+	}
+	line_len = ft_strlen(line);
+	*heredoc_content = (char *)ft_realloc(*heredoc_content, *total_len
+			+ line_len + 2);
+	if (*heredoc_content == NULL)
+	{
+		free(line);
+		return (2);
+	}
+	ft_strlcpy(*heredoc_content + *total_len, line, line_len + 1);
+	*total_len += line_len;
+	(*heredoc_content)[(*total_len)++] = '\n';
+	(*heredoc_content)[*total_len] = '\0';
+	free(line);
+	return (0);
 }
 
 char	*read_heredoc_input(char *delimiter)
 {
-	char	*input_line;
 	char	*heredoc_content;
 	size_t	total_len;
-	size_t	line_len;
+	int		res;
 
 	heredoc_content = NULL;
 	total_len = 0;
 	while (1)
 	{
-		input_line = readline("> ");
-		if (input_line == NULL || strcmp(input_line, delimiter) == 0)
-		{
-			free(input_line);
+		res = read_and_add_line(&heredoc_content, &total_len, delimiter);
+		if (res == 1)
 			break ;
-		}
-		line_len = ft_strlen(input_line);
-		heredoc_content = realloc(heredoc_content, total_len + line_len + 2);
-		if (heredoc_content == NULL)
+		if (res == 2)
 		{
-			perror("realloc");
-			exit(EXIT_FAILURE);
+			free(heredoc_content);
+			return (NULL);
 		}
-		strcpy(heredoc_content + total_len, input_line);
-		total_len += line_len;
-		heredoc_content[total_len++] = '\n';
-		heredoc_content[total_len] = '\0';
-		free(input_line);
 	}
 	if (heredoc_content == NULL)
 	{
-		heredoc_content = malloc(1);
+		heredoc_content = (char *)malloc(1);
 		if (heredoc_content == NULL)
-		{
-			perror("malloc");
-			exit(EXIT_FAILURE);
-		}
+			return (NULL);
 		heredoc_content[0] = '\0';
 	}
 	return (heredoc_content);
@@ -126,19 +103,22 @@ char	*replace_heredoc_with_filename(char *input, char *delimiter,
 	size_t	new_input_len;
 	char	*new_input;
 
-	start = strstr(input, "<<");
+	start = ft_strnstr(input, "<<", ft_strlen(input));
+	if (!start)
+		return (NULL);
 	end = start + 2;
 	while (*end == ' ')
 		end++;
-	end += strlen(delimiter);
+	end += ft_strlen(delimiter);
 	while (*end == ' ' || *end == '\n')
 		end++;
-	new_input_len = strlen(input) - (end - start) + strlen(filename) + 1;
+	new_input_len = ft_strlen(input) - (end - start) + ft_strlen(filename) + 1;
 	new_input = (char *)malloc(new_input_len);
-	strncpy(new_input, input, start - input);
-	new_input[start - input] = '\0';
-	strcat(new_input, filename);
-	strcat(new_input, end);
+	if (!new_input)
+		return (NULL);
+	ft_strlcpy(new_input, input, start - input + 1);
+	ft_strlcat(new_input, filename, new_input_len);
+	ft_strlcat(new_input, end, new_input_len);
 	return (new_input);
 }
 

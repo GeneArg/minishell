@@ -33,6 +33,8 @@ SRC_FILES	:= lexer/lexer_split.c \
 				lexer/lexer_list.c \
 				parser/parser.c \
 				parser/syntax.c \
+				parser/redirections.c \
+				parser/append.c \
 				main.c \
 				freeing.c \
 				errors.c \
@@ -40,6 +42,8 @@ SRC_FILES	:= lexer/lexer_split.c \
 				executor/exe.c \
 				builtins/export.c \
 				expander/expander.c \
+				expander/quotes.c \
+				expander/replace.c \
 				builtins/echo.c \
 				builtins/unset.c \
 				builtins/cd.c \
@@ -49,7 +53,8 @@ SRC_FILES	:= lexer/lexer_split.c \
 				utils/env_utils.c \
 				prompt.c \
 				signals.c \
-				heredoc.c
+				heredoc/check.c \
+				heredoc/handle.c
 
 
 SRC			:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))

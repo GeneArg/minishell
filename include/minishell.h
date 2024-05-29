@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 17:28:40 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:43:23 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,10 +128,33 @@ t_token_type				determine_type(char *token);
 
 int							check_syntax(t_token *token, t_program **program);
 t_command					*parse(t_token *tokens);
+void						handle_token_redirect_in(t_token **token,
+								t_command **current_cmd);
+void						handle_token_redirect_out(t_token **token,
+								t_command **current_cmd);
+void						append_argument(t_command **cmd, char *arg);
 
 // Expander
 
 void						expand(t_command *commands, char **envp);
+void						expand_redirects(t_redirection *redirects,
+								char **envp);
+void						expand_redirects_helper(t_redirection *redir,
+								char **envp);
+void						expand_args(t_command *cmd, char **envp);
+void						expand_args_helper(char **arg, char **envp);
+void						remove_empty_args(char ***argv);
+void						remove_empty_args_helper(char **argv,
+								char **new_argv, int *count);
+void						replace_env_variables(char **arg, char **env);
+void						replace_env_helper(char **cur, char **out,
+								char **env);
+char						*find_var_end(char *cur);
+void						trim_quotes(char **arg);
+void						trim_quotes_helper(char *input, char *output);
+bool						toggle_quote_state(char c, bool *inside_quotes,
+								char *current_quote);
+bool						is_enclosed_in_single_quotes(char *arg);
 
 // Executor
 
