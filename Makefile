@@ -39,7 +39,10 @@ SRC_FILES	:= lexer/lexer_split.c \
 				freeing.c \
 				errors.c \
 				init.c \
-				executor/exe.c \
+				executor/execute.c \
+				executor/checks.c \
+				executor/execute_builtin.c \
+				executor/execute_child.c \
 				builtins/export.c \
 				expander/expander.c \
 				expander/quotes.c \

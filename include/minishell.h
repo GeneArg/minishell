@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/29 12:43:23 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:56:53 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,9 +164,14 @@ char						**get_paths(char **envp);
 void						append_str_to_array(char ***array, char *str);
 void						free_split(char **split);
 void						check_access(char *cmd_path, t_command *cmd);
+void						execute_builtin_with_redirection(t_command *cmd,
+								t_program **program, int in_fd, int out_fd);
+
 pid_t						execute_in_child(t_command *cmd,
 								t_program **program, int in_fd, int out_fd,
 								char **env_copy);
+bool						is_builtin(char *cmd);
+void						check_access(char *cmd_path, t_command *cmd);
 
 // Builtins
 
@@ -204,6 +209,7 @@ void						free_redirects(t_redirection *redirects);
 
 void						ft_error(t_program **program, char *cmd,
 								char *error, int exit_status);
+void						handle_open_error(t_program **program, char *file);
 
 // Utils
 

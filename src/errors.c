@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 10:11:15 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 10:48:46 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:50:34 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,18 @@ void	ft_error(t_program **program, char *cmd, char *error, int exit_status)
 	if (exit_status != -1)
 		ft_export(program, (char *[]){"export", env_exit_status, NULL});
 	free(env_exit_status);
+}
+
+void	handle_open_error(t_program **program, char *file)
+{
+	char	*error_message;
+
+	if (errno == ENOENT)
+		error_message = "No such file or directory";
+	else if (errno == EACCES)
+		error_message = "Permission denied";
+	else
+		error_message = strerror(errno);
+	ft_error(program, file, error_message, 1);
+	ft_export(program, (char *[]){"export", "?=1", NULL});
 }

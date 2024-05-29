@@ -1,184 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exe.c                                              :+:      :+:    :+:   */
+/*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/27 17:15:06 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/05/29 12:55:59 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
 
-void	print_pids(pid_t *pids, int num_commands)
-{
-	for (int i = 0; i < num_commands; i++)
-	{
-		printf("pids[%d]: %d\n", i, pids[i]);
-	}
-}
 
-bool	is_builtin(char *cmd)
-{
-	return (!strcmp(cmd, "cd") || !strcmp(cmd, "echo") || !strcmp(cmd, "export")
-		|| !strcmp(cmd, "unset") || !strcmp(cmd, "pwd") || !strcmp(cmd, "env")
-		|| !strcmp(cmd, "exit"));
-}
 
-void	execute_builtin_with_redirection(t_command *cmd, t_program **program,
-		int in_fd, int out_fd)
-{
-	int		saved_stdout;
-	int		saved_stdin;
-	int		exit_code;
-	char	*exit_code_str;
-	char	*exit_code_env;
 
-	saved_stdout = dup(1);
-	saved_stdin = dup(0);
-	exit_code = 0;
-	if (saved_stdout == -1 || saved_stdin == -1)
-	{
-		perror("Failed to save STDIN or STDOUT");
-		exit(EXIT_FAILURE);
-	}
-	dup2(in_fd, 0);
-	dup2(out_fd, 1);
-	if (!strcmp(cmd->argv[0], "export"))
-		exit_code = ft_export(program, cmd->argv);
-	else if (!strcmp(cmd->argv[0], "unset"))
-		exit_code = ft_unset(program, cmd->argv);
-	else if (!strcmp(cmd->argv[0], "echo"))
-	{
-		exit_code = ft_echo(cmd->argv);
-	}
-	else if (!ft_strncmp(cmd->argv[0], "pwd", 4))
-		exit_code = ft_pwd();
-	else if (!ft_strncmp(cmd->argv[0], "env", 4))
-		exit_code = ft_env(program);
-	else if (!strcmp(cmd->argv[0], "cd"))
-		exit_code = ft_cd(program, cmd->argv);
-	else if (!ft_strncmp(cmd->argv[0], "exit", 5))
-		ft_exit(program, cmd);
-	exit_code_str = ft_itoa(exit_code);
-	exit_code_env = ft_strjoin("?=", exit_code_str);
-	ft_export(program, (char *[]){"export", exit_code_env, NULL});
-	free(exit_code_str);
-	free(exit_code_env);
-	// Restore STDIN and STDOUT
-	dup2(saved_stdin, 0);
-	dup2(saved_stdout, 1);
-	close(saved_stdin);
-	close(saved_stdout);
-}
 
-void	check_access(char *cmd_path, t_command *cmd)
-{
-	struct stat	statbuf;
-	int			stat_result;
 
-	stat_result = stat(cmd_path, &statbuf);
-	if (stat_result == 0)
-	{
-		if (S_ISDIR(statbuf.st_mode))
-		{
-			ft_error(NULL, cmd->argv[0], "Is a directory", -1);
-			exit(CANNOT_EXECUTE);
-		}
-		else if (access(cmd_path, X_OK) != 0)
-		{
-			ft_error(NULL, cmd->argv[0], "Permission denied", -1);
-			exit(CANNOT_EXECUTE);
-		}
-	}
-	else
-	{
-		if (errno == EACCES)
-		{
-			ft_error(NULL, cmd->argv[0], "Permission denied", -1);
-			exit(COMMAND_NOT_FOUND);
-		}
-		else
-		{
-			ft_error(NULL, cmd->argv[0], "No such file or directory", -1);
-			exit(COMMAND_NOT_FOUND);
-		}
-	}
-}
 
-pid_t	execute_in_child(t_command *cmd, t_program **program, int in_fd,
-		int out_fd, char **env_copy)
-{
-	char	*cmd_path;
-	pid_t	pid;
-	int		execstat;
 
-	pid = fork();
-	if (pid == 0)
-	{ // Child process
-		if (in_fd != 0)
-		{
-			dup2(in_fd, 0);
-			close(in_fd);
-		}
-		if (out_fd != 1)
-		{
-			dup2(out_fd, 1);
-			close(out_fd);
-		}
-		if (cmd->argv[0][0] == '/')
-			cmd_path = ft_strdup(cmd->argv[0]);
-		else
-			cmd_path = find_path(env_copy, cmd->argv[0]);
-		if (cmd->argv[0][0] == '.' || cmd->argv[0][0] == '/')
-			check_access(cmd_path, cmd);
-		execstat = execve(cmd_path, cmd->argv, env_copy);
-		if (execstat == -1)
-		{
-			ft_error(program, cmd->argv[0], "command not found",
-				COMMAND_NOT_FOUND);
-			exit(COMMAND_NOT_FOUND);
-		}
-		free(cmd_path);
-		exit(SUCCESS);
-	}
-	else if (pid > 0)
-	{ // Parent process
-		if (in_fd != 0)
-			close(in_fd);
-		if (out_fd != 1)
-			close(out_fd);
-	}
-	else
-	{
-		ft_error(program, cmd->argv[0], "Failed to fork process", FAILURE);
-		exit(FAILURE);
-	}
-	return (pid);
-}
 
-void	handle_open_error(t_program **program, char *file)
-{
-	char	*error_message;
-
-	if (errno == ENOENT)
-	{
-		error_message = "No such file or directory";
-	}
-	else if (errno == EACCES)
-	{
-		error_message = "Permission denied";
-	}
-	else
-	{
-		error_message = strerror(errno);
-	}
-	ft_error(program, file, error_message, 1);
-	ft_export(program, (char *[]){"export", "?=1", NULL});
-}
 
 void	execute_pipeline(t_program **program)
 {
