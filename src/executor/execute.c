@@ -3,31 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/29 12:55:59 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/01 15:07:12 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-
-
-
-
-
-
-
-
-
 
 void	execute_pipeline(t_program **program)
 {
 	t_command		*current_command;
 	int				pipefds[2];
 	int				in_fd;
-	int				out_fd;
 	pid_t			pid;
 	int				status;
 	int				num_commands;
@@ -35,14 +24,13 @@ void	execute_pipeline(t_program **program)
 	t_redirection	*current_redirection;
 	int				fd;
 	char			*cmd_path;
+	char			exit_code_str[10];
 	int				exit_code;
-			char exit_code_str[10];
 
-	in_fd = 0;
-	out_fd = 1;
-	num_commands = 0;
-	i = 0;
 	current_command = (*program)->commands;
+	in_fd = 0;
+	num_commands = 0;
+	// Count the number of commands
 	while (current_command)
 	{
 		num_commands++;
@@ -60,11 +48,11 @@ void	execute_pipeline(t_program **program)
 				perror("pipe");
 				exit(EXIT_FAILURE);
 			}
-			out_fd = pipefds[1];
 		}
 		else
 		{
-			out_fd = 1;
+			pipefds[0] = -1;
+			pipefds[1] = -1;
 		}
 		pid = fork();
 		if (pid == 0)
@@ -74,13 +62,16 @@ void	execute_pipeline(t_program **program)
 				dup2(in_fd, 0);
 				close(in_fd);
 			}
-			if (out_fd != 1)
+			if (pipefds[1] != -1)
 			{
-				dup2(out_fd, 1);
-				close(out_fd);
+				dup2(pipefds[1], 1);
+				close(pipefds[1]);
 			}
-			if (in_fd != 0)
+			// Close the read end of the pipe in the child process
+			if (pipefds[0] != -1)
+			{
 				close(pipefds[0]);
+			}
 			// Handle redirections
 			current_redirection = current_command->redirects;
 			while (current_redirection)
@@ -138,9 +129,10 @@ void	execute_pipeline(t_program **program)
 		{ // Parent process
 			if (in_fd != 0)
 				close(in_fd);
-			if (out_fd != 1)
-				close(out_fd);
+			if (pipefds[1] != -1)
+				close(pipefds[1]);
 			in_fd = pipefds[0];
+				// Assign the read end of the pipe to in_fd for the next command
 		}
 		else
 		{
@@ -150,6 +142,12 @@ void	execute_pipeline(t_program **program)
 		ft_free_array(env_copy); // Free the copied environment array
 		current_command = current_command->next;
 	}
+	// Close the last pipe read end in the parent
+	if (in_fd != 0)
+	{
+		close(in_fd);
+	}
+	// Wait for all child processes to finish
 	for (i = 0; i < num_commands; i++)
 	{
 		wait(&status);
@@ -172,9 +170,10 @@ void	execute(t_program **program)
 	pid_t			*pids;
 	int				i;
 	int				num_commands;
-		int status;
-		char *exit_status_str;
-		char *exit_code_env;
+	int				status;
+	char			*exit_status_str;
+	char			*exit_code_env;
+	char			**env_copy;
 
 	if ((*program)->commands && (*program)->commands->next)
 	{
@@ -235,7 +234,7 @@ void	execute(t_program **program)
 					handle_open_error(program, current_redirection->file);
 					current_command->flag_error = 1;
 					ft_export(program, (char *[]){"export", "?=1", NULL});
-						// Set exit code to 1
+					// Set exit code to 1
 					break ;
 				}
 				if (in_fd != 0)
@@ -252,7 +251,7 @@ void	execute(t_program **program)
 					handle_open_error(program, current_redirection->file);
 					current_command->flag_error = 1;
 					ft_export(program, (char *[]){"export", "?=1", NULL});
-						// Set exit code to 1
+					// Set exit code to 1
 					break ;
 				}
 				if (out_fd != 1)
@@ -291,8 +290,8 @@ void	execute(t_program **program)
 		}
 		else
 		{
-			char **env_copy = ft_copy_array((*program)->envp);
-				// Create a copy of the environment variables
+			env_copy = ft_copy_array((*program)->envp);
+			// Create a copy of the environment variables
 			pids[i] = execute_in_child(current_command, program, in_fd, out_fd,
 					env_copy);
 			ft_free_array(env_copy); // Free the copied environment array
