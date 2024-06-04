@@ -42,6 +42,7 @@ SRC_FILES	:= lexer/lexer_split.c \
 				executor/execute.c \
 				executor/checks.c \
 				executor/execute_builtin.c \
+				executor/handle_redirects.c \
 				executor/execute_child.c \
 				builtins/export.c \
 				expander/expander.c \

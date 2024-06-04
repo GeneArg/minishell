@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:39:51 by eagranat          #+#    #+#             */
-/*   Updated: 2024/05/27 10:38:12 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/04 13:32:01 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,29 +41,48 @@ char	*get_correct_path(char *arg, char *home, char *oldpwd)
 	return (path);
 }
 
-int	ft_cd(t_program **program, char **argv)
+int	prepare_cd_path(t_program **program, char **argv, char **path)
 {
 	char	*home;
 	char	*oldpwd;
-	char	*pwd;
-	char	*path;
-	int		ret;
 
 	home = find_env_var_value((*program)->envp, "HOME");
+	if (!home && !argv[1])
+	{
+		ft_error(program, "cd", "HOME not set", 1);
+		return (FAILURE);
+	}
 	oldpwd = find_env_var_value((*program)->envp, "OLDPWD");
-	pwd = find_env_var_value((*program)->envp, "PWD");
 	if (argv[2])
 	{
 		ft_error(program, "cd", "too many arguments", 1);
 		return (FAILURE);
 	}
-	path = get_correct_path(argv[1], home, oldpwd);
+	*path = get_correct_path(argv[1], home, oldpwd);
+	return (SUCCESS);
+}
+
+int	change_directory_and_update(t_program **program, char *path)
+{
+	int		ret;
+	char	*pwd;
+
 	ret = chdir(path);
 	if (ret == -1)
 	{
 		ft_error(program, "cd", "No such file or directory", 1);
 		return (FAILURE);
 	}
+	pwd = find_env_var_value((*program)->envp, "PWD");
 	update_pwd_env_vars(program, pwd);
 	return (SUCCESS);
+}
+
+int	ft_cd(t_program **program, char **argv)
+{
+	char	*path;
+
+	if (prepare_cd_path(program, argv, &path) == FAILURE)
+		return (FAILURE);
+	return (change_directory_and_update(program, path));
 }

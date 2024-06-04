@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/02 11:37:35 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 16:53:39 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/04 12:15:44 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	run(t_program **program)
 	free_tokens((*program)->tokens);
 	(*program)->tokens = NULL;
 	expand((*program)->commands, (*program)->envp);
-	execute(program);
+	execute_pipeline(program);
 }
 
 void	setup_and_read_prompt(t_program *program)

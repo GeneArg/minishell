@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/06/04 11:27:30 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/04 13:33:58 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ bool						is_enclosed_in_single_quotes(char *arg);
 
 // Executor
 
-void						execute(t_program **program);
+void						execute_pipeline(t_program **program);
 char						*find_path(char **envp, char *cmd);
 char						**get_paths(char **envp);
 void						append_str_to_array(char ***array, char *str);
@@ -169,10 +169,11 @@ void						check_access(char *cmd_path, t_command *cmd);
 void						execute_builtin_with_redirection(t_command *cmd,
 								t_program **program);
 
-pid_t						execute_in_child(t_command *cmd,
-								t_program **program, char **env_copy);
 bool						is_builtin(char *cmd);
-void						check_access(char *cmd_path, t_command *cmd);
+
+void						handle_redirection(t_command *cmd);
+void						handle_child_process(t_program **program,
+								t_command *current_command, int pipefds[2]);
 
 // Builtins
 

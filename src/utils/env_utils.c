@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 11:11:00 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/27 11:20:55 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/04 13:44:37 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,11 @@ char	*find_path(char **envp, char *cmd)
 	char	*sub;
 	char	**temp_paths;
 
+	if (cmd[0] == '.' || cmd[0] == '/')
+	{
+		cmd_path = ft_strdup(cmd);
+		return (cmd_path);
+	}
 	paths = get_paths(envp);
 	temp_paths = paths;
 	sub = ft_strjoin("/", cmd);
@@ -90,13 +95,18 @@ void	set_env_var(t_program **program, char *key, char *value)
 {
 	int		i;
 	char	*new_env_var;
+	char	*temp;
 
 	i = find_env_var((*program)->envp, key);
+	temp = ft_strjoin(key, "=");
+	new_env_var = ft_strjoin(temp, value);
+	free(temp);
 	if (i == -1)
-		add_env(&(*program)->envp, ft_strjoin(key, ft_strjoin("=", value)));
+	{
+		add_env(&(*program)->envp, new_env_var);
+	}
 	else
 	{
-		new_env_var = ft_strjoin(key, ft_strjoin("=", value));
 		free((*program)->envp[i]);
 		(*program)->envp[i] = new_env_var;
 	}

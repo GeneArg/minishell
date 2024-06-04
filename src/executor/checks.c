@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 12:52:08 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/06/04 11:29:11 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/04 13:01:55 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	check_access(char *cmd_path, t_command *cmd)
 		ft_error(NULL, cmd->argv[0], "Permission denied", -1);
 		exit(COMMAND_NOT_FOUND);
 	}
-	else
+	else if (errno == ENOENT)
 	{
 		ft_error(NULL, cmd->argv[0], "No such file or directory", -1);
 		exit(COMMAND_NOT_FOUND);

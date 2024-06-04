@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 12:54:46 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/06/04 11:30:53 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/04 13:19:02 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void	execute_builtin_with_redirection(t_command *cmd, t_program **program)
 
 	save_and_redirect_fds(&saved_stdin, &saved_stdout, (*program)->in_fd,
 		(*program)->out_fd);
+	handle_redirection(cmd);
 	exit_code = execute_builtin(cmd, program);
 	set_exit_code_env(program, exit_code);
 	restore_fds(saved_stdin, saved_stdout);
