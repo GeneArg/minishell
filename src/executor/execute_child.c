@@ -3,38 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   execute_child.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 12:56:06 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/06/01 16:20:55 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/06/04 11:28:45 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	handle_in_fd(int in_fd)
+void	handle_fd(int fd, int std_fd)
 {
-	if (in_fd != 0)
+	if (fd != std_fd)
 	{
-		dup2(in_fd, 0);
-		close(in_fd);
+		dup2(fd, std_fd);
+		close(fd);
 	}
-}
-
-void	handle_out_fd(int out_fd)
-{
-	if (out_fd != 1)
-	{
-		dup2(out_fd, 1);
-		close(out_fd);
-	}
-}
-
-char	*get_command_path(t_command *cmd, char **env_copy)
-{
-	if (cmd->argv[0][0] == '/')
-		return (ft_strdup(cmd->argv[0]));
-	return (find_path(env_copy, cmd->argv[0]));
 }
 
 void	check_and_execute(t_command *cmd, char *cmd_path, char **env_copy,
@@ -52,26 +36,18 @@ void	check_and_execute(t_command *cmd, char *cmd_path, char **env_copy,
 	}
 }
 
-void	execute_command(t_command *cmd, char *cmd_path, char **env_copy,
-		t_program **program)
-{
-	check_and_execute(cmd, cmd_path, env_copy, program);
-}
-
-void	handle_child_process_fds(int in_fd, int out_fd)
-{
-	handle_in_fd(in_fd);
-	handle_out_fd(out_fd);
-}
-
-void	handle_child_process(t_command *cmd, t_program **program, int in_fd,
-		int out_fd, char **env_copy)
+void	handle_child_process(t_command *cmd, t_program **program,
+		char **env_copy)
 {
 	char	*cmd_path;
 
-	cmd_path = get_command_path(cmd, env_copy);
-	handle_child_process_fds(in_fd, out_fd);
-	execute_command(cmd, cmd_path, env_copy, program);
+	handle_fd((*program)->in_fd, 0);
+	handle_fd((*program)->out_fd, 1);
+	if (cmd->argv[0][0] == '/')
+		cmd_path = ft_strdup(cmd->argv[0]);
+	else
+		cmd_path = find_path(env_copy, cmd->argv[0]);
+	check_and_execute(cmd, cmd_path, env_copy, program);
 	free(cmd_path);
 	exit(SUCCESS);
 }
@@ -84,29 +60,19 @@ void	handle_parent_process(int in_fd, int out_fd)
 		close(out_fd);
 }
 
-void	handle_fork_error(t_program **program, char *cmd)
-{
-	ft_error(program, cmd, "Failed to fork process", FAILURE);
-	exit(FAILURE);
-}
-
-pid_t	execute_in_child(t_command *cmd, t_program **program, int in_fd,
-		int out_fd, char **env_copy)
+pid_t	execute_in_child(t_command *cmd, t_program **program, char **env_copy)
 {
 	pid_t	pid;
 
 	pid = fork();
 	if (pid == 0)
-	{
-		handle_child_process(cmd, program, in_fd, out_fd, env_copy);
-	}
+		handle_child_process(cmd, program, env_copy);
 	else if (pid > 0)
-	{
-		handle_parent_process(in_fd, out_fd);
-	}
+		handle_parent_process((*program)->in_fd, (*program)->out_fd);
 	else
 	{
-		handle_fork_error(program, cmd->argv[0]);
+		ft_error(program, cmd->argv[0], "Failed to fork process", FAILURE);
+		exit(FAILURE);
 	}
 	return (pid);
 }

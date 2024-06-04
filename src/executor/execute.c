@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
+/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 11:42:12 by eagranat          #+#    #+#             */
-/*   Updated: 2024/06/01 15:07:12 by eagranat         ###   ########.fr       */
+/*   Updated: 2024/06/04 11:23:20 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void	execute_pipeline(t_program **program)
 {
 	t_command		*current_command;
 	int				pipefds[2];
-	int				in_fd;
 	pid_t			pid;
 	int				status;
 	int				num_commands;
@@ -28,7 +27,7 @@ void	execute_pipeline(t_program **program)
 	int				exit_code;
 
 	current_command = (*program)->commands;
-	in_fd = 0;
+	(*program)->in_fd = 0;
 	num_commands = 0;
 	// Count the number of commands
 	while (current_command)
@@ -57,10 +56,10 @@ void	execute_pipeline(t_program **program)
 		pid = fork();
 		if (pid == 0)
 		{ // Child process
-			if (in_fd != 0)
+			if ((*program)->in_fd != 0)
 			{
-				dup2(in_fd, 0);
-				close(in_fd);
+				dup2((*program)->in_fd, 0);
+				close((*program)->in_fd);
 			}
 			if (pipefds[1] != -1)
 			{
@@ -104,8 +103,10 @@ void	execute_pipeline(t_program **program)
 			}
 			if (is_builtin(current_command->argv[0]))
 			{
-				execute_builtin_with_redirection(current_command, program, 0,
-					1);
+				(*program)->in_fd = 0;
+				(*program)->out_fd = 1;
+				////might need to save and restore
+				execute_builtin_with_redirection(current_command, program);
 				exit(0);
 			}
 			else
@@ -127,11 +128,11 @@ void	execute_pipeline(t_program **program)
 		}
 		else if (pid > 0)
 		{ // Parent process
-			if (in_fd != 0)
-				close(in_fd);
+			if ((*program)->in_fd != 0)
+				close((*program)->in_fd);
 			if (pipefds[1] != -1)
 				close(pipefds[1]);
-			in_fd = pipefds[0];
+			(*program)->in_fd = pipefds[0];
 				// Assign the read end of the pipe to in_fd for the next command
 		}
 		else
@@ -143,9 +144,9 @@ void	execute_pipeline(t_program **program)
 		current_command = current_command->next;
 	}
 	// Close the last pipe read end in the parent
-	if (in_fd != 0)
+	if ((*program)->in_fd != 0)
 	{
-		close(in_fd);
+		close((*program)->in_fd);
 	}
 	// Wait for all child processes to finish
 	for (i = 0; i < num_commands; i++)
@@ -181,8 +182,8 @@ void	execute(t_program **program)
 		return ;
 	}
 	num_commands = 0;
-	int in_fd = 0;  // Standard input by default
-	int out_fd = 1; // Standard output by default
+	(*program)->in_fd= 0;  // Standard input by default
+	(*program)->out_fd = 1; // Standard output by default
 	current_command = (*program)->commands;
 	while (current_command)
 	{
@@ -220,7 +221,7 @@ void	execute(t_program **program)
 				i++;
 				continue ;
 			}
-			out_fd = pipefds[1];
+			(*program)->out_fd = pipefds[1];
 		}
 		// Handle redirections
 		current_redirection = current_command->redirects;
@@ -237,9 +238,9 @@ void	execute(t_program **program)
 					// Set exit code to 1
 					break ;
 				}
-				if (in_fd != 0)
-					close(in_fd);
-				in_fd = new_in_fd;
+				if ((*program)->in_fd != 0)
+					close((*program)->in_fd);
+				(*program)->in_fd = new_in_fd;
 			}
 			else if (current_redirection->type == REDIRECT_OUT)
 			{
@@ -254,11 +255,11 @@ void	execute(t_program **program)
 					// Set exit code to 1
 					break ;
 				}
-				if (out_fd != 1)
+				if ((*program)->out_fd != 1)
 				{
-					close(out_fd);
+					close((*program)->out_fd);
 				}
-				out_fd = new_out_fd;
+				(*program)->out_fd = new_out_fd;
 			}
 			current_redirection = current_redirection->next;
 			if (current_command->flag_error)
@@ -269,44 +270,42 @@ void	execute(t_program **program)
 			pids[i] = -1;
 			current_command = current_command->next;
 			i++;
-			if (in_fd != 0)
+			if ((*program)->in_fd != 0)
 			{
-				close(in_fd);
-				in_fd = 0;
+				close((*program)->in_fd);
+				(*program)->in_fd = 0;
 			}
-			if (out_fd != 1)
+			if ((*program)->out_fd != 1)
 			{
-				close(out_fd);
-				out_fd = 1;
+				close((*program)->out_fd);
+				(*program)->out_fd = 1;
 			}
 			continue ;
 		}
 		// Execute the command
 		if (is_builtin(current_command->argv[0]))
 		{
-			execute_builtin_with_redirection(current_command, program, in_fd,
-				out_fd);
+			execute_builtin_with_redirection(current_command, program);
 			pids[i] = -1;
 		}
 		else
 		{
 			env_copy = ft_copy_array((*program)->envp);
 			// Create a copy of the environment variables
-			pids[i] = execute_in_child(current_command, program, in_fd, out_fd,
-					env_copy);
+			pids[i] = execute_in_child(current_command, program, env_copy);
 			ft_free_array(env_copy); // Free the copied environment array
 		}
-		if (out_fd != 1)
+		if ((*program)->out_fd != 1)
 		{
-			close(out_fd);
-			out_fd = 1;
+			close((*program)->out_fd);
+			(*program)->out_fd = 1;
 		}
 		// If there was a pipe,
 		// close the read end and make the write end the new input
 		if (current_command->next)
 		{
 			close(pipefds[1]);
-			in_fd = pipefds[0];
+			(*program)->in_fd = pipefds[0];
 		}
 		i++;
 		current_command = current_command->next;
@@ -335,8 +334,8 @@ void	execute(t_program **program)
 	}
 	free(pids);
 	// Ensure all file descriptors are closed
-	if (in_fd != 0)
-		close(in_fd);
-	if (out_fd != 1)
-		close(out_fd);
+	if ((*program)->in_fd != 0)
+		close((*program)->in_fd);
+	if ((*program)->out_fd != 1)
+		close((*program)->out_fd);
 }

@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/29 12:56:53 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/04 11:27:30 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,8 @@ typedef struct s_program
 	t_token					*tokens;
 	t_command				*commands;
 	char					**envp;
+	int						in_fd;
+	int						out_fd;
 }							t_program;
 
 // Lexer
@@ -165,11 +167,10 @@ void						append_str_to_array(char ***array, char *str);
 void						free_split(char **split);
 void						check_access(char *cmd_path, t_command *cmd);
 void						execute_builtin_with_redirection(t_command *cmd,
-								t_program **program, int in_fd, int out_fd);
+								t_program **program);
 
 pid_t						execute_in_child(t_command *cmd,
-								t_program **program, int in_fd, int out_fd,
-								char **env_copy);
+								t_program **program, char **env_copy);
 bool						is_builtin(char *cmd);
 void						check_access(char *cmd_path, t_command *cmd);
 

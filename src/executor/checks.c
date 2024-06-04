@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 12:52:08 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/29 13:02:01 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/04 11:29:11 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ bool	is_builtin(char *cmd)
 void	check_access(char *cmd_path, t_command *cmd)
 {
 	struct stat	statbuf;
-	int		stat_result;
+	int			stat_result;
 
 	stat_result = stat(cmd_path, &statbuf);
 	if (S_ISDIR(statbuf.st_mode) && stat_result == 0)
