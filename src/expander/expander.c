@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eagranat <eagranat@student.42bangkok.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/06 12:56:22 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/29 12:43:43 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/08 22:31:42 by eagranat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	expand_args_helper(char **arg, char **envp)
 void	expand_args(t_command *cmd, char **envp)
 {
 	int	i;
-
+	if (!cmd || !cmd->argv)
+		return;
 	i = 0;
 	while (cmd->argv[i] != NULL)
 	{
