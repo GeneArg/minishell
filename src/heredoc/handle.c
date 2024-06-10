@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:33:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/29 10:21:33 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/10 11:10:03 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 char	*get_delimiter(char *input)
 {
+	char	*start;
 	char	*end;
 	size_t	len;
 	char	*delimiter;
-	char	*start;
 
 	start = ft_strnstr(input, "<<", strlen(input));
 	if (!start)
@@ -37,23 +37,25 @@ char	*get_delimiter(char *input)
 }
 
 int	read_and_add_line(char **heredoc_content, size_t *total_len,
-		char *delimiter)
+		const char *delimiter)
 {
 	char	*line;
 	size_t	del_len;
 	size_t	line_len;
 
-	del_len = ft_strlen(delimiter);
 	line = readline("> ");
-	if (line == NULL || ft_strncmp(line, delimiter, del_len) == 0)
+	if (!line)
+		return (1);
+	del_len = ft_strlen(delimiter);
+	if (ft_strncmp(line, delimiter, del_len) == 0 && strlen(line) == del_len)
 	{
 		free(line);
 		return (1);
 	}
-	line_len = ft_strlen(line);
+	line_len = strlen(line);
 	*heredoc_content = (char *)ft_realloc(*heredoc_content, *total_len
 			+ line_len + 2);
-	if (*heredoc_content == NULL)
+	if (!*heredoc_content)
 	{
 		free(line);
 		return (2);
@@ -66,7 +68,7 @@ int	read_and_add_line(char **heredoc_content, size_t *total_len,
 	return (0);
 }
 
-char	*read_heredoc_input(char *delimiter)
+char	*read_heredoc_input(const char *delimiter)
 {
 	char	*heredoc_content;
 	size_t	total_len;
@@ -85,14 +87,10 @@ char	*read_heredoc_input(char *delimiter)
 			return (NULL);
 		}
 	}
-	if (heredoc_content == NULL)
-	{
-		heredoc_content = (char *)malloc(1);
-		if (heredoc_content == NULL)
-			return (NULL);
-		heredoc_content[0] = '\0';
-	}
-	return (heredoc_content);
+	if (heredoc_content)
+		return (heredoc_content);
+	else
+		return ft_strdup("");
 }
 
 char	*replace_heredoc_with_filename(char *input, char *delimiter,
@@ -112,25 +110,31 @@ char	*replace_heredoc_with_filename(char *input, char *delimiter,
 	end += ft_strlen(delimiter);
 	while (*end == ' ' || *end == '\n')
 		end++;
-	new_input_len = ft_strlen(input) - (end - start) + ft_strlen(filename) + 1;
+	new_input_len = ft_strlen(input) - (end - start) + ft_strlen(filename) + 5;
 	new_input = (char *)malloc(new_input_len);
 	if (!new_input)
 		return (NULL);
 	ft_strlcpy(new_input, input, start - input + 1);
+	ft_strlcat(new_input, "< ", new_input_len);
 	ft_strlcat(new_input, filename, new_input_len);
+	ft_strlcat(new_input, " ", new_input_len);
 	ft_strlcat(new_input, end, new_input_len);
 	return (new_input);
 }
 
 char	*handle_heredoc(char *input)
 {
-	char	*delimiter;
-	char	*heredoc_content;
-	char	*tmp_filename;
-	int		fd;
-	char	*updated_input;
+	char		*delimiter;
+	char		*heredoc_content;
+	char		*tmp_filename;
+	int			fd;
+	char		*updated_input;
+	static int	i;
+	char		*number;
 
-	tmp_filename = "/tmp/minishell_heredoc";
+	number = ft_itoa(i++);
+	tmp_filename = ft_strjoin("/tmp/minishell_heredoc", number);
+	free(number);
 	delimiter = get_delimiter(input);
 	heredoc_content = read_heredoc_input(delimiter);
 	if (!heredoc_content)
@@ -139,11 +143,12 @@ char	*handle_heredoc(char *input)
 		return (NULL);
 	}
 	fd = open(tmp_filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	write(fd, heredoc_content, strlen(heredoc_content));
+	write(fd, heredoc_content, ft_strlen(heredoc_content));
 	close(fd);
 	updated_input = replace_heredoc_with_filename(input, delimiter,
 			tmp_filename);
 	free(delimiter);
 	free(heredoc_content);
+	free(tmp_filename);
 	return (updated_input);
 }
