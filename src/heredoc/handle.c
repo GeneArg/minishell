@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 10:33:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/06/10 11:10:03 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/10 11:21:07 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ char	*get_delimiter(char *input)
 	return (delimiter);
 }
 
-int	read_and_add_line(char **heredoc_content, size_t *total_len,
-		const char *delimiter)
+int	read_and_add_line(char **content, size_t *total_len, const char *delimiter)
 {
 	char	*line;
 	size_t	del_len;
@@ -53,17 +52,11 @@ int	read_and_add_line(char **heredoc_content, size_t *total_len,
 		return (1);
 	}
 	line_len = strlen(line);
-	*heredoc_content = (char *)ft_realloc(*heredoc_content, *total_len
-			+ line_len + 2);
-	if (!*heredoc_content)
-	{
-		free(line);
-		return (2);
-	}
-	ft_strlcpy(*heredoc_content + *total_len, line, line_len + 1);
+	*content = (char *)ft_realloc(*content, *total_len + line_len + 2);
+	ft_strlcpy(*content + *total_len, line, line_len + 1);
 	*total_len += line_len;
-	(*heredoc_content)[(*total_len)++] = '\n';
-	(*heredoc_content)[*total_len] = '\0';
+	(*content)[(*total_len)++] = '\n';
+	(*content)[*total_len] = '\0';
 	free(line);
 	return (0);
 }
@@ -90,7 +83,7 @@ char	*read_heredoc_input(const char *delimiter)
 	if (heredoc_content)
 		return (heredoc_content);
 	else
-		return ft_strdup("");
+		return (ft_strdup(""));
 }
 
 char	*replace_heredoc_with_filename(char *input, char *delimiter,
@@ -124,17 +117,13 @@ char	*replace_heredoc_with_filename(char *input, char *delimiter,
 
 char	*handle_heredoc(char *input)
 {
-	char		*delimiter;
-	char		*heredoc_content;
-	char		*tmp_filename;
-	int			fd;
-	char		*updated_input;
-	static int	i;
-	char		*number;
+	char	*delimiter;
+	char	*heredoc_content;
+	char	*tmp_filename;
+	int		fd;
+	char	*updated_input;
 
-	number = ft_itoa(i++);
-	tmp_filename = ft_strjoin("/tmp/minishell_heredoc", number);
-	free(number);
+	tmp_filename = generate_unique_filename();
 	delimiter = get_delimiter(input);
 	heredoc_content = read_heredoc_input(delimiter);
 	if (!heredoc_content)

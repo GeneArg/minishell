@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 10:11:42 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/06/04 13:33:58 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/10 11:21:19 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,5 +232,6 @@ void						handle_sigquit(int sig);
 
 char						*handle_heredoc(char *input);
 bool						is_heredoc(char *input);
+char						*generate_unique_filename(void);
 
 #endif

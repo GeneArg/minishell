@@ -6,11 +6,23 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/29 09:46:04 by bperez-a          #+#    #+#             */
-/*   Updated: 2024/05/29 09:48:17 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/10 11:20:50 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+
+char	*generate_unique_filename(void)
+{
+	static int	i = 0;
+	char		*number;
+	char		*filename;
+
+	number = ft_itoa(i++);
+	filename = ft_strjoin("/tmp/minishell_heredoc", number);
+	free(number);
+	return (filename);
+}
 
 void	check_quotes(char **ptr, bool *in_single_quote, bool *in_double_quote)
 {
