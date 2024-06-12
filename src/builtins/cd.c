@@ -6,7 +6,7 @@
 /*   By: bperez-a <bperez-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/03 14:39:51 by eagranat          #+#    #+#             */
-/*   Updated: 2024/06/04 13:32:01 by bperez-a         ###   ########.fr       */
+/*   Updated: 2024/06/12 12:41:00 by bperez-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,10 @@ char	*get_correct_path(char *arg, char *home, char *oldpwd)
 	if (!arg || !ft_strncmp(arg, "~", 2))
 		path = home;
 	else if (!ft_strncmp(arg, "-", 2))
+	{
 		path = oldpwd;
+		ft_putendl_fd(oldpwd, 1);
+	}
 	else
 		path = arg;
 	return (path);
